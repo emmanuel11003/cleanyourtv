@@ -58,28 +58,28 @@
     <string name="wallpaper_none">None (Solid black)</string>
     <string name="wallpaper_applied">Wallpaper changed</string>
     <string name="wallpaper_theme_default">Theme default</string>
-    <string name="wallpaper_custom_browse">Pick image from storage…</string>
-    <string name="screensaver_label">Screensaver</string>
-    <string name="screensaver_state">Screensaver: %1$s</string>
-    <string name="screensaver_style_calendar">Clock &amp; Month Calendar</string>
-    <string name="screensaver_style_clock">Clock only</string>
-    <string name="screensaver_bg_wallpaper">Theme / Custom wallpaper</string>
-    <string name="screensaver_bg_glow">Ambient color glow</string>
-    <string name="screensaver_bg_black">Solid black (OLED)</string>
-    <string name="screensaver_summary">Shows clock when TV is left idle on Home</string>
-    <string name="screensaver_calendar_label">Screensaver Calendar</string>
-    <string name="screensaver_calendar_summary">Full month calendar with today highlighted</string>
-    <string name="stats_label">Top Bar Stats</string>
-    <string name="stats_summary">Memory and storage usage line under clock</string>
-    <string name="inputs_pill_label">Inputs Pill</string>
-    <string name="inputs_pill_summary">Inputs dropdown button in top bar</string>
-    <string name="network_pill_label">Network Pill</string>
-    <string name="network_pill_summary">Wi-Fi and Ethernet status button in top bar</string>
-    <string name="animations">Animations</string>
-    <string name="animations_summary">Dynamic spring motion physics</string>
-    <string name="advanced_effects_summary">Tile lift, icon zoom, and smooth transitions</string>
-    <string name="switch_on_badge">ON</string>
-    <string name="switch_off_badge">OFF</string>
+    <string name="wallpaper_custom_browse" translatable="false">Pick image from storage…</string>
+    <string name="screensaver_label" translatable="false">Screensaver</string>
+    <string name="screensaver_state" translatable="false">Screensaver: %1$s</string>
+    <string name="screensaver_style_calendar" translatable="false">Clock &amp; Month Calendar</string>
+    <string name="screensaver_style_clock" translatable="false">Clock only</string>
+    <string name="screensaver_bg_wallpaper" translatable="false">Theme / Custom wallpaper</string>
+    <string name="screensaver_bg_glow" translatable="false">Ambient color glow</string>
+    <string name="screensaver_bg_black" translatable="false">Solid black (OLED)</string>
+    <string name="screensaver_summary" translatable="false">Shows clock when TV is left idle on Home</string>
+    <string name="screensaver_calendar_label" translatable="false">Screensaver Calendar</string>
+    <string name="screensaver_calendar_summary" translatable="false">Full month calendar with today highlighted</string>
+    <string name="stats_label" translatable="false">Top Bar Stats</string>
+    <string name="stats_summary" translatable="false">Memory and storage usage line under clock</string>
+    <string name="inputs_pill_label" translatable="false">Inputs Pill</string>
+    <string name="inputs_pill_summary" translatable="false">Inputs dropdown button in top bar</string>
+    <string name="network_pill_label" translatable="false">Network Pill</string>
+    <string name="network_pill_summary" translatable="false">Wi-Fi and Ethernet status button in top bar</string>
+    <string name="animations" translatable="false">Animations</string>
+    <string name="animations_summary" translatable="false">Dynamic spring motion physics</string>
+    <string name="advanced_effects_summary" translatable="false">Tile lift, icon zoom, and smooth transitions</string>
+    <string name="switch_on_badge" translatable="false">ON</string>
+    <string name="switch_off_badge" translatable="false">OFF</string>
     <string name="animations_state">Animations: %1$s</string>
     <string name="advanced_effects">Advanced effects</string>
     <string name="advanced_effects_state">Advanced effects: %1$s</string>
@@ -127,8 +127,8 @@
     <string name="tile_replace_in_dock">Replace with another app</string>
     <string name="dock_edit_pick_place">Choose the dock place for this app and press OK. Back to cancel.</string>
     <string name="reorder">Reorder apps</string>
-    <string name="reorder_apps">Rearrange Apps</string>
-    <string name="reorder_apps_summary">Change the order of apps on your home screen.</string>
+    <string name="reorder_apps" translatable="false">Rearrange Apps</string>
+    <string name="reorder_apps_summary" translatable="false">Change the order of apps on your home screen.</string>
     <string name="tile_move">Move</string>
     <string name="reorder_hint">OK picks up an app, arrows move it, Back places it. Back again to finish.</string>
     <string name="reorder_not_saved">Couldn\'t save the new order</string>
@@ -184,50 +184,50 @@
     <string name="clock_format_24">24-hour</string>
 
     <!-- Google TV Style Quick Settings -->
-    <string name="all_settings">All settings</string>
-    <string name="tile_screensaver">Screensaver</string>
-    <string name="tile_inputs">Inputs</string>
-    <string name="tile_display">Display</string>
-    <string name="tile_sound">Sound</string>
-    <string name="tile_wifi">Wi-Fi</string>
-    <string name="tile_bluetooth">Bluetooth</string>
-    <string name="tile_sleep_timer">Sleep timer</string>
-    <string name="quick_settings_footer">Press Back to close</string>
-    <string name="sleep_timer_addon_help">Sleep timer requires the Sleep Timer add-on (addons/sleep-timer)</string>
+    <string name="all_settings" translatable="false">All settings</string>
+    <string name="tile_screensaver" translatable="false">Screensaver</string>
+    <string name="tile_inputs" translatable="false">Inputs</string>
+    <string name="tile_display" translatable="false">Display</string>
+    <string name="tile_sound" translatable="false">Sound</string>
+    <string name="tile_wifi" translatable="false">Wi-Fi</string>
+    <string name="tile_bluetooth" translatable="false">Bluetooth</string>
+    <string name="tile_sleep_timer" translatable="false">Sleep timer</string>
+    <string name="quick_settings_footer" translatable="false">Press Back to close</string>
+    <string name="sleep_timer_addon_help" translatable="false">Sleep timer requires the Sleep Timer add-on</string>
 
     <!-- Remote Button Mapper -->
-    <string name="button_mapper">Button Mapper</string>
-    <string name="button_mapper_summary">Customize remote buttons to launch apps or actions</string>
-    <string name="button_mapper_mapped">%1$d buttons customized</string>
-    <string name="button_mapper_learn">Detect Remote Button…</string>
-    <string name="button_mapper_learn_prompt">Press any button on your TV remote to customize it.\n\nPress Back to cancel.</string>
-    <string name="button_mapper_reset">Default (Unmapped)</string>
-    <string name="button_mapper_clear_all">Clear All Mappings</string>
-    <string name="button_mapper_clear_all_confirm">Remove all custom remote button mappings?</string>
-    <string name="button_mapper_action_quick_settings">Quick Settings</string>
-    <string name="button_mapper_action_inputs">TV Inputs</string>
-    <string name="button_mapper_action_reorder">Rearrange Apps</string>
-    <string name="button_mapper_action_screensaver">Screensaver / Clock</string>
-    <string name="button_mapper_action_library">App Library</string>
-    <string name="button_mapper_action_tv_settings">TV Settings</string>
-    <string name="button_mapper_action_recents">Recent Apps</string>
-    <string name="button_mapper_launch_app">Launch App…</string>
-    <string name="button_mapper_key_cannot_remap">This navigation button cannot be remapped.</string>
+    <string name="button_mapper" translatable="false">Button Mapper</string>
+    <string name="button_mapper_summary" translatable="false">Customize remote buttons to launch apps or actions</string>
+    <string name="button_mapper_mapped" translatable="false">%1$d buttons customized</string>
+    <string name="button_mapper_learn" translatable="false">Detect Remote Button…</string>
+    <string name="button_mapper_learn_prompt" translatable="false">Press any button on your TV remote to customize it.\n\nPress Back to cancel.</string>
+    <string name="button_mapper_reset" translatable="false">Default (Unmapped)</string>
+    <string name="button_mapper_clear_all" translatable="false">Clear All Mappings</string>
+    <string name="button_mapper_clear_all_confirm" translatable="false">Remove all custom remote button mappings?</string>
+    <string name="button_mapper_action_quick_settings" translatable="false">Quick Settings</string>
+    <string name="button_mapper_action_inputs" translatable="false">TV Inputs</string>
+    <string name="button_mapper_action_reorder" translatable="false">Rearrange Apps</string>
+    <string name="button_mapper_action_screensaver" translatable="false">Screensaver / Clock</string>
+    <string name="button_mapper_action_library" translatable="false">App Library</string>
+    <string name="button_mapper_action_tv_settings" translatable="false">TV Settings</string>
+    <string name="button_mapper_action_recents" translatable="false">Recent Apps</string>
+    <string name="button_mapper_launch_app" translatable="false">Launch App…</string>
+    <string name="button_mapper_key_cannot_remap" translatable="false">This navigation button cannot be remapped.</string>
 
     <!-- Recent Applications / Multitasking Switcher -->
-    <string name="recents">Recents</string>
-    <string name="recent_apps_title">Recent Apps</string>
-    <string name="recent_apps_subtitle">Switch between recent apps or manage tasks</string>
-    <string name="recents_action_open">Switch to App</string>
-    <string name="recents_action_dismiss">Dismiss Task</string>
-    <string name="recents_action_force_stop">Force Stop App</string>
-    <string name="recents_action_app_info">App Info</string>
-    <string name="recents_empty_title">No Recent Apps</string>
-    <string name="recents_empty_message">Apps opened from CleanYourTV will appear here for quick switching.</string>
-    <string name="recents_empty_return">Return Home</string>
-    <string name="recents_dismissed_toast">%1$s dismissed from recents. The app may still be running in the background.</string>
-    <string name="recents_force_stop_requires_auth">Direct force stop requires elevated privileges (e.g. Shizuku/ADB). Use App Info instead.</string>
-    <string name="recents_pill_label">Recent Apps Pill</string>
-    <string name="recents_pill_summary">Show recent apps switcher in top bar</string>
-    <string name="choose_wallpaper">Change Wallpaper…</string>
+    <string name="recents" translatable="false">Recents</string>
+    <string name="recent_apps_title" translatable="false">Recent Apps</string>
+    <string name="recent_apps_subtitle" translatable="false">Switch between recent apps or manage tasks</string>
+    <string name="recents_action_open" translatable="false">Switch to App</string>
+    <string name="recents_action_dismiss" translatable="false">Dismiss Task</string>
+    <string name="recents_action_force_stop" translatable="false">Force Stop App</string>
+    <string name="recents_action_app_info" translatable="false">App Info</string>
+    <string name="recents_empty_title" translatable="false">No Recent Apps</string>
+    <string name="recents_empty_message" translatable="false">Apps opened from CleanYourTV will appear here for quick switching.</string>
+    <string name="recents_empty_return" translatable="false">Return Home</string>
+    <string name="recents_dismissed_toast" translatable="false">%1$s dismissed from recents. The app may still be running in the background.</string>
+    <string name="recents_force_stop_requires_auth" translatable="false">Direct force stop requires elevated privileges (e.g. Shizuku/ADB). Use App Info instead.</string>
+    <string name="recents_pill_label" translatable="false">Recent Apps Pill</string>
+    <string name="recents_pill_summary" translatable="false">Show recent apps switcher in top bar</string>
+    <string name="choose_wallpaper" translatable="false">Change Wallpaper…</string>
 </resources>

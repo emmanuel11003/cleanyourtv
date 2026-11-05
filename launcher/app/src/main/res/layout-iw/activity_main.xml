@@ -297,18 +297,22 @@
                             android:ellipsize="none"
                             android:textAllCaps="true" />
 
-                        <TextClock
+                        <com.gathin.tvhome.LiveClockView
                             android:id="@+id/clock"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginEnd="6dp"
-                            android:format12Hour="h:mm"
-                            android:format24Hour="HH:mm"
                             android:textColor="#FFFFFFFF"
                             android:textSize="52sp"
                             android:fontFamily="@string/font_light"
                             android:letterSpacing="-0.04"
                             android:includeFontPadding="false" />
+
+                        <View
+                            android:id="@+id/clockSeconds"
+                            android:layout_width="0dp"
+                            android:layout_height="0dp"
+                            android:visibility="gone" />
                     </LinearLayout>
 
                 </LinearLayout>
@@ -375,6 +379,13 @@
                     android:visibility="gone"
                     android:singleLine="true"
                     android:text="@string/vpn"
+                    android:nextFocusDown="@+id/grid" />
+
+                <TextView
+                    android:id="@+id/btnRecents"
+                    style="@style/TopButton"
+                    android:text="@string/recents"
+                    android:drawableStart="@drawable/ic_recents"
                     android:nextFocusDown="@+id/grid" />
 
                 <TextView

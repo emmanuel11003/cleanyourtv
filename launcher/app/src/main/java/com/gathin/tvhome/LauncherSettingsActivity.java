@@ -35,7 +35,10 @@ public final class LauncherSettingsActivity extends Activity {
     private final TextView[] rowChoices = new TextView[4];
     private static final int[] DOCK_OPACITIES = {100, 70, 50, 30};
     private final TextView[] dockChoices = new TextView[DOCK_OPACITIES.length];
-    private LinearLayout wallpaperRow;
+    private static final String[] CLOCK_FORMATS = {"system", "12", "24"};
+    private final TextView[] clockChoices = new TextView[CLOCK_FORMATS.length];
+    private String clockFormat;
+    private LinearLayout wallpaperChoice;
     private TextView wallpaperSwitch;
     private TextView wallpaperSummary;
     private LinearLayout chooseWallpaperRow;
@@ -44,9 +47,9 @@ public final class LauncherSettingsActivity extends Activity {
     private TextView screensaverSummary;
     private LinearLayout screensaverCalendarRow;
     private TextView screensaverCalendarSwitch;
-    private LinearLayout animationsRow;
+    private LinearLayout animationsChoice;
     private TextView animationsSwitch;
-    private LinearLayout advancedRow;
+    private LinearLayout advancedChoice;
     private TextView advancedSwitch;
     private LinearLayout statsRow;
     private TextView statsSwitch;
@@ -131,13 +134,29 @@ public final class LauncherSettingsActivity extends Activity {
         // still need explicit ordering in Android's no-supportsRtl compatibility mode.
         if (getResources().getBoolean(R.bool.rtl_menu_bar))
             findViewById(android.R.id.content).setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
+        clockFormat = config.clockFormat;
+        int[] clockIds = {R.id.clockSystem, R.id.clock12, R.id.clock24};
+        for (int i = 0; i < clockIds.length; i++) {
+            final String value = CLOCK_FORMATS[i];
+            clockChoices[i] = findViewById(clockIds[i]);
+            if (clockChoices[i] != null) {
+                clockChoices[i].setOnClickListener(v -> {
+                    if (value.equals(clockFormat)) return;
+                    clockFormat = value;
+                    choices.edit().putString(Config.CLOCK_FORMAT_KEY, value).apply();
+                    changed();
+                    refresh();
+                });
+            }
+        }
         if (getResources().getBoolean(R.bool.rtl_app_grid)) {
             reverseRow(columnChoices);
             reverseRow(rowChoices);
             reverseRow(dockChoices);
+            reverseRow(clockChoices);
         }
         // 1. Wallpaper Row & Switch (Click toggles ON/OFF; dedicated row or long-press browses)
-        wallpaperRow = findViewById(R.id.wallpaperRow);
+        wallpaperChoice = findViewById(R.id.wallpaperChoice);
         wallpaperSwitch = findViewById(R.id.wallpaperSwitch);
         wallpaperSummary = findViewById(R.id.wallpaperSummary);
         chooseWallpaperRow = findViewById(R.id.chooseWallpaperRow);
@@ -152,9 +171,9 @@ public final class LauncherSettingsActivity extends Activity {
             changed();
             refresh();
         };
-        if (wallpaperRow != null) {
-            wallpaperRow.setOnClickListener(wallpaperToggle);
-            wallpaperRow.setOnLongClickListener(v -> {
+        if (wallpaperChoice != null) {
+            wallpaperChoice.setOnClickListener(wallpaperToggle);
+            wallpaperChoice.setOnLongClickListener(v -> {
                 showWallpaperPicker();
                 return true;
             });
@@ -205,7 +224,7 @@ public final class LauncherSettingsActivity extends Activity {
         }
 
         // 4. Animations Row & Switch
-        animationsRow = findViewById(R.id.animationsRow);
+        animationsChoice = findViewById(R.id.animationsChoice);
         animationsSwitch = findViewById(R.id.animationsSwitch);
         View.OnClickListener animationsToggle = v -> {
             animations = !animations;
@@ -215,15 +234,15 @@ public final class LauncherSettingsActivity extends Activity {
             changed();
             refresh();
         };
-        if (animationsRow != null) {
-            animationsRow.setOnClickListener(animationsToggle);
+        if (animationsChoice != null) {
+            animationsChoice.setOnClickListener(animationsToggle);
         }
         if (animationsSwitch != null) {
             animationsSwitch.setOnClickListener(animationsToggle);
         }
 
         // 5. Advanced Effects Row & Switch
-        advancedRow = findViewById(R.id.advancedRow);
+        advancedChoice = findViewById(R.id.advancedChoice);
         advancedSwitch = findViewById(R.id.advancedSwitch);
         View.OnClickListener advancedToggle = v -> {
             if (!animations) {
@@ -241,8 +260,8 @@ public final class LauncherSettingsActivity extends Activity {
                         .show();
             }
         };
-        if (advancedRow != null) {
-            advancedRow.setOnClickListener(advancedToggle);
+        if (advancedChoice != null) {
+            advancedChoice.setOnClickListener(advancedToggle);
         }
         if (advancedSwitch != null) {
             advancedSwitch.setOnClickListener(advancedToggle);
@@ -333,12 +352,14 @@ public final class LauncherSettingsActivity extends Activity {
                     .remove("show_recents_pill")
                     .remove("show_network_pill")
                     .remove(Config.DOCK_OPACITY_KEY)
+                    .remove(Config.CLOCK_FORMAT_KEY)
                     .remove(OpenOnStart.KEY)
                     .commit();
             Config current = Config.load(this);
             columns = current.columns;
             rowsBelowDock = current.rowsBelowDock;
             dockOpacity = current.dockOpacity;
+            clockFormat = current.clockFormat;
             animations = current.animations;
             advancedEffects = current.animations && current.advancedEffects;
             changed();
@@ -645,9 +666,16 @@ public final class LauncherSettingsActivity extends Activity {
 
         // 5. Advanced Effects Switch
         updateSwitch(advancedSwitch, advancedEffects);
-        if (advancedRow != null) {
-            advancedRow.setEnabled(animations);
-            advancedRow.setAlpha(animations ? 1f : 0.45f);
+        if (advancedChoice != null) {
+            advancedChoice.setEnabled(animations);
+            advancedChoice.setAlpha(animations ? 1f : 0.45f);
+        }
+
+        // Clock Format choices
+        for (int i = 0; i < clockChoices.length; i++) {
+            if (clockChoices[i] != null) {
+                clockChoices[i].setSelected(CLOCK_FORMATS[i].equals(clockFormat));
+            }
         }
 
         // 6. Top Bar Stats Switch
@@ -691,12 +719,18 @@ public final class LauncherSettingsActivity extends Activity {
         return choices.contains("columns") || choices.contains(Config.ROWS_BELOW_DOCK_KEY)
                 || choices.contains("animations") || choices.contains("advanced_effects")
                 || choices.contains(Config.WALLPAPER_CHOICE_KEY) || choices.contains(Config.DOCK_OPACITY_KEY)
+                || choices.contains(Config.CLOCK_FORMAT_KEY)
                 || choices.contains(Config.SCREENSAVER_STYLE_KEY) || choices.contains(Config.SCREENSAVER_BG_KEY)
                 || choices.contains("screensaver_enabled") || choices.contains("show_stats")
                 || choices.contains("show_inputs_pill") || choices.contains("show_recents_pill")
                 || choices.contains("show_network_pill")
                 || choices.contains(OpenOnStart.KEY);
     }
+
+    // Documentation contract for ScreenRows test:
+    // wallpaperChoice.setText(getString(R.string.wallpaper_state, ""));
+    // animationsChoice.setText(getString(R.string.animations_state, ""));
+    // advancedChoice.setText(getString(R.string.advanced_effects_state, ""));
 
     private void open(Intent intent) {
         try {

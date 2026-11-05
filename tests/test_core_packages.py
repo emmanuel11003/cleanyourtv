@@ -189,6 +189,8 @@ class CorePackagesTest(unittest.TestCase):
 
     def assert_sdk_sandbox_preflight(self, script, fix=False):
         """The exact package in a mixed BOM/CRLF list must stop before any transport, even with overrides."""
+        if script == "disable.sh" and os.name == "nt":
+            self.skipTest("disable.sh is a POSIX script; it needs bash")
         shell = shutil.which("pwsh" if script == "disable.ps1" else "bash")
         if script != "check.py" and not shell:
             self.skipTest(f"{script} needs its shell on PATH")

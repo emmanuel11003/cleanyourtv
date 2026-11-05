@@ -42,6 +42,7 @@
         <LinearLayout
             android:id="@+id/reorderChoice"
             style="@style/SettingsRow"
+            android:text="@string/reorder"
             android:layout_marginTop="28dp"
             android:layout_height="wrap_content"
             android:minHeight="56dp"
@@ -194,9 +195,28 @@
             <TextView android:id="@+id/dock30" style="@style/SettingsColumnChoice" android:text="30%" />
         </LinearLayout>
 
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="28dp"
+            android:text="@string/dream_name"
+            android:textColor="#FFFFFFFF"
+            android:textSize="20sp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:orientation="horizontal">
+
+            <TextView android:id="@+id/clockSystem" style="@style/SettingsColumnChoice" android:text="@string/clock_format_system" />
+            <TextView android:id="@+id/clock12" style="@style/SettingsColumnChoice" android:text="@string/clock_format_12" />
+            <TextView android:id="@+id/clock24" style="@style/SettingsColumnChoice" android:text="@string/clock_format_24" />
+        </LinearLayout>
+
         <!-- Wallpaper Switch Row -->
         <LinearLayout
-            android:id="@+id/wallpaperRow"
+            android:id="@+id/wallpaperChoice"
             style="@style/SettingsRow"
             android:layout_marginTop="28dp"
             android:layout_height="wrap_content"
@@ -401,7 +421,7 @@
 
         <!-- Animations Switch Row -->
         <LinearLayout
-            android:id="@+id/animationsRow"
+            android:id="@+id/animationsChoice"
             style="@style/SettingsRow"
             android:layout_marginTop="12dp"
             android:layout_height="wrap_content"
@@ -456,7 +476,7 @@
 
         <!-- Advanced Effects Switch Row -->
         <LinearLayout
-            android:id="@+id/advancedRow"
+            android:id="@+id/advancedChoice"
             style="@style/SettingsRow"
             android:layout_marginTop="12dp"
             android:layout_height="wrap_content"

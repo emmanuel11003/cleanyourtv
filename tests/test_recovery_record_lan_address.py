@@ -38,10 +38,14 @@ CLEANED_TV = {"disabled": ["com.example.enabled", "com.example.already_off"]}
 class RecordPerLanAddressTest(unittest.TestCase):
     # The harness's copy of tools/ with the fake tv.py, HOME and TV state. The methods are borrowed
     # rather than inherited, so that the harness's own tests do not run twice.
-    setUp = harness.RecoveryRecordTest.setUp
     write_list = harness.RecoveryRecordTest.write_list
     tv = harness.RecoveryRecordTest.tv
     sent = harness.RecoveryRecordTest.sent
+
+    def setUp(self):
+        if os.name == "nt":
+            self.skipTest("disable.sh is a POSIX script; it needs bash")
+        harness.RecoveryRecordTest.setUp(self)
 
     def run_script(self, script, host, port=None):
         env = dict(os.environ, TV_HOST=host, HOME=str(self.home), FAKE_TV_STATE=str(self.state_path))

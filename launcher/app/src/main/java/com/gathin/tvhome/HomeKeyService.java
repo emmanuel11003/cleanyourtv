@@ -260,8 +260,8 @@ public class HomeKeyService extends AccessibilityService {
     }
 
     private boolean isSettingsKey(KeyEvent event) {
-        if (event.getKeyCode() == KeyEvent.KEYCODE_SETTINGS
-                || event.getKeyCode() == KeyEvent.KEYCODE_NOTIFICATION
+        if (event.getKeyCode() == KeyEvent.KEYCODE_SETTINGS) return true;
+        if (event.getKeyCode() == KeyEvent.KEYCODE_NOTIFICATION
                 || event.getKeyCode() == KeyEvent.KEYCODE_MENU
                 || event.getKeyCode() == 312) return true;
         for (int code : settingsScancodes) if (event.getScanCode() == code) return true;

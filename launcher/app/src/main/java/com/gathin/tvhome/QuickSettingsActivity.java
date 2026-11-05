@@ -71,7 +71,7 @@ public final class QuickSettingsActivity extends Activity {
         // 6. Bluetooth -> Native Remotes & Accessories (AddAccessoryActivity / DevicePicker)
         findViewById(R.id.tileBluetooth).setOnClickListener(v -> openBluetooth());
 
-        // 7. Sleep timer -> Opens the Sleep Timer add-on (addons/sleep-timer)
+        // 7. Sleep timer -> Opens the Sleep Timer add-on
         findViewById(R.id.tileSleepTimer).setOnClickListener(v -> openSleepTimer());
 
         // 8. Reorder apps -> Triggers CleanYourTV reorder mode directly
@@ -152,7 +152,7 @@ public final class QuickSettingsActivity extends Activity {
         safeStart(new Intent(Settings.ACTION_SETTINGS));
     }
 
-    /** 7. Sleep Timer: Directs user to the official Sleep Timer add-on (addons/sleep-timer). */
+    /** 7. Sleep Timer: Directs user to the official Sleep Timer add-on. */
     private void openSleepTimer() {
         Intent quickIntent = new Intent()
                 .setComponent(new android.content.ComponentName("io.github.luyzfernando08.sleeptimer",
