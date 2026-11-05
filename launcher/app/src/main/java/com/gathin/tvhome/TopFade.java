@@ -2,6 +2,7 @@ package com.gathin.tvhome;
 
 import android.graphics.Canvas;
 import android.graphics.LinearGradient;
+import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
@@ -23,11 +24,14 @@ final class TopFade extends RecyclerView.ItemDecoration {
 
     private final float length;
     private final Paint paint = new Paint();
-    private float shaderHeight = -1f;
+    private final LinearGradient baseShader;
+    private final Matrix matrix = new Matrix();
 
     private TopFade(float length) {
         this.length = length;
         paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.DST_OUT));
+        this.baseShader = new LinearGradient(0f, 0f, 0f, length, 0xFF000000, 0x00000000, Shader.TileMode.CLAMP);
+        paint.setShader(baseShader);
     }
 
     static void attach(RecyclerView grid, float length) {
@@ -44,10 +48,8 @@ final class TopFade extends RecyclerView.ItemDecoration {
     public void onDrawOver(@NonNull Canvas c, @NonNull RecyclerView parent, @NonNull RecyclerView.State state) {
         float fade = height(parent.computeVerticalScrollOffset(), length);
         if (fade <= 0f) return;
-        if (fade != shaderHeight) {
-            paint.setShader(new LinearGradient(0f, 0f, 0f, fade, 0xFF000000, 0x00000000, Shader.TileMode.CLAMP));
-            shaderHeight = fade;
-        }
+        matrix.setScale(1f, fade / length);
+        baseShader.setLocalMatrix(matrix);
         c.drawRect(0f, 0f, parent.getWidth(), fade, paint);
     }
 }

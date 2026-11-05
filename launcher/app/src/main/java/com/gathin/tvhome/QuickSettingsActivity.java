@@ -2,87 +2,232 @@ package com.gathin.tvhome;
 
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
+import android.content.ComponentName;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.view.KeyEvent;
 import android.view.View;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.text.DateFormat;
+import java.util.Date;
+
 /**
- * The panel the remote's Settings button opens when {@code settings_key_panel} is on (HomeKeyService):
- * a few glass rows under the Settings pill, over Home or whatever app is playing. Translucent and in a
- * task of its own, so the app behind keeps running and Back returns to it. Pressing Settings again
- * closes the panel.
+ * Google TV-style Quick Settings Panel:
+ * A right-side panel matching Google TV stock launcher's quick toggles, layout,
+ * and exact native target intents for Haier MediaTek Google TV.
  */
 public final class QuickSettingsActivity extends Activity {
+
     @Override
     protected void attachBaseContext(android.content.Context base) {
-        super.attachBaseContext(LauncherLocale.wrap(base));   // locale
+        super.attachBaseContext(LauncherLocale.wrap(base));
     }
 
+    private static final String PREFS_NAME = "quick_settings";
+
+    private View layoutMainPanel;
 
     @Override
     protected void onCreate(Bundle state) {
         super.onCreate(state);
+        overridePendingTransition(R.anim.app_open_enter, R.anim.app_open_exit);
         setContentView(R.layout.activity_quick_settings);
-        if (getResources().getBoolean(R.bool.rtl_menu_bar)) {
-            View panel = findViewById(R.id.panel);
-            android.widget.FrameLayout.LayoutParams position =
-                    (android.widget.FrameLayout.LayoutParams) panel.getLayoutParams();
-            position.gravity = android.view.Gravity.TOP | android.view.Gravity.LEFT;
-            int inset = position.getMarginEnd();
-            position.setMarginEnd(0);
-            position.setMargins(inset, position.topMargin, 0, position.bottomMargin);
-            panel.setLayoutParams(position);
-        }
+
+        layoutMainPanel = findViewById(R.id.layoutMainPanel);
+
+        // Scrim click closes the panel
         findViewById(R.id.scrim).setOnClickListener(v -> finish());
-        LinearLayout rows = findViewById(R.id.rows);
-        addRow(rows, R.drawable.ic_settings, R.string.tv_settings, 0, SystemSettings.intent(this, Settings.ACTION_SETTINGS));
-        addRow(rows, R.drawable.ic_picture, R.string.quick_picture, 0, SystemSettings.displayIntent(this));
-        addRow(rows, R.drawable.ic_wifi, R.string.quick_network, 0, SystemSettings.intent(this, Settings.ACTION_WIFI_SETTINGS));
-        addRow(rows, R.drawable.ic_apps, R.string.quick_apps, R.string.quick_apps_hint,
-                SystemSettings.intent(this, Settings.ACTION_MANAGE_APPLICATIONS_SETTINGS));
-        // Through Home, so it rebuilds with the new choices when Launcher settings closes.
-        addRow(rows, R.drawable.ic_home_settings, R.string.launcher_settings, 0,
-                new Intent(this, MainActivity.class).setAction(MainActivity.ACTION_LAUNCHER_SETTINGS));
-        rows.getChildAt(0).requestFocus();
+
+        // Update Date (quickClock is a live TextClock that ticks with seconds automatically)
+        TextView date = findViewById(R.id.quickDate);
+        date.setText(DateFormat.getDateInstance(DateFormat.FULL).format(new Date()));
+
+        // Top Header: "All settings" -> Native TV Settings (MainSettings)
+        findViewById(R.id.btnAllSettings).setOnClickListener(v ->
+                safeStart(new Intent(Settings.ACTION_SETTINGS)));
+
+        // --- Eight Quick Settings Tiles ---
+
+        // 1. Screensaver -> Start Ambient Mode / DreamX, fallback to DREAM_SETTINGS
+        findViewById(R.id.tileScreensaver).setOnClickListener(v -> openScreensaver());
+
+        // 2. Inputs -> Native TV Input switcher (SelectInputActivity), fallback to local inputs
+        findViewById(R.id.tileInputs).setOnClickListener(v -> openInputs());
+
+        // 3. Display -> Native TV Picture Settings (MediaTek PictureActivity)
+        findViewById(R.id.tileDisplay).setOnClickListener(v -> openDisplay());
+
+        // 4. Sound -> Native TV Sound Settings (MediaTek SoundActivity)
+        findViewById(R.id.tileSound).setOnClickListener(v -> openSound());
+
+        // 5. Wi-Fi -> Native TV Network side panel (NetworkActivity)
+        findViewById(R.id.tileWifi).setOnClickListener(v -> openWifi());
+
+        // 6. Bluetooth -> Native Remotes & Accessories (AddAccessoryActivity / DevicePicker)
+        findViewById(R.id.tileBluetooth).setOnClickListener(v -> openBluetooth());
+
+        // 7. Sleep timer -> Opens the Sleep Timer add-on (addons/sleep-timer)
+        findViewById(R.id.tileSleepTimer).setOnClickListener(v -> openSleepTimer());
+
+        // 8. Reorder apps -> Triggers CleanYourTV reorder mode directly
+        findViewById(R.id.tileRearrange).setOnClickListener(v -> openRearrange());
+
+        // Initial focus on first tile for immediate D-pad readiness
+        View firstTile = findViewById(R.id.tileScreensaver);
+        if (firstTile != null) firstTile.requestFocus();
     }
 
-    /** Settings pressed again while the panel is up. */
+    /** 1. Screensaver: Launch CleanYourTV's new Month Calendar & Clock Screensaver. */
+    private void openScreensaver() {
+        Intent screensaver = new Intent(this, ClockActivity.class);
+        startActivity(screensaver);
+        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+    }
+
+    /** 2. Inputs: com.android.tv.action.VIEW_INPUTS (SelectInputActivity) on Google TV. */
+    private void openInputs() {
+        Intent inputsIntent = new Intent("com.android.tv.action.VIEW_INPUTS");
+        if (safeStart(inputsIntent)) return;
+
+        // Fallback to CleanYourTV inputs dropdown
+        Intent localInputs = new Intent(this, MainActivity.class)
+                .setAction(MainActivity.ACTION_VIEW_INPUTS)
+                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        try {
+            startActivity(localInputs);
+            finish();
+        } catch (Exception ignored) {
+        }
+    }
+
+    /** 3. Display: Native TV Picture Settings (MediaTek PictureActivity). */
+    private void openDisplay() {
+        Intent displayIntent = new Intent(Settings.ACTION_DISPLAY_SETTINGS);
+        if (safeStart(displayIntent)) return;
+        safeStart(new Intent(Settings.ACTION_SETTINGS));
+    }
+
+    /** 4. Sound: com.android.tv.action.VIEW_SOUND_SETTINGS (MediaTek SoundActivity). */
+    private void openSound() {
+        Intent soundIntent = new Intent("com.android.tv.action.VIEW_SOUND_SETTINGS");
+        if (safeStart(soundIntent)) return;
+
+        Intent genericSound = new Intent(Settings.ACTION_SOUND_SETTINGS);
+        if (safeStart(genericSound)) return;
+
+        safeStart(new Intent(Settings.ACTION_SETTINGS));
+    }
+
+    /** 5. Wi-Fi: Native TV NetworkActivity. */
+    private void openWifi() {
+        Intent wifiIntent = new Intent(Settings.ACTION_WIFI_SETTINGS);
+        if (safeStart(wifiIntent)) return;
+
+        safeStart(new Intent(Settings.ACTION_WIRELESS_SETTINGS));
+    }
+
+    /** 6. Bluetooth: Remotes & Accessories (Google TV Slice / AddAccessoryActivity / Device Picker). */
+    private void openBluetooth() {
+        // 1. Google TV Remotes & Accessories Slice: opens paired devices, audio/headphones & pair accessory
+        Intent sliceIntent = new Intent("android.settings.SLICE_SETTINGS")
+                .addCategory(Intent.CATEGORY_DEFAULT)
+                .putExtra("slice_uri", "content://com.android.tv.settings.accessories.sliceprovider/general");
+        if (safeStart(sliceIntent)) return;
+
+        // 2. Android TV Settings AddAccessoryActivity (Universal Bluetooth Scanner)
+        Intent addAccessory = new Intent()
+                .setClassName("com.android.tv.settings", "com.android.tv.settings.accessories.AddAccessoryActivity");
+        if (safeStart(addAccessory)) return;
+
+        // 3. Fallback: Google TV Remote Pairer
+        Intent pairer = new Intent("com.google.android.tv.googletvremotepairer.action.BLUETOOTH_PAIRING");
+        if (safeStart(pairer)) return;
+
+        // 4. Fallback: General Settings
+        safeStart(new Intent(Settings.ACTION_SETTINGS));
+    }
+
+    /** 7. Sleep Timer: Directs user to the official Sleep Timer add-on (addons/sleep-timer). */
+    private void openSleepTimer() {
+        Intent quickIntent = new Intent()
+                .setComponent(new android.content.ComponentName("io.github.luyzfernando08.sleeptimer",
+                        "io.github.luyzfernando08.sleeptimer.QuickActivity"))
+                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        if (safeStart(quickIntent)) {
+            finish();
+            return;
+        }
+
+        Intent timerIntent = new Intent()
+                .setComponent(new android.content.ComponentName("io.github.luyzfernando08.sleeptimer",
+                        "io.github.luyzfernando08.sleeptimer.TimerActivity"))
+                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        if (safeStart(timerIntent)) {
+            finish();
+            return;
+        }
+
+        Toast.makeText(this, R.string.sleep_timer_addon_help, Toast.LENGTH_LONG).show();
+    }
+
+    /** 8. Reorder apps: triggers CleanYourTV's native app rearranging mode. */
+    private void openRearrange() {
+        Intent reorderIntent = new Intent(this, MainActivity.class)
+                .setAction(MainActivity.ACTION_REORDER)
+                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        try {
+            startActivity(reorderIntent);
+            finish();
+        } catch (Exception ignored) {
+        }
+    }
+
+    private boolean safeStart(Intent intent) {
+        if (intent == null) return false;
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        try {
+            startActivity(intent);
+            finish();
+            return true;
+        } catch (ActivityNotFoundException | SecurityException e) {
+            return false;
+        }
+    }
+
+    @Override
+    public boolean dispatchKeyEvent(KeyEvent event) {
+        int kc = event.getKeyCode();
+        if (kc == KeyEvent.KEYCODE_SETTINGS || kc == KeyEvent.KEYCODE_NOTIFICATION
+                || kc == KeyEvent.KEYCODE_MENU || kc == 312 || kc == 240) {
+            if (event.getAction() == KeyEvent.ACTION_UP && !event.isCanceled()) {
+                finish();
+            }
+            return true;
+        }
+        return super.dispatchKeyEvent(event);
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+    }
+
+    /** Settings key pressed again while panel is up closes it. */
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         finish();
     }
 
-    /** Anything else taking the screen (Home, an app, a screensaver) closes the panel. */
     @Override
-    @SuppressWarnings("deprecation")
     protected void onPause() {
         super.onPause();
         finish();
-        overridePendingTransition(0, 0);
-    }
-
-    private void addRow(LinearLayout rows, int icon, int title, int status, Intent target) {
-        View row = getLayoutInflater().inflate(R.layout.item_input, rows, false);
-        ((ImageView) row.findViewById(R.id.icon)).setImageResource(icon);
-        ((TextView) row.findViewById(R.id.title)).setText(title);
-        row.findViewById(R.id.dot).setVisibility(View.GONE);
-        TextView hint = row.findViewById(R.id.status);
-        if (status != 0) hint.setText(status);
-        else hint.setVisibility(View.GONE);
-        row.setOnClickListener(v -> {
-            try {
-                startActivity(target.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
-            } catch (ActivityNotFoundException | SecurityException e) {
-                Toast.makeText(this, R.string.not_available, Toast.LENGTH_SHORT).show();
-            }
-            finish();
-        });
-        rows.addView(row);
+        overridePendingTransition(R.anim.app_close_enter, R.anim.app_close_exit);
     }
 }

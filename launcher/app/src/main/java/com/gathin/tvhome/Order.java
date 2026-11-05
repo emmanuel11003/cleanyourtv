@@ -4,9 +4,11 @@ import android.content.Context;
 import android.util.AtomicFile;
 import android.util.Log;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -121,6 +123,24 @@ final class Order {
 
     static File file(Context ctx) {
         return new File(ctx.getFilesDir(), FILE_NAME);
+    }
+
+    /** Loads the saved order from private files, falling back to built-in default from assets. */
+    static Order load(Context ctx) {
+        File file = file(ctx);
+        if (file.exists()) {
+            Order o = load(file);
+            if (o != null) return o;
+        }
+        try (InputStream in = ctx.getAssets().open(FILE_NAME)) {
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            byte[] buf = new byte[1024];
+            int n;
+            while ((n = in.read(buf)) != -1) out.write(buf, 0, n);
+            return decode(new String(out.toByteArray(), StandardCharsets.UTF_8));
+        } catch (IOException ignored) {
+            return null;
+        }
     }
 
     /** The saved order, or null when there is none or it does not decode (then it is ignored, not deleted). */

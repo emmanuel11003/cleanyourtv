@@ -3,7 +3,26 @@
     <style name="Theme.TvHome" parent="android:Theme.Material.NoActionBar.Fullscreen">
         <item name="android:windowBackground">@android:color/black</item>
         <item name="android:colorBackground">@android:color/black</item>
-        <item name="android:windowAnimationStyle">@null</item>
+        <item name="android:windowAnimationStyle">@style/Animation.TvHome.AppTransition</item>
+    </style>
+
+    <style name="Theme.TvHome.Translucent" parent="@android:style/Theme.Translucent.NoTitleBar.Fullscreen">
+        <item name="android:windowAnimationStyle">@style/Animation.TvHome.AppTransition</item>
+    </style>
+
+    <style name="Animation.TvHome.AppTransition" parent="@android:style/Animation.Activity">
+        <item name="android:activityOpenEnterAnimation">@anim/app_open_enter</item>
+        <item name="android:activityOpenExitAnimation">@anim/app_open_exit</item>
+        <item name="android:activityCloseEnterAnimation">@anim/app_close_enter</item>
+        <item name="android:activityCloseExitAnimation">@anim/app_close_exit</item>
+        <item name="android:taskOpenEnterAnimation">@anim/app_open_enter</item>
+        <item name="android:taskOpenExitAnimation">@anim/app_open_exit</item>
+        <item name="android:taskCloseEnterAnimation">@anim/app_close_enter</item>
+        <item name="android:taskCloseExitAnimation">@anim/app_close_exit</item>
+        <item name="android:taskToFrontEnterAnimation">@anim/app_close_enter</item>
+        <item name="android:taskToFrontExitAnimation">@anim/app_close_exit</item>
+        <item name="android:taskToBackEnterAnimation">@anim/app_open_enter</item>
+        <item name="android:taskToBackExitAnimation">@anim/app_open_exit</item>
     </style>
 
     <!-- Frosted pill, tvOS style. -->

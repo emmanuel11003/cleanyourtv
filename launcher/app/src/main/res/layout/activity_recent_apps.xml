@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/recentRoot"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F20B0D12"
+    android:clipChildren="false"
+    android:clipToPadding="false">
+
+    <!-- Top Header Bar -->
+    <RelativeLayout
+        android:id="@+id/headerLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="60dp"
+        android:paddingEnd="60dp"
+        android:paddingTop="32dp">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/txtHeaderTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/recent_apps_title"
+                android:textColor="#FFFFFFFF"
+                android:textSize="32sp"
+                android:fontFamily="@string/font_medium"
+                android:includeFontPadding="false" />
+
+            <TextView
+                android:id="@+id/txtHeaderSubtitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="@string/recent_apps_subtitle"
+                android:textColor="#99FFFFFF"
+                android:textSize="13sp"
+                android:fontFamily="@string/font_regular" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:orientation="horizontal"
+            android:baselineAligned="true">
+
+            <com.gathin.tvhome.LiveClockView
+                android:id="@+id/recentsClock"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#CCFFFFFF"
+                android:textSize="22sp"
+                android:fontFamily="@string/font_light" />
+
+            <View
+                android:id="@+id/recentsSeconds"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:visibility="gone" />
+
+            <TextClock
+                android:id="@+id/recentsAmPm"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:layout_gravity="bottom"
+                android:layout_marginBottom="2dp"
+                android:format12Hour="a"
+                android:format24Hour=""
+                android:textColor="#80FFFFFF"
+                android:textSize="11sp"
+                android:textAllCaps="true"
+                android:fontFamily="@string/font_medium" />
+        </LinearLayout>
+    </RelativeLayout>
+
+    <!-- Main Switcher Carousel Container -->
+    <LinearLayout
+        android:id="@+id/contentLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:orientation="vertical"
+        android:clipChildren="false"
+        android:clipToPadding="false">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recentsRecycler"
+            android:layout_width="match_parent"
+            android:layout_height="220dp"
+            android:paddingStart="60dp"
+            android:paddingEnd="60dp"
+            android:clipChildren="false"
+            android:clipToPadding="false"
+            android:orientation="horizontal" />
+
+        <!-- Action Controls -->
+        <LinearLayout
+            android:id="@+id/actionBarLayout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="24dp"
+            android:orientation="horizontal"
+            android:clipChildren="false">
+
+            <TextView
+                android:id="@+id/btnActionOpen"
+                style="@style/TopButton"
+                android:text="@string/recents_action_open"
+                android:drawableStart="@drawable/ic_apps"
+                android:nextFocusUp="@+id/recentsRecycler"
+                android:nextFocusRight="@+id/btnActionDismiss" />
+
+            <TextView
+                android:id="@+id/btnActionDismiss"
+                style="@style/TopButton"
+                android:layout_marginStart="14dp"
+                android:text="@string/recents_action_dismiss"
+                android:drawableStart="@drawable/ic_back"
+                android:nextFocusUp="@+id/recentsRecycler"
+                android:nextFocusLeft="@+id/btnActionOpen"
+                android:nextFocusRight="@+id/btnActionForceStop" />
+
+            <TextView
+                android:id="@+id/btnActionForceStop"
+                style="@style/TopButton"
+                android:layout_marginStart="14dp"
+                android:text="@string/recents_action_force_stop"
+                android:drawableStart="@drawable/ic_settings"
+                android:visibility="gone"
+                android:nextFocusUp="@+id/recentsRecycler"
+                android:nextFocusLeft="@+id/btnActionDismiss"
+                android:nextFocusRight="@+id/btnActionAppInfo" />
+
+            <TextView
+                android:id="@+id/btnActionAppInfo"
+                style="@style/TopButton"
+                android:layout_marginStart="14dp"
+                android:text="@string/recents_action_app_info"
+                android:drawableStart="@drawable/ic_settings"
+                android:nextFocusUp="@+id/recentsRecycler"
+                android:nextFocusLeft="@+id/btnActionDismiss" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- Empty State -->
+    <LinearLayout
+        android:id="@+id/emptyLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <ImageView
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:src="@drawable/ic_recents"
+            android:tint="#4DFFFFFF" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="@string/recents_empty_title"
+            android:textColor="#E6FFFFFF"
+            android:textSize="22sp"
+            android:fontFamily="@string/font_medium" />
+
+        <TextView
+            android:layout_width="400dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:gravity="center"
+            android:text="@string/recents_empty_message"
+            android:textColor="#80FFFFFF"
+            android:textSize="14sp"
+            android:fontFamily="@string/font_regular" />
+
+        <TextView
+            android:id="@+id/btnEmptyHome"
+            style="@style/TopButton"
+            android:layout_marginTop="24dp"
+            android:text="@string/recents_empty_return"
+            android:drawableStart="@drawable/ic_back" />
+    </LinearLayout>
+
+</FrameLayout>

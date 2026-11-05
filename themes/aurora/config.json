@@ -1,4 +1,11 @@
 {
+  "dock_apps": [
+    "org.smarttube.stable",
+    "com.google.android.youtube.tv",
+    "in.startv.hotstar",
+    "com.sonyliv",
+    "com.android.vending"
+  ],
   "background_color": "#070A14",
   "wallpaper": true
 }

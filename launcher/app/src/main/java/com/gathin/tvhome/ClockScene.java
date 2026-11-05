@@ -45,6 +45,8 @@ final class ClockScene {
     private final View content;
     private final ClockRefresh clockRefresh;
     private final ImageView ambient;
+    private final MonthCalendarView calendar;
+    private final View calendarDivider;
     private final GradientDrawable glow;
     private int colorIndex;
     private int glowColor;
@@ -70,6 +72,9 @@ final class ClockScene {
             moveClock();
             shiftGlow();
             advanceWallpaper();
+            if (calendar != null && calendar.getVisibility() == View.VISIBLE) {
+                calendar.updateCalendarData();
+            }
             handler.postDelayed(this, MOVE_MS);
         }
     };
@@ -79,6 +84,8 @@ final class ClockScene {
         content = root.findViewById(R.id.dreamContent);
         clockRefresh = new ClockRefresh(content);
         ambient = root.findViewById(R.id.dreamAmbient);
+        calendar = root.findViewById(R.id.dreamCalendar);
+        calendarDivider = root.findViewById(R.id.dreamCalendarDivider);
         glow = new GradientDrawable();
         glow.setGradientType(GradientDrawable.RADIAL_GRADIENT);
         ambient.setBackground(glow);
@@ -115,6 +122,29 @@ final class ClockScene {
      * Call before start(), which starts the decode (again after a stop() that dropped an unfinished one).
      */
     void useHomeWallpaper(Context ctx) {
+        android.content.SharedPreferences choices = ctx.getSharedPreferences(Config.SETTINGS_NAME, Context.MODE_PRIVATE);
+        boolean showCalendar = "calendar".equals(choices.getString(Config.SCREENSAVER_STYLE_KEY, "calendar"));
+        if (calendar != null) {
+            calendar.setVisibility(showCalendar ? View.VISIBLE : View.GONE);
+            if (showCalendar) calendar.updateCalendarData();
+        }
+        if (calendarDivider != null) {
+            calendarDivider.setVisibility(showCalendar ? View.VISIBLE : View.GONE);
+        }
+
+        String bgChoice = choices.getString(Config.SCREENSAVER_BG_KEY, "wallpaper");
+        if ("black".equals(bgChoice)) {
+            wallpaperShown = true;
+            ambient.setBackground(null);
+            ambient.setImageDrawable(null);
+            return;
+        } else if ("glow".equals(bgChoice)) {
+            wallpaperShown = false;
+            ambient.setImageDrawable(null);
+            ambient.setBackground(glow);
+            return;
+        }
+
         Config cfg;
         try {
             cfg = Config.load(ctx);

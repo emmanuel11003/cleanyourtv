@@ -27,6 +27,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Sends the remote's Home button to this launcher on remotes that emit KEYCODE_ALL_APPS for Home
@@ -90,13 +91,26 @@ public class HomeKeyService extends AccessibilityService {
     private BroadcastReceiver standbyExit;
     /** disableSelf is how this service leaves for standby, not the user turning it off. */
     private boolean steppingOut;
+    /** Rate-limiting for Recent Apps window state tracking. */
+    private String lastRecentsPkg;
+    private long lastRecentsTime;
     /** The bound helper, so the opt-in broadcast can arm it without waiting for a new connection. */
     private static HomeKeyService running;
+    /**
+     * Native GLOBAL_ACTION_RECENTS: null = untested, true = the last invocation returned true,
+     * false = the action was tried and returned false (OEM firmware may not support it).
+     * Reset to null on each service bind so a reconnect retries.
+     */
+    private static AtomicBoolean nativeRecentsAvailable = new AtomicBoolean(false);
+    private static volatile boolean nativeRecentsTested = false;
 
     @Override
     protected void onServiceConnected() {
         super.onServiceConnected();
         running = this;
+        // Reset native recents cache so a reconnect retries the action.
+        nativeRecentsTested = false;
+        nativeRecentsAvailable.set(false);
         settingsScancodes = getResources().getIntArray(R.array.settings_key_scancodes);
         // The service is directBootAware: Android 11 skips a service that is not while the user is still
         // locked at boot, writes accessibility_enabled=0 and, on TCL G03 firmware, never binds it after the
@@ -246,7 +260,10 @@ public class HomeKeyService extends AccessibilityService {
     }
 
     private boolean isSettingsKey(KeyEvent event) {
-        if (event.getKeyCode() == KeyEvent.KEYCODE_SETTINGS) return true;
+        if (event.getKeyCode() == KeyEvent.KEYCODE_SETTINGS
+                || event.getKeyCode() == KeyEvent.KEYCODE_NOTIFICATION
+                || event.getKeyCode() == KeyEvent.KEYCODE_MENU
+                || event.getKeyCode() == 312) return true;
         for (int code : settingsScancodes) if (event.getScanCode() == code) return true;
         for (int code : settingsKeycodes) if (event.getKeyCode() == code) return true;
         return false;
@@ -260,16 +277,27 @@ public class HomeKeyService extends AccessibilityService {
             powerOnUntil = 0;
         }
         if (consumeVolumeKeys && VolumeKeys.handle(this, event)) return true;
+        if (ButtonMapper.handleKeyEvent(this, event)) return true;
         // A scancode entry is more specific than any keycode, so it goes first.
         if (RemoteKeys.handle(this, event, inFront(appScancodes, frontAppScancodes, event.getScanCode()),
                 holdAppScancodes.get(event.getScanCode()))) return true;
+        // Hardware Recents key (KEYCODE_APP_SWITCH).
+        if (event.getKeyCode() == KeyEvent.KEYCODE_APP_SWITCH) {
+            if (event.getAction() == KeyEvent.ACTION_UP && !event.isCanceled()) {
+                // Try native Android Recents overview first; fall back to custom switcher.
+                if (!tryNativeRecents()) {
+                    openCustomRecents();
+                }
+            }
+            return true;
+        }
         // The stock launcher handled the remote's Settings button; with it disabled the button does nothing.
         if (isSettingsKey(event)) {
             if (event.getAction() == KeyEvent.ACTION_UP && !event.isCanceled()) {
                 Intent open = settingsPanel ? new Intent(this, QuickSettingsActivity.class)
                         : SystemSettings.intent(this, Settings.ACTION_SETTINGS);
                 try {
-                    startActivity(open.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+                    startActivity(open.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP));
                 } catch (ActivityNotFoundException | SecurityException unavailable) {
                     Toast.makeText(this, R.string.not_available, Toast.LENGTH_SHORT).show();
                 }
@@ -312,6 +340,20 @@ public class HomeKeyService extends AccessibilityService {
                 frontPackage = window.getPackageName();
             } catch (PackageManager.NameNotFoundException notAnActivity) {
                 // a dialog, panel or overlay: the app under it is still in front
+            }
+        }
+        if (event.getPackageName() != null && event.getClassName() != null) {
+            String pkg = event.getPackageName().toString();
+            long now = SystemClock.elapsedRealtime();
+            if (RecentApps.isValidPackage(pkg, getPackageName())
+                    && (!pkg.equals(lastRecentsPkg) || now - lastRecentsTime >= 5000L)) {
+                try {
+                    ComponentName window = new ComponentName(pkg, event.getClassName().toString());
+                    getPackageManager().getActivityInfo(window, 0);
+                    lastRecentsPkg = pkg;
+                    lastRecentsTime = now;
+                    RecentApps.record(this, pkg, window, null);
+                } catch (PackageManager.NameNotFoundException ignored) {}
             }
         }
         // power_on_home: the firmware opened Live TV by itself at power-on, before anyone pressed a key.
@@ -438,5 +480,57 @@ public class HomeKeyService extends AccessibilityService {
 
     @Override
     public void onInterrupt() {
+    }
+
+    /**
+     * Whether the accessibility service is bound and could attempt a native recents invocation.
+     * Does not guarantee the action will succeed; the OEM may not support GLOBAL_ACTION_RECENTS.
+     */
+    static boolean isServiceBound() {
+        return running != null;
+    }
+
+    /**
+     * Attempts to open the native Android Recent Apps overview via GLOBAL_ACTION_RECENTS.
+     * Returns true if the global action reported success. A true return does not guarantee
+     * the native UI actually appeared (some OEMs return true but show nothing), but a false
+     * return means the platform does not support it.
+     *
+     * After the first call, the result is cached so repeated failures do not keep trying
+     * a broken action. The cache resets when the service reconnects.
+     */
+    static boolean tryNativeRecents() {
+        HomeKeyService service = running;
+        if (service == null) return false;
+        boolean result = service.performGlobalAction(GLOBAL_ACTION_RECENTS);
+        nativeRecentsAvailable.set(result);
+        nativeRecentsTested = true;
+        return result;
+    }
+
+    /**
+     * Whether GLOBAL_ACTION_RECENTS has been tested and returned true at least once
+     * during this service session.
+     */
+    static boolean isNativeRecentsTested() {
+        return nativeRecentsTested;
+    }
+
+    /**
+     * Whether GLOBAL_ACTION_RECENTS returned true on its last invocation.
+     */
+    static boolean isNativeRecentsAvailable() {
+        return nativeRecentsTested && nativeRecentsAvailable.get();
+    }
+
+    /**
+     * Opens the custom CleanYourTV Recent Apps switcher as a fallback.
+     */
+    private void openCustomRecents() {
+        Intent recents = new Intent(this, RecentAppsActivity.class)
+                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        try {
+            startActivity(recents);
+        } catch (Exception ignored) {}
     }
 }
