@@ -572,9 +572,7 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 ctx.startActivity(launchIntent);
                 RecentApps.record(ctx, e.pkg, e.component, e.label);
                 if (cinematic) LastOpened.record(ctx, e.pkg);
-                if (animated && advancedEffects && ctx instanceof Activity) {
-                    ((Activity) ctx).overridePendingTransition(R.anim.app_open_enter, R.anim.app_open_exit);
-                }
+                launchController.reset();
             } catch (Exception ex) {
                 launchController.onLaunchFailed();
                 Toast.makeText(ctx, ctx.getString(R.string.cant_open, e.label), Toast.LENGTH_SHORT).show();

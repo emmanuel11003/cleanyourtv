@@ -176,12 +176,8 @@ public final class AppLaunchController {
         if (activeView != null) {
             activeView.animate().cancel();
             activeView.setLayerType(originalLayerType, null);
-            activeView.animate()
-                    .scaleX(activeNormalScale)
-                    .scaleY(activeNormalScale)
-                    .setDuration(180)
-                    .setInterpolator(new DecelerateInterpolator())
-                    .start();
+            activeView.setScaleX(activeNormalScale);
+            activeView.setScaleY(activeNormalScale);
             activeView = null;
         }
         activeEntry = null;

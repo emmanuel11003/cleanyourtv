@@ -1145,6 +1145,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             ((LiveClockView) clockView).updateTime();
             ((LiveClockView) clockView).startTicking();
         }
+        if (adapter != null) {
+            adapter.launchController.onActivityResumed();
+        }
         // Back from an app opened from its tile, focus is still on that tile, so the cinematic "Last opened" line kept
         // the time from before this launch ("2 days ago" right after opening it). Refresh it.
         if (cinematic && heroMeta != null && lastFocused >= 0 && lastFocused < adapter.appCount()) updateHeroMeta(lastFocused);
@@ -1358,6 +1361,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         if (clockView instanceof LiveClockView) {
             ((LiveClockView) clockView).stopTicking();
         }
+        if (adapter != null) {
+            adapter.launchController.onActivityPaused();
+        }
     }
 
     @Override
@@ -1369,6 +1375,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         View clockView = findViewById(R.id.clock);
         if (clockView instanceof LiveClockView) {
             ((LiveClockView) clockView).stopTicking();
+        }
+        if (adapter != null) {
+            adapter.launchController.onActivityPaused();
         }
         handler.removeCallbacks(clockCheck);
         stopped = true;
