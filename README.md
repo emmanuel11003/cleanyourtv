@@ -2,6 +2,19 @@
   <a href="https://cleanyour.tv"><img src="https://raw.githubusercontent.com/Gathin23/cleanyourtv/main/docs/banner.png" alt="CleanYourTV. Your TV, minus the ads. Strip the bloatware from any Android TV or Google TV over Wi-Fi and replace the ad-filled home screen with a clean launcher that looks like an Apple TV. No root, no cable, nothing uninstalled, and a one-line restore." width="800"></a>
 </p>
 
+> [!NOTE]
+> **Custom Fork for Haier 55P7GT-P (HR9676EU)**
+> This fork is maintained by [@emmanuel11003](https://github.com/emmanuel11003) and specifically optimized for the **Haier 55P7GT-P / HR9676EUF (MediaTek board `omonia`, Google TV 14)**.
+> 
+> **Specific optimizations included in this build:**
+> - **Permanent Aurora Theme**: Hardcoded glass aesthetic with transparent backgrounds tuned for MediaTek hardware.
+> - **5-Column Dock**: Configured for 55" display proportions and remote D-pad ergonomics.
+> - **0.5x System Animation Scales**: Ultra-responsive transitions eliminating UI lag.
+> - **Android 14 Task Switch Fix**: Eliminates pop-up animations and previous app icon flash during app launches.
+> - **LiveClock Optimizations**: Fixed baseline alignment, digit doubling, and stopped background timer threads when idle.
+> 
+> *Original project and upstream attribution: [Gathin23/cleanyourtv](https://github.com/Gathin23/cleanyourtv) (Licensed under MIT).*
+
 <p align="center">
   Read in: <a href="README.he.md" lang="he" dir="rtl">עברית</a> · <a href="README.zh-CN.md">简体中文</a> · <a href="README.zh-TW.md">正體中文</a> · <a href="README.vi.md">Tiếng Việt</a> · <a href="README.ja.md">日本語</a> · <a href="README.it.md">Italiano</a> · <a href="README.pt-BR.md">Português</a> · <a href="README.nl.md">Nederlands</a> · <a href="README.de.md">Deutsch</a> · <a href="README.uk.md">Українська</a> · <a href="README.tr.md">Türkçe</a>
 </p>
