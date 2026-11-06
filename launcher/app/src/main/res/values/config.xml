@@ -304,7 +304,7 @@
     <!-- The dock band as light frosted glass, like the Inputs, Wi-Fi and Settings pills, so a sky or wallpaper shows
          through it. false (the default) keeps the solid near-black band, or the cinematic shelf's dark glass. Can
          also be set with "dock_glass": true in a theme's config.json. -->
-    <bool name="dock_glass">false</bool>
+    <bool name="dock_glass">true</bool>
     <!-- Draw the dock band and its edge. false leaves the tiles floating on the wallpaper (config.xml dock_band). -->
     <bool name="dock_band">true</bool>
     <!-- Every app in one row: the dock apps first, the rest after them, and the row scrolls sideways when focus
@@ -317,15 +317,15 @@
     <!-- The dock band's padding equals the gap between its tiles on all four sides (as far as the grid's edges leave room),
          so its corners are concentric with the tiles' and the spacing reads even. false (the default) keeps the fixed
          14dp above and below, up to 22dp at the sides and 26dp corners. Can also be set with "dock_even_padding": true in a theme's config.json. -->
-    <bool name="dock_even_padding">false</bool>
+    <bool name="dock_even_padding">true</bool>
     <!-- A reorder button (two arrows) in the top bar. Off by default: reordering is also in the Settings
          button's long-press menu, so it needs no extra button on screen. -->
     <bool name="reorder_button">false</bool>
     <!-- Wi-Fi and Settings as round icon-only buttons (the network name moves to the talkback description);
          Inputs keeps its label. -->
-    <bool name="icon_only_buttons">false</bool>
+    <bool name="icon_only_buttons">true</bool>
     <!-- The Inputs pill as a round icon button too (the label moves to the talkback description). -->
-    <bool name="icon_only_inputs">false</bool>
+    <bool name="icon_only_inputs">true</bool>
     <!-- With vpn_pill, the VPN pill as a round icon button too: an open lock on the plain glass button while no VPN is
          up, the closed lock in a green outline while one is (solid green only while focused, like the pill). "VPN" /
          "VPN off" become its talkback description. A theme can set "icon_only_vpn": true. -->
@@ -337,7 +337,7 @@
     <!-- true colours the Wi-Fi pill's icon green while the TV is online and leaves it white while it is not (dark on
          the focused pill either way), so the connection shows at a glance, also as an icon-only button. Can also be
          set with "wifi_status_color": true in a theme's config.json. -->
-    <bool name="wifi_status_color">false</bool>
+    <bool name="wifi_status_color">true</bool>
     <!-- With wifi_status_color: the icon orange while the TV is connected but Android has not reached the internet
          through it (a hotel or holiday-park Wi-Fi waiting for its login page) and red while it is offline, instead
          of white for both. Can also be set with "wifi_status_warnings": true in a theme's config.json. -->
@@ -407,11 +407,18 @@
 
     <!-- Tiles per row in the grid; the dock always has this many slots. Tiles are 180dp wide at 4 columns and
          shrink to fit from 5 up (about 144dp at 5, 117dp at 6 on a 1080p TV). -->
-    <integer name="columns">4</integer>
+    <integer name="columns">5</integer>
 
     <!-- Basic motion is on; advanced effects are opt-in in the launcher's own Settings screen. -->
     <bool name="animations">true</bool>
-    <bool name="advanced_effects">false</bool>
+    <bool name="advanced_effects">true</bool>
+
+    <!-- Default background color (#RRGGBB) -->
+    <string name="background_color" translatable="false">#070A14</string>
+    <!-- Dock opacity in percent (30-100) -->
+    <integer name="dock_opacity">50</integer>
+    <!-- System animation scale (0.5 for 0.5x, enforced permanently across TV reboots) -->
+    <string name="animation_scale" translatable="false">0.5</string>
 
     <!-- Optional Default-home tile; keep this key for existing themes and tile-ordering work.
          Off by default because the chooser is also available from launcher settings. -->

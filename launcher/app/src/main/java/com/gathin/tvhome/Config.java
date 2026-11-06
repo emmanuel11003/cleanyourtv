@@ -91,6 +91,7 @@ final class Config {
     final boolean animations;
     final boolean advancedEffects;
     final int rowsBelowDock;
+    final float animationScale;
     final boolean shamsiDate;
     /** Lunisolar date under the date (config.json lunar_date), computed for lunarUtcOffset hours east of UTC (-1: by locale). */
     final boolean lunarDate;
@@ -298,7 +299,7 @@ final class Config {
                    boolean keyFilter, boolean dockGlass, String glowStyle, boolean wallpaperCaptions,
                    boolean handleViewInputs, boolean tileMenu, boolean dockEvenPadding, boolean dockBand, boolean cinematicDots, boolean cinematicWhiteFocus, boolean wifiStatusColor, int cinematicScrim, int cinematicArt,
                    Map<String, Set<String>> wallpaperMoods, boolean gamepadPassthrough, boolean consumeVolumeKeys, boolean homeIgnoreChannelKeys, boolean powerOnHome, boolean homeLongPressHome, boolean wifiStatusWarnings, List<String> topBarApps, boolean showGreeting, boolean headerWhite, boolean clockWallpaper, int clockWallpaperDim, boolean clockGlow, String glassStyle, boolean singleRow, boolean dockBandAll, boolean lunarDate, int lunarUtcOffset, boolean dateBelowClock, boolean vpnPill, String locale, boolean powerOnHomeAlways, boolean inputsConnectedOnly, boolean inputsCecStateOnly,
-                   int openOnStartNetworkWait, boolean openOnStartOnWake, boolean iconOnlyVpn, String clockFormat, boolean backOpensClock, boolean glowSnap) {
+                   int openOnStartNetworkWait, boolean openOnStartOnWake, boolean iconOnlyVpn, String clockFormat, boolean backOpensClock, boolean glowSnap, float animationScale) {
         this.handleViewInputs = handleViewInputs;
         this.tileMenu = tileMenu;
         this.inputKeycodes = inputKeycodes;
@@ -351,6 +352,7 @@ final class Config {
         this.iconOnlyVpn = iconOnlyVpn;
         this.backOpensClock = backOpensClock;
         this.glowSnap = glowSnap;
+        this.animationScale = animationScale;
         this.libraryButton = libraryButton;
         this.showLibraryPill = showLibraryPill;
         this.wifiLabelWidth = wifiLabelWidth;
@@ -500,7 +502,16 @@ final class Config {
         boolean librarySelection = res.getBoolean(R.bool.app_library_selection);
         boolean libraryOkOpens = res.getBoolean(R.bool.library_ok_opens);
         boolean uniformTiles = res.getBoolean(R.bool.uniform_tiles);
-        int background = 0xFF000000;
+        int background = 0xFF070A14;
+        try {
+            String bgStr = res.getString(R.string.background_color).trim();
+            if (!bgStr.isEmpty()) background = Color.parseColor(bgStr);
+        } catch (Exception ignored) {}
+        float animationScale = 0.5f;
+        try {
+            String scaleStr = res.getString(R.string.animation_scale).trim();
+            if (!scaleStr.isEmpty()) animationScale = Float.parseFloat(scaleStr);
+        } catch (Exception ignored) {}
         int skyIntensity = res.getInteger(R.integer.sky_intensity);
         int[] settingsKeycodes = res.getIntArray(R.array.settings_key_keycodes);
         boolean settingsKeyPanel = res.getBoolean(R.bool.settings_key_panel);
@@ -617,6 +628,11 @@ final class Config {
             libraryOkOpens = bool(json, "library_ok_opens", libraryOkOpens);
             uniformTiles = bool(json, "uniform_tiles", uniformTiles);
             background = color(json, "background_color", background);
+            if (json.has("animation_scale")) {
+                try {
+                    animationScale = (float) json.optDouble("animation_scale", animationScale);
+                } catch (Exception ignored) {}
+            }
             skyIntensity = integer(json, "sky_intensity", skyIntensity, 0, 100);
             settingsKeycodes = intArray(json, "settings_key_keycodes", settingsKeycodes);
             settingsKeyPanel = bool(json, "settings_key_panel", settingsKeyPanel);
@@ -689,12 +705,27 @@ final class Config {
         }
         File wallpaper = dir != null ? new File(dir, WALLPAPER_NAME) : null;
         if (wallpaper != null && !(wallpaper.isFile() && wallpaper.length() > 0)) wallpaper = null;
+        if (wallpaper == null && ctx != null) {
+            File internal = new File(ctx.getFilesDir(), WALLPAPER_NAME);
+            if (internal.isFile() && internal.length() > 0) wallpaper = internal;
+        } else if (wallpaper != null && ctx != null) {
+            File internal = new File(ctx.getFilesDir(), WALLPAPER_NAME);
+            if (!internal.equals(wallpaper) && (!internal.exists() || internal.length() != wallpaper.length())) {
+                try {
+                    java.nio.file.Files.copy(wallpaper.toPath(), internal.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+                } catch (Exception ignored) {}
+            }
+        }
         // A theme can also switch the wallpaper off while the file is still there.
         boolean wallpaperEnabled = json == null || bool(json, "wallpaper", true);
         if (!wallpaperEnabled) wallpaper = null;
         int rotationMinutes = json == null ? 0 : integer(json, "wallpaper_rotation_minutes", 0, 0, 1440);
         int wallpaperDim = json == null ? 0 : integer(json, "wallpaper_dim", 0, 0, 90);
-        int dockOpacity = json == null ? 100 : integer(json, "dock_opacity", 100, 30, 100);
+        int defaultDockOpacity = 50;
+        try {
+            defaultDockOpacity = res.getInteger(R.integer.dock_opacity);
+        } catch (Exception ignored) {}
+        int dockOpacity = json == null ? defaultDockOpacity : integer(json, "dock_opacity", defaultDockOpacity, 30, 100);
         dockOpacity = chosenDockOpacity(choices.getInt(DOCK_OPACITY_KEY, -1), dockOpacity);
         clockFormat = choices.getString(CLOCK_FORMAT_KEY, clockFormat);
         String wallpaperOrder = json == null ? WallpaperRotation.ORDER_SHUFFLE
@@ -736,7 +767,7 @@ final class Config {
                 consumeVolumeKeys, homeIgnoreChannelKeys, powerOnHome, homeLongPressHome, wifiStatusWarnings, topBarApps, showGreeting, headerWhite, clockWallpaper,
                 Math.max(0, Math.min(90, clockWallpaperDim)), clockGlow, glassStyle, singleRow && dockRow, dockBandAll, lunar, lunarOffset,
                 dateBelowClock, vpnPill, locale, powerOnHomeAlways, inputsConnectedOnly, inputsCecStateOnly,
-                Math.max(0, Math.min(600, openOnStartNetworkWait)), openOnStartOnWake, iconOnlyVpn, clockFormat, backOpensClock, glowSnap);
+                Math.max(0, Math.min(600, openOnStartNetworkWait)), openOnStartOnWake, iconOnlyVpn, clockFormat, backOpensClock, glowSnap, animationScale);
     }
 
     /**

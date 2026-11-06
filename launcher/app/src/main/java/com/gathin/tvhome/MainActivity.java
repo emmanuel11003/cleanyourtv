@@ -267,6 +267,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     private boolean singleRow;
     /** The highlight springs past its target (config.xml, focus_overshoot); false goes straight there. */
     private boolean focusOvershoot;
+    private float animationScale;
     /** Festive skin from the theme (see Festival); applied while it is active today. */
     private Festival festival = Festival.NONE;
     private boolean festive;
@@ -475,6 +476,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         // restore_key_services: after a force stop, put back the remote's accessibility helpers that Android took
         // off the list (needs WRITE_SECURE_SETTINGS, granted by build-and-install with RESTORE_KEY_SERVICES=1).
         if (cfg.restoreKeyServices) ServiceRepair.restore(this);
+        animationScale = cfg.animationScale;
+        AnimationScale.enforce(this, animationScale);
         settingsRevision = settingsRevision();
         applyViewInputsHandler(cfg.handleViewInputs);
         settingsKeycodes = cfg.settingsKeycodes;
@@ -1160,6 +1163,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         if (gameDay != null) gameDay.start();
         sky.update();
         wallpaperPlayer.start();
+        AnimationScale.enforce(this, animationScale);
         handler.postDelayed(minuteTick, MINUTE_MS);
         if (festive && lamp != null) {
             lamp.start();
