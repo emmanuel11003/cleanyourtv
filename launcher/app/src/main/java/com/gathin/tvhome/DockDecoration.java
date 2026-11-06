@@ -2,6 +2,7 @@ package com.gathin.tvhome;
 
 import android.graphics.Canvas;
 import android.graphics.LinearGradient;
+import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.RectF;
@@ -26,8 +27,12 @@ public class DockDecoration extends RecyclerView.ItemDecoration {
     private final boolean lightGlass;
     /** Padding all round the tiles equal to the gap between them (config.xml dock_even_padding). */
     private final boolean evenPadding;
-    /** The band's top and bottom the glass gradient was made for; it is remade when they move. */
-    private float shaderTop = Float.NaN, shaderBottom = Float.NaN;
+    /** Cached shader and translation matrix to avoid per-frame allocations during scrolling. */
+    private final Matrix shaderMatrix = new Matrix();
+    private LinearGradient glassShader;
+    private float lastShaderHeight = -1f;
+    private float cachedDockLeft = Float.NaN;
+    private float cachedDockRight = Float.NaN;
     /** Draw the band and its edge (config.xml dock_band); false leaves the tiles floating on the wallpaper. */
     private final boolean bandVisible;
     /** single_row: the tiles after the dock share its row, so they take the same offsets to stay level with it. */
@@ -102,6 +107,8 @@ public class DockDecoration extends RecyclerView.ItemDecoration {
             float r = l + card.getWidth();
             float b = t + card.getHeight();
             cardWidth = card.getWidth();
+            if (pos == 0) cachedDockLeft = l;
+            if (pos == dockSize - 1) cachedDockRight = r;
             if (!any) {
                 rect.set(l, t, r, b);
                 any = true;
@@ -110,6 +117,13 @@ public class DockDecoration extends RecyclerView.ItemDecoration {
             }
         }
         if (!any) return;
+
+        // In a vertical grid, preserve the horizontal dock width even if edge tiles temporarily detach while scrolling
+        if (!singleRow) {
+            if (!Float.isNaN(cachedDockLeft)) rect.left = Math.min(rect.left, cachedDockLeft);
+            if (!Float.isNaN(cachedDockRight)) rect.right = Math.max(rect.right, cachedDockRight);
+        }
+
         float pad = 14 * density;
         // The band can only draw inside the grid, and the first and last dock tiles sit 12dp in from its
         // edges: a full 14dp at the sides sliced the rounded ends flat (#454). Keep the sides, with the
@@ -122,8 +136,10 @@ public class DockDecoration extends RecyclerView.ItemDecoration {
         if (evenPadding) {
             // The same padding on all four sides, so the band's corners are concentric with the tiles' everywhere.
             int inner = parent.getWidth() - parent.getPaddingLeft() - parent.getPaddingRight();
-            // A single row's tiles can run off the screen, so only its top limits the padding; its ends are clamped below.
-            float room = (singleRow ? rect.top : Math.min(rect.top, Math.min(rect.left, parent.getWidth() - rect.right))) - density;
+            // In a single row, the row scrolls horizontally so its top limits the padding;
+            // in a vertical grid, the dock scrolls vertically, so only the horizontal room limits the padding.
+            float sideRoom = Math.min(rect.left, parent.getWidth() - rect.right) - density;
+            float room = singleRow ? rect.top - density : sideRoom;
             float even = evenPaddingPx(inner, dockSize, cardWidth, room);
             rect.inset(-even, -even);
             radius = radiusPx(radius, even);
@@ -139,12 +155,15 @@ public class DockDecoration extends RecyclerView.ItemDecoration {
             rect.right = Math.min(rect.right, parent.getWidth() - density);
         }
         rect.bottom += namesRoom;
-        if (lightGlass && (rect.top != shaderTop || rect.bottom != shaderBottom)) {
-            // The pills' glass (pill_bg: white, 18% fading to 8%), a little fainter over this much larger area.
-            band.setShader(new LinearGradient(0, rect.top, 0, rect.bottom, 0x24FFFFFF, 0x0DFFFFFF,
-                    Shader.TileMode.CLAMP));
-            shaderTop = rect.top;
-            shaderBottom = rect.bottom;
+        if (lightGlass) {
+            float bandHeight = rect.height();
+            if (glassShader == null || Math.abs(bandHeight - lastShaderHeight) > 1f) {
+                glassShader = new LinearGradient(0f, 0f, 0f, bandHeight, 0x24FFFFFF, 0x0DFFFFFF, Shader.TileMode.CLAMP);
+                lastShaderHeight = bandHeight;
+                band.setShader(glassShader);
+            }
+            shaderMatrix.setTranslate(0f, rect.top);
+            glassShader.setLocalMatrix(shaderMatrix);
         }
         c.drawRoundRect(rect, radius, radius, band);
         c.drawRoundRect(rect, radius, radius, edge);

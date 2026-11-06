@@ -432,6 +432,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         public void onReceive(Context context, Intent intent) {
             updateClockVisibility();
             clockRefresh.start();   // the wall clock was set: line the redraw up with the new minute
+            View clockView = findViewById(R.id.clock);
+            if (clockView instanceof LiveClockView) {
+                ((LiveClockView) clockView).updateTime();
+            }
         }
     };
     /** Keeps the Home clocks moving on Android before 12 when the firmware stops ACTION_TIME_TICK (see ClockRefresh). */
@@ -1133,6 +1137,11 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         if (openLiveTvAfterBoot()) return;
         updateGreeting();
         updatePanel();
+        View clockView = findViewById(R.id.clock);
+        if (clockView instanceof LiveClockView) {
+            ((LiveClockView) clockView).updateTime();
+            ((LiveClockView) clockView).startTicking();
+        }
         // Back from an app opened from its tile, focus is still on that tile, so the cinematic "Last opened" line kept
         // the time from before this launch ("2 days ago" right after opening it). Refresh it.
         if (cinematic && heroMeta != null && lastFocused >= 0 && lastFocused < adapter.appCount()) updateHeroMeta(lastFocused);

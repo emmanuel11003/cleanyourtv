@@ -307,12 +307,6 @@
                             android:fontFamily="@string/font_light"
                             android:letterSpacing="-0.04"
                             android:includeFontPadding="false" />
-
-                        <View
-                            android:id="@+id/clockSeconds"
-                            android:layout_width="0dp"
-                            android:layout_height="0dp"
-                            android:visibility="gone" />
                     </LinearLayout>
 
                 </LinearLayout>

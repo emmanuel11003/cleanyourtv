@@ -58,12 +58,6 @@
                 android:textSize="22sp"
                 android:fontFamily="@string/font_light" />
 
-            <View
-                android:id="@+id/recentsSeconds"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:visibility="gone" />
-
             <TextClock
                 android:id="@+id/recentsAmPm"
                 android:layout_width="wrap_content"
