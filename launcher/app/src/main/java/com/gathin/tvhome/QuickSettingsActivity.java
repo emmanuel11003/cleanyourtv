@@ -214,20 +214,27 @@ public final class QuickSettingsActivity extends Activity {
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
+        if (!isFinishing()) {
+            finish();
+        }
+        overridePendingTransition(R.anim.app_close_enter, R.anim.app_close_exit);
     }
 
     /** Settings key pressed again while panel is up closes it. */
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
-        finish();
+        if (!isFinishing()) {
+            finish();
+        }
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        finish();
+        if (!isFinishing()) {
+            finish();
+        }
         overridePendingTransition(R.anim.app_close_enter, R.anim.app_close_exit);
     }
 }

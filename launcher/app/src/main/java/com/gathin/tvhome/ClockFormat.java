@@ -18,6 +18,8 @@ final class ClockFormat {
             TextClock c = (TextClock) root;
             if ("12".equals(mode)) c.setFormat24Hour(c.getFormat12Hour());
             else c.setFormat12Hour(c.getFormat24Hour());
+        } else if (root instanceof LiveClockView) {
+            ((LiveClockView) root).setClockFormat(mode);
         } else if (root instanceof ViewGroup) {
             ViewGroup g = (ViewGroup) root;
             for (int i = 0; i < g.getChildCount(); i++) apply(g.getChildAt(i), mode);

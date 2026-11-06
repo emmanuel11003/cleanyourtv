@@ -42,7 +42,9 @@ public class ClockActivity extends Activity {
     protected void onPause() {
         scene.stop();
         super.onPause();
-        finish();   // never left behind in the back stack
+        if (!isFinishing()) {
+            finish();   // never left behind in the back stack
+        }
     }
 
     @Override

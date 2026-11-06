@@ -15,12 +15,14 @@ final class AnimationScale {
     }
 
     static void enforce(Context context, float targetScale) {
-        if (targetScale <= 0f) return;
-        if (context.checkSelfPermission(Manifest.permission.WRITE_SECURE_SETTINGS)
+        if (Float.isNaN(targetScale) || Float.isInfinite(targetScale) || targetScale <= 0f) return;
+        Context appContext = context != null ? context.getApplicationContext() : null;
+        if (appContext == null) return;
+        if (appContext.checkSelfPermission(Manifest.permission.WRITE_SECURE_SETTINGS)
                 != PackageManager.PERMISSION_GRANTED) return;
         AsyncTask.THREAD_POOL_EXECUTOR.execute(() -> {
             try {
-                ContentResolver cr = context.getContentResolver();
+                ContentResolver cr = appContext.getContentResolver();
                 float win = Settings.Global.getFloat(cr, Settings.Global.WINDOW_ANIMATION_SCALE, 1f);
                 if (Math.abs(win - targetScale) > 0.01f) {
                     Settings.Global.putFloat(cr, Settings.Global.WINDOW_ANIMATION_SCALE, targetScale);

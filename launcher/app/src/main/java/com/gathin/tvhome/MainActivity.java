@@ -1354,6 +1354,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         if (cardPrompt != null) cardPrompt.dismiss();
         if (appLibrary != null) appLibrary.close();
         if (openPopup != null) openPopup.dismiss();
+        View clockView = findViewById(R.id.clock);
+        if (clockView instanceof LiveClockView) {
+            ((LiveClockView) clockView).stopTicking();
+        }
     }
 
     @Override
@@ -1362,6 +1366,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         started = false;
         unregisterReceiver(timeReceiver);
         clockRefresh.stop();
+        View clockView = findViewById(R.id.clock);
+        if (clockView instanceof LiveClockView) {
+            ((LiveClockView) clockView).stopTicking();
+        }
         handler.removeCallbacks(clockCheck);
         stopped = true;
         tileRefresh.onStop();

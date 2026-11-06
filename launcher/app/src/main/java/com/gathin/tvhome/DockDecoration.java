@@ -33,6 +33,7 @@ public class DockDecoration extends RecyclerView.ItemDecoration {
     private float lastShaderHeight = -1f;
     private float cachedDockLeft = Float.NaN;
     private float cachedDockRight = Float.NaN;
+    private int lastParentWidth = -1;
     /** Draw the band and its edge (config.xml dock_band); false leaves the tiles floating on the wallpaper. */
     private final boolean bandVisible;
     /** single_row: the tiles after the dock share its row, so they take the same offsets to stay level with it. */
@@ -93,6 +94,12 @@ public class DockDecoration extends RecyclerView.ItemDecoration {
     @Override
     public void onDraw(@NonNull Canvas c, @NonNull RecyclerView parent, @NonNull RecyclerView.State state) {
         if (!bandVisible) return;
+        int parentWidth = parent.getWidth();
+        if (lastParentWidth != parentWidth) {
+            lastParentWidth = parentWidth;
+            cachedDockLeft = Float.NaN;
+            cachedDockRight = Float.NaN;
+        }
         boolean any = false;
         int cardWidth = 0;
         for (int i = 0; i < parent.getChildCount(); i++) {

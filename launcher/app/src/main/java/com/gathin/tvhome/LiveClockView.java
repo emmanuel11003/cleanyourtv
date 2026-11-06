@@ -83,13 +83,16 @@ public class LiveClockView extends TextView {
     private boolean attached;
     private boolean receiverRegistered;
     private DisplayManager displayManager;
+    private Boolean cachedIs24 = null;
+    private String cachedClockFormat = null;
 
     private final Runnable ticker = new Runnable() {
         @Override
         public void run() {
-            if (attached && getVisibility() == View.VISIBLE) {
-                updateTime();
+            if (!attached || getWindowVisibility() != View.VISIBLE || !isShown()) {
+                return;
             }
+            updateTime();
             long now = System.currentTimeMillis();
             long delay = 1000L - (now % 1000L);
             if (delay <= 0) delay = 1000L;
@@ -100,8 +103,11 @@ public class LiveClockView extends TextView {
     private final BroadcastReceiver timeReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            updateTime();
-            startTicking();
+            cachedIs24 = null;
+            if (attached && getWindowVisibility() == View.VISIBLE && isShown()) {
+                updateTime();
+                startTicking();
+            }
         }
     };
 
@@ -110,8 +116,10 @@ public class LiveClockView extends TextView {
         public void onDisplayChanged(int displayId) {
             Display d = getDisplay();
             if (d != null && d.getDisplayId() == displayId && d.getState() == Display.STATE_ON) {
-                updateTime();
-                startTicking();
+                if (attached && getWindowVisibility() == View.VISIBLE && isShown()) {
+                    updateTime();
+                    startTicking();
+                }
             }
         }
 
@@ -192,29 +200,44 @@ public class LiveClockView extends TextView {
         if (visibility == View.VISIBLE && isShown()) {
             updateTime();
             startTicking();
+        } else {
+            stopTicking();
         }
     }
 
     @Override
     protected void onWindowVisibilityChanged(int visibility) {
         super.onWindowVisibilityChanged(visibility);
-        if (visibility == View.VISIBLE) {
+        if (visibility == View.VISIBLE && isShown()) {
             updateTime();
             startTicking();
+        } else {
+            stopTicking();
         }
     }
 
     @Override
     public void onWindowFocusChanged(boolean hasWindowFocus) {
         super.onWindowFocusChanged(hasWindowFocus);
-        if (hasWindowFocus) {
+        if (hasWindowFocus && isShown()) {
             updateTime();
             startTicking();
         }
     }
 
+    public void setClockFormat(String mode) {
+        this.cachedClockFormat = mode;
+        this.cachedIs24 = ClockFormat.is24(getContext(), mode);
+        if (attached && getWindowVisibility() == View.VISIBLE && isShown()) {
+            updateTime();
+        }
+    }
+
     public void startTicking() {
         handler.removeCallbacks(ticker);
+        if (!attached || getWindowVisibility() != View.VISIBLE || !isShown()) {
+            return;
+        }
         updateTime();
         long now = System.currentTimeMillis();
         long delay = 1000L - (now % 1000L);
@@ -228,12 +251,17 @@ public class LiveClockView extends TextView {
 
     public void updateTime() {
         calendar.setTimeInMillis(System.currentTimeMillis());
-        boolean is24;
-        try {
-            is24 = ClockFormat.is24(getContext(), Config.load(getContext()).clockFormat);
-        } catch (Exception e) {
-            is24 = DateFormat.is24HourFormat(getContext());
+        if (cachedIs24 == null) {
+            try {
+                if (cachedClockFormat == null) {
+                    cachedClockFormat = Config.load(getContext()).clockFormat;
+                }
+                cachedIs24 = ClockFormat.is24(getContext(), cachedClockFormat);
+            } catch (Exception e) {
+                cachedIs24 = DateFormat.is24HourFormat(getContext());
+            }
         }
+        boolean is24 = cachedIs24 != null ? cachedIs24 : DateFormat.is24HourFormat(getContext());
 
         int hour = is24 ? calendar.get(Calendar.HOUR_OF_DAY) : calendar.get(Calendar.HOUR);
         if (!is24 && hour == 0) hour = 12;
@@ -271,6 +299,5 @@ public class LiveClockView extends TextView {
         spanBuilder.setSpan(colorSpan, secStart, secEnd, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
 
         setText(spanBuilder, BufferType.SPANNABLE);
-        invalidate();
     }
 }

@@ -294,7 +294,9 @@ public final class RecentAppsActivity extends Activity {
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
-            finish();
+            if (!isFinishing()) {
+                finish();
+            }
             overridePendingTransition(R.anim.app_close_enter, R.anim.app_close_exit);
             return true;
         }
@@ -303,8 +305,9 @@ public final class RecentAppsActivity extends Activity {
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
-        finish();
+        if (!isFinishing()) {
+            finish();
+        }
         overridePendingTransition(R.anim.app_close_enter, R.anim.app_close_exit);
     }
 
