@@ -162,7 +162,7 @@ public final class ButtonMapper {
                         ((MainActivity) ctx).onLibraryRequested();
                     } else {
                         ctx.startActivity(new Intent(ctx, MainActivity.class)
-                                .setAction(MainActivity.ACTION_LAUNCHER_SETTINGS)
+                                .setAction(MainActivity.ACTION_APP_LIBRARY)
                                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
                     }
                     break;

@@ -154,7 +154,13 @@ public class HomeKeyService extends AccessibilityService {
         if (running == this) running = null;
         RemoteKeys.release(this);
         stopWaitingForUnlock();
-        if (screenOnReceiver != null) unregisterReceiver(screenOnReceiver);
+        if (screenOnReceiver != null) {
+            try {
+                unregisterReceiver(screenOnReceiver);
+            } catch (RuntimeException ignored) {
+            }
+            screenOnReceiver = null;
+        }
         if (standbyExit != null) {
             try {
                 unregisterReceiver(standbyExit);

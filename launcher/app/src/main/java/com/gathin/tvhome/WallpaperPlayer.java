@@ -266,7 +266,13 @@ final class WallpaperPlayer {
         // The wallpaper covers the whole root; avoid drawing the fallback colour under it.
         root.setBackground(null);
         image.setImageBitmap(bitmap);
-        if (old != null && old != bitmap) image.postDelayed(old::recycle, 500);
+        if (old != null && old != bitmap) {
+            image.postDelayed(() -> {
+                if (old != null && !old.isRecycled() && old.getConfig() != Bitmap.Config.HARDWARE) {
+                    old.recycle();
+                }
+            }, 500);
+        }
     }
 
     private Bitmap decode(File file) {
