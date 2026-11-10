@@ -82,6 +82,7 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         int ambient;
         /** uniform_tiles card fill, top and bottom colour; null until sampled from the icon. */
         int[] backdrop;
+        Drawable backdropDrawable;
 
         Entry(String label, ComponentName component, Drawable banner, Drawable icon) {
             this(APP, label, component, banner, icon, null, 0);
@@ -519,7 +520,10 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         h.card.setBackground(e.banner != null && e.banner.getOpacity() == PixelFormat.OPAQUE ? null : h.cardBackground);
         if (uniformTiles && e.banner == null) {
             if (e.backdrop == null) e.backdrop = backdrop(e.icon, ambientColorAt(position));
-            h.card.setBackground(new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, e.backdrop));
+            if (e.backdropDrawable == null) {
+                e.backdropDrawable = new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, e.backdrop);
+            }
+            h.card.setBackground(e.backdropDrawable);
         }
         if (e.banner != null) {
             h.banner.setImageDrawable(e.banner);
@@ -724,23 +728,23 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         d.draw(new Canvas(bmp));
         d.setBounds(saved);
         float[] weight = new float[12];
-        float[][] sum = new float[12][3];
+        float[] sum = new float[36];
         float[] hsv = new float[3];
         float totalWeight = 0;
-        for (int y = 0; y < n; y++) {
-            for (int x = 0; x < n; x++) {
-                int p = bmp.getPixel(x, y);
-                if (Color.alpha(p) < 128) continue;
-                Color.colorToHSV(p, hsv);
-                if (hsv[1] < 0.3f || hsv[2] < 0.25f) continue;   // white, grey and black carry no hue
-                int bin = (int) (hsv[0] / 30f) % 12;
-                float w = hsv[1] * hsv[2];
-                weight[bin] += w;
-                totalWeight += w;
-                sum[bin][0] += Color.red(p) * w;
-                sum[bin][1] += Color.green(p) * w;
-                sum[bin][2] += Color.blue(p) * w;
-            }
+        int[] px = new int[n * n];
+        bmp.getPixels(px, 0, n, 0, 0, n, n);
+        for (int p : px) {
+            if (Color.alpha(p) < 128) continue;
+            Color.colorToHSV(p, hsv);
+            if (hsv[1] < 0.3f || hsv[2] < 0.25f) continue;   // white, grey and black carry no hue
+            int bin = (int) (hsv[0] / 30f) % 12;
+            float w = hsv[1] * hsv[2];
+            weight[bin] += w;
+            totalWeight += w;
+            int idx = bin * 3;
+            sum[idx] += Color.red(p) * w;
+            sum[idx + 1] += Color.green(p) * w;
+            sum[idx + 2] += Color.blue(p) * w;
         }
         bmp.recycle();
         if (totalWeight < n * n * 0.03f) return 0xFF6E6E73;   // a monochrome icon, like a grey gear
@@ -751,7 +755,8 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             return vividColor(live);
         }
         float w = weight[best];
-        return Color.rgb((int) (sum[best][0] / w), (int) (sum[best][1] / w), (int) (sum[best][2] / w));
+        int bestIdx = best * 3;
+        return Color.rgb((int) (sum[bestIdx] / w), (int) (sum[bestIdx + 1] / w), (int) (sum[bestIdx + 2] / w));
     }
 
     /**

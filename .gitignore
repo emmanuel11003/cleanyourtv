@@ -5,6 +5,12 @@ launcher/.gradle/
 launcher/build/
 launcher/app/build/
 launcher/local.properties
+companion/.gradle/
+companion/build/
+companion/app/build/
+companion/local.properties
+tv_server/build/
+tv_server/*.jar
 # your own TV's dumps (serial, android_id, device names) stay local
 backup/
 # session screenshots and working notes (may show the Wi-Fi name or account avatar) stay local

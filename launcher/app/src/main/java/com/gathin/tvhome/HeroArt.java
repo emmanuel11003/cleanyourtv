@@ -38,12 +38,13 @@ final class HeroArt {
         half.recycle();
 
         int[] px = new int[W * H];
+        int[] temp = new int[W * H];
         small.getPixels(px, 0, W, 0, 0, W, H);
         saturate(px);
         // Three box passes approximate a gaussian, so the stretched image shows no seams between pixels.
         for (int pass = 0; pass < 3; pass++) {
-            px = boxBlur(px, W, H, 2, true);
-            px = boxBlur(px, W, H, 2, false);
+            boxBlur(px, temp, W, H, 2, true);
+            boxBlur(temp, px, W, H, 2, false);
         }
         Bitmap out = small.isMutable() ? small : small.copy(Bitmap.Config.ARGB_8888, true);
         if (out != small) small.recycle();
@@ -65,9 +66,8 @@ final class HeroArt {
         return v < 0 ? 0 : v > 255 ? 255 : Math.round(v);
     }
 
-    /** One box blur pass along rows (horizontal) or columns, edges clamped. */
-    private static int[] boxBlur(int[] src, int w, int h, int radius, boolean horizontal) {
-        int[] dst = new int[src.length];
+    /** One box blur pass along rows (horizontal) or columns, edges clamped. Writes into dst without allocations. */
+    private static void boxBlur(int[] src, int[] dst, int w, int h, int radius, boolean horizontal) {
         int lines = horizontal ? h : w, length = horizontal ? w : h, span = 2 * radius + 1;
         for (int line = 0; line < lines; line++) {
             for (int i = 0; i < length; i++) {
@@ -75,13 +75,12 @@ final class HeroArt {
                 for (int k = -radius; k <= radius; k++) {
                     int j = Math.max(0, Math.min(length - 1, i + k));
                     int p = horizontal ? src[line * w + j] : src[j * w + line];
-                    r += Color.red(p);
-                    g += Color.green(p);
-                    b += Color.blue(p);
+                    r += (p >> 16) & 0xFF;
+                    g += (p >> 8) & 0xFF;
+                    b += p & 0xFF;
                 }
-                dst[horizontal ? line * w + i : i * w + line] = Color.rgb(r / span, g / span, b / span);
+                dst[horizontal ? line * w + i : i * w + line] = 0xFF000000 | ((r / span) << 16) | ((g / span) << 8) | (b / span);
             }
         }
-        return dst;
     }
 }

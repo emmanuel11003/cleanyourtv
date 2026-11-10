@@ -53,6 +53,7 @@ import android.text.Spanned;
 import android.text.TextPaint;
 import android.text.TextUtils;
 import android.text.style.ForegroundColorSpan;
+import android.util.LruCache;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.KeyEvent;
@@ -172,7 +173,15 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     /** The artwork's opacity behind the cinematic shelf (config.xml cinematic_art); 0 leaves it out. */
     private float heroArtAlpha = 0.5f;
     /** Softened artwork per app (HeroArt, about 5 KB each), made the first time its dock tile is focused. */
-    private final Map<String, Bitmap> heroArtCache = new HashMap<>();
+    private final LruCache<String, Bitmap> heroArtCache = new LruCache<String, Bitmap>(10) {
+        @Override
+        protected void entryRemoved(boolean evicted, String key, Bitmap oldValue, Bitmap newValue) {
+            if (oldValue != null && oldValue != newValue && !oldValue.isRecycled()
+                    && oldValue.getConfig() != Bitmap.Config.HARDWARE) {
+                oldValue.recycle();
+            }
+        }
+    };
     /** The app whose artwork heroArt shows, so focusing it again only fades it back in. */
     private String heroArtKey;
     /** The focus glow's colour while the cinematic shelf tints it, 0 for plain white glass. */
@@ -1287,7 +1296,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         final int returnSlot = lastFocused;
         final List<Cards.Card> none = Collections.emptyList();
         // An updated app may bring new artwork; the backdrop is cheap to make again.
-        heroArtCache.clear();
+        heroArtCache.evictAll();
         heroArtKey = null;
         // One LEANBACK query for both the tiles and the card checks.
         final List<ResolveInfo> leanback = getPackageManager().queryIntentActivities(
@@ -1400,7 +1409,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         // they hold) would stay attached until Home comes back. setAdapter(null) recycles them now.
         grid.setAdapter(null);
         grid.getRecycledViewPool().clear();
-        heroArtCache.clear();
+        heroArtCache.evictAll();
         heroArtKey = null;
         wallpaperPlayer.releaseForMemoryPressure();
         tileRefresh.invalidate();
