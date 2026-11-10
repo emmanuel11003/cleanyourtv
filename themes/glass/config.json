@@ -17,6 +17,7 @@
   "app_glow": false,
   "ambient_glow": false,
   "cinematic_art": 0,
+  "cinematic_scrim": 0,
   "cinematic_white_focus": true,
   "glow_style": "horizon",
   "focus_overshoot": false,
