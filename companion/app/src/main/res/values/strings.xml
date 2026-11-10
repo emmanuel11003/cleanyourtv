@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">TV Companion</string>
+    <string name="connect_title">TV Mirror &amp; Remote</string>
+    <string name="connect_subtitle">Offline LAN Companion • 60 FPS Low-Latency</string>
+    
+    <string name="label_tv_ip">TV IP Address (Local Wi-Fi)</string>
+    <string name="hint_tv_ip">192.168.1.50</string>
+    
+    <string name="label_port">Port</string>
+    <string name="default_port">55555</string>
+    
+    <string name="label_token">Security Token</string>
+    <string name="hint_token">123456</string>
+    <string name="default_token">123456</string>
+
+    <string name="label_quality">Stream Profile</string>
+    <string name="profile_540p">Low Latency (540p60)</string>
+    <string name="profile_720p">Balanced (720p60 - Recommended)</string>
+    <string name="profile_1080p">High Quality (1080p60)</string>
+
+    <string name="btn_connect">Connect &amp; Start Mirror</string>
+    <string name="btn_disconnect">Disconnect</string>
+    <string name="btn_reconnect">Reconnect</string>
+    <string name="btn_help">Setup &amp; ADB Guide</string>
+    <string name="btn_settings">Settings</string>
+    <string name="btn_remote_toggle">Remote</string>
+    <string name="btn_save">Save Settings</string>
+    <string name="btn_back">Back</string>
+
+    <string name="status_disconnected">Disconnected. Enter TV IP and connect.</string>
+    <string name="status_connecting">Connecting to TV over local Wi-Fi...</string>
+    <string name="status_connected">Connected • 60 FPS Hardware Decoding</string>
+    <string name="status_failed">Connection failed. Check IP, port, and TV server.</string>
+    <string name="status_token_failed">Authentication failed: Invalid security token.</string>
+    
+    <string name="error_invalid_ip">Please enter a valid private LAN IP (e.g. 192.168.x.x, 10.x.x.x, 172.16.x.x, or 169.254.x.x).</string>
+    <string name="error_public_ip">Public IP rejected. App operates strictly on offline local LAN.</string>
+
+    <string name="settings_title">Companion Settings</string>
+    <string name="setting_stream_profile">Video Quality</string>
+    <string name="setting_fps_overlay">Show FPS &amp; Latency Overlay</string>
+    <string name="setting_haptic">Haptic Vibration on Touch</string>
+    <string name="setting_sensitivity">Touchpad Sensitivity</string>
+    <string name="setting_long_press">Long Press Action</string>
+    <string name="action_back">Back</string>
+    <string name="action_menu">Context Menu</string>
+
+    <string name="help_title">Setup &amp; TV Server Guide</string>
+    <string name="help_intro">This companion app mirrors your Haier 55P7GT-P Google TV over local Wi-Fi without internet or cloud services.</string>
+    <string name="help_step1">1. Enable Developer Options &amp; USB Debugging on your TV (Settings &gt; System &gt; About &gt; Click Build 7 times, then Settings &gt; System &gt; Developer options &gt; USB debugging: ON).</string>
+    <string name="help_step2">2. Ensure Phone and TV are on the same Wi-Fi router or Phone Hotspot. Internet connection is NOT required.</string>
+    <string name="help_step3">3. Start the TV server once using ADB from your PC or TV terminal:</string>
+    <string name="help_cmd1">adb connect &lt;TV_IP&gt;:5555</string>
+    <string name="help_cmd2">adb push tv-server.jar /data/local/tmp/tv-server.jar</string>
+    <string name="help_cmd3">adb shell CLASSPATH=/data/local/tmp/tv-server.jar app_process / com.example.tvserver.Main 55555 123456</string>
+    <string name="help_note">No root required. TV server runs as shell process and automatically captures at 60 FPS.</string>
+</resources>

@@ -1,0 +1,260 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg_black">
+
+    <!-- Video Surface: Renders 60 FPS hardware-decoded TV UI -->
+    <SurfaceView
+        android:id="@+id/surface_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_centerInParent="true" />
+
+    <!-- Touchpad View: Intercepts gestures (tap = OK, swipe = Dpad, longpress = Back) -->
+    <View
+        android:id="@+id/touchpad_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <!-- Top Overlay Bar -->
+    <LinearLayout
+        android:id="@+id/top_bar"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_alignParentTop="true"
+        android:background="@color/overlay_bg"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp">
+
+        <ImageButton
+            android:id="@+id/btn_mirror_back"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="?android:attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_back"
+            android:contentDescription="@string/btn_back" />
+
+        <View
+            android:id="@+id/mirror_status_dot"
+            android:layout_width="10dp"
+            android:layout_height="10dp"
+            android:background="@drawable/bg_pill"
+            android:backgroundTint="@color/status_connected"
+            android:layout_marginStart="6dp" />
+
+        <TextView
+            android:id="@+id/tv_mirror_status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:text="720p60"
+            android:textColor="@color/text_primary"
+            android:textSize="12sp"
+            android:textStyle="bold" />
+
+        <!-- FPS & Latency Counter -->
+        <TextView
+            android:id="@+id/tv_fps_overlay"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="60.0 FPS • 16ms"
+            android:textColor="@color/accent_cyan"
+            android:textSize="12sp"
+            android:fontFamily="monospace"
+            android:textStyle="bold" />
+
+        <!-- Toggle Remote Overlay Button -->
+        <ImageButton
+            android:id="@+id/btn_toggle_remote"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="?android:attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_remote"
+            android:contentDescription="@string/btn_remote_toggle" />
+
+        <!-- Reconnect Button -->
+        <ImageButton
+            android:id="@+id/btn_mirror_reconnect"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="?android:attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_app_icon"
+            android:contentDescription="@string/btn_reconnect" />
+
+        <!-- Settings Button -->
+        <ImageButton
+            android:id="@+id/btn_mirror_settings"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="?android:attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_settings"
+            android:contentDescription="@string/btn_settings" />
+    </LinearLayout>
+
+    <!-- Disconnected / Error Banner -->
+    <TextView
+        android:id="@+id/tv_mirror_alert"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/top_bar"
+        android:background="#D32F2F"
+        android:textColor="#FFFFFF"
+        android:textSize="13sp"
+        android:padding="8dp"
+        android:gravity="center"
+        android:visibility="gone"
+        android:text="TV Stream Interrupted. Reconnecting..." />
+
+    <!-- Remote Control Dock Overlay (Toggleable / Semi-transparent) -->
+    <LinearLayout
+        android:id="@+id/layout_remote_overlay"
+        android:layout_width="320dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="12dp"
+        android:background="@drawable/bg_card"
+        android:backgroundTint="@color/overlay_bg"
+        android:orientation="vertical"
+        android:padding="12dp"
+        android:elevation="6dp">
+
+        <!-- Nav Row: Back, Home, Recents -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:layout_marginBottom="8dp">
+
+            <ImageButton
+                android:id="@+id/btn_nav_back"
+                android:layout_width="48dp"
+                android:layout_height="40dp"
+                android:background="@drawable/bg_dpad_button"
+                android:src="@drawable/ic_back"
+                android:contentDescription="Back"
+                android:layout_marginEnd="10dp" />
+
+            <ImageButton
+                android:id="@+id/btn_nav_home"
+                android:layout_width="48dp"
+                android:layout_height="40dp"
+                android:background="@drawable/bg_dpad_button"
+                android:src="@drawable/ic_home"
+                android:contentDescription="Home"
+                android:layout_marginEnd="10dp" />
+
+            <ImageButton
+                android:id="@+id/btn_nav_recents"
+                android:layout_width="48dp"
+                android:layout_height="40dp"
+                android:background="@drawable/bg_dpad_button"
+                android:src="@drawable/ic_recents"
+                android:contentDescription="Recents" />
+        </LinearLayout>
+
+        <!-- D-Pad Center Cross -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:layout_marginBottom="8dp">
+
+            <!-- DPAD UP -->
+            <ImageButton
+                android:id="@+id/btn_dpad_up"
+                android:layout_width="60dp"
+                android:layout_height="44dp"
+                android:background="@drawable/bg_dpad_button"
+                android:src="@drawable/ic_dpad_up"
+                android:contentDescription="Up" />
+
+            <!-- DPAD LEFT - OK - RIGHT -->
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginTop="4dp"
+                android:layout_marginBottom="4dp">
+
+                <ImageButton
+                    android:id="@+id/btn_dpad_left"
+                    android:layout_width="44dp"
+                    android:layout_height="60dp"
+                    android:background="@drawable/bg_dpad_button"
+                    android:src="@drawable/ic_dpad_left"
+                    android:contentDescription="Left"
+                    android:layout_marginEnd="6dp" />
+
+                <ImageButton
+                    android:id="@+id/btn_dpad_ok"
+                    android:layout_width="64dp"
+                    android:layout_height="60dp"
+                    android:background="@drawable/bg_button"
+                    android:src="@drawable/ic_dpad_ok"
+                    android:contentDescription="OK / Select" />
+
+                <ImageButton
+                    android:id="@+id/btn_dpad_right"
+                    android:layout_width="44dp"
+                    android:layout_height="60dp"
+                    android:background="@drawable/bg_dpad_button"
+                    android:src="@drawable/ic_dpad_right"
+                    android:contentDescription="Right"
+                    android:layout_marginStart="6dp" />
+            </LinearLayout>
+
+            <!-- DPAD DOWN -->
+            <ImageButton
+                android:id="@+id/btn_dpad_down"
+                android:layout_width="60dp"
+                android:layout_height="44dp"
+                android:background="@drawable/bg_dpad_button"
+                android:src="@drawable/ic_dpad_down"
+                android:contentDescription="Down" />
+        </LinearLayout>
+
+        <!-- Volume Row: Vol Down, Mute, Vol Up -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center">
+
+            <ImageButton
+                android:id="@+id/btn_vol_down"
+                android:layout_width="48dp"
+                android:layout_height="40dp"
+                android:background="@drawable/bg_dpad_button"
+                android:src="@drawable/ic_vol_down"
+                android:contentDescription="Volume Down"
+                android:layout_marginEnd="10dp" />
+
+            <ImageButton
+                android:id="@+id/btn_vol_mute"
+                android:layout_width="48dp"
+                android:layout_height="40dp"
+                android:background="@drawable/bg_dpad_button"
+                android:src="@drawable/ic_mute"
+                android:contentDescription="Mute"
+                android:layout_marginEnd="10dp" />
+
+            <ImageButton
+                android:id="@+id/btn_vol_up"
+                android:layout_width="48dp"
+                android:layout_height="40dp"
+                android:background="@drawable/bg_dpad_button"
+                android:src="@drawable/ic_vol_up"
+                android:contentDescription="Volume Up" />
+        </LinearLayout>
+    </LinearLayout>
+
+</RelativeLayout>
