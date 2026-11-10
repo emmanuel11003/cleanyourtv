@@ -455,6 +455,11 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         public void run() {
             updateGreeting();
             updatePanel();
+            View clockView = findViewById(R.id.clock);
+            if (clockView instanceof LiveClockView) {
+                ((LiveClockView) clockView).updateTime();
+                ((LiveClockView) clockView).startTicking();
+            }
             // The pill follows the network callbacks and each return to Home; only the festive light follows the
             // signal level, so only it needs this minute's binder calls (about 7 ms on the UI thread).
             if (festive) updateWifiLabel();
@@ -2050,8 +2055,11 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         heroArt.setVisibility(heroArtAlpha > 0f ? View.VISIBLE : View.GONE);
         // One stretched bitmap: apply its alpha while drawing instead of through an offscreen buffer.
         heroArt.forceHasOverlappingRendering(false);
-        if (scrimPercent <= 0) return;   // cinematic_scrim 0: no scrim at all
         View scrim = findViewById(R.id.heroScrim);
+        if (scrimPercent <= 0) {
+            if (scrim != null) scrim.setVisibility(View.GONE);
+            return;
+        }
         Drawable shade = scrimDrawable();
         // On the bitmap's paint, not the view: a view's alpha would draw the full screen through an offscreen buffer.
         shade.setAlpha(scrimPercent * 255 / 100);
