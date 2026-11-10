@@ -173,7 +173,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     /** The artwork's opacity behind the cinematic shelf (config.xml cinematic_art); 0 leaves it out. */
     private float heroArtAlpha = 0.5f;
     /** Softened artwork per app (HeroArt, about 5 KB each), made the first time its dock tile is focused. */
-    private final LruCache<String, Bitmap> heroArtCache = new LruCache<String, Bitmap>(10) {
+    private final LruCache<String, Bitmap> heroArtCache = new LruCache<String, Bitmap>(24) {
         @Override
         protected void entryRemoved(boolean evicted, String key, Bitmap oldValue, Bitmap newValue) {
             if (oldValue != null && oldValue != newValue && !oldValue.isRecycled()
@@ -1998,8 +1998,12 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             hero.setTranslationX(0f);
             hero.animate().alpha(1f).setDuration(260).start();
             if (ambientGlow) {
-                setAmbient(color);
-                ambient.animate().alpha(1f).setDuration(600).start();
+                if (advancedEffects && ambientColor != -1 && ambient.getBackground() != null) {
+                    transitionAmbient(color);
+                } else {
+                    setAmbient(color);
+                    ambient.animate().alpha(1f).setDuration(600).start();
+                }
             }
             heroShown = true;
         } else if (changed) {
@@ -2226,6 +2230,11 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         // A rapid focus change continues from the colour actually displayed on screen.
         stopAmbientAnimation();
         ambient.animate().cancel();
+        if (ambientColor == -1 || ambient.getBackground() == null) {
+            setAmbient(color);
+            ambient.animate().alpha(1f).setDuration(300).start();
+            return;
+        }
         if (color == ambientColor) {
             ambient.animate().alpha(1f).setDuration(180).start();
             return;
@@ -2250,33 +2259,42 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
      */
     private void showGlowOnly(int position) {
         int color = adapter.ambientColorAt(position);
-        stopAmbientAnimation();
         hero.animate().cancel();
-        ambient.animate().cancel();
         hero.setAlpha(0f);
-        heroArt.animate().cancel();
-        heroArt.setAlpha(0f);
         heroShown = false;
+        if (cinematic && heroArtAlpha > 0f) {
+            showHeroArt(position);
+        } else {
+            heroArt.animate().cancel();
+            heroArt.setAlpha(0f);
+        }
         if (!ambientGlow) return;
         if (!animations || reducedMotion) {
+            stopAmbientAnimation();
+            ambient.animate().cancel();
             setAmbient(color);
             ambient.setAlpha(1f);
             return;
         }
         if (color == ambientColor && ambient.getBackground() != null) {
-            ambient.animate().alpha(1f).setDuration(300).start();
+            if (ambient.getAlpha() < 1f) ambient.animate().alpha(1f).setDuration(300).start();
             return;
         }
-        if (glowSnap) {
+        if (advancedEffects) {
+            transitionAmbient(color);
+        } else if (glowSnap) {
+            stopAmbientAnimation();
+            ambient.animate().cancel();
             setAmbient(color);
             ambient.setAlpha(1f);
-            return;
+        } else {
+            stopAmbientAnimation();
+            ambient.animate().cancel();
+            ambient.animate().alpha(0.35f).setDuration(ambient.getAlpha() > 0.35f ? 200 : 0).withEndAction(() -> {
+                setAmbient(color);
+                ambient.animate().alpha(1f).setDuration(500).start();
+            }).start();
         }
-        // The same dip-and-swap as the dock's top shelf.
-        ambient.animate().alpha(0.35f).setDuration(ambient.getAlpha() > 0.35f ? 200 : 0).withEndAction(() -> {
-            setAmbient(color);
-            ambient.animate().alpha(1f).setDuration(500).start();
-        }).start();
     }
 
     private void hideHero() {
