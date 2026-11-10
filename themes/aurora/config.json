@@ -1,13 +1,7 @@
 ﻿{
-    "settings_key_panel":  true,
-    "settings_key_keycodes":  [
-                                  82,
-                                  83,
-                                  176,
-                                  240,
-                                  312
-                              ],
-    "background_color":  "#070A14",
+    "focus_overshoot":  false,
+    "app_glow":  true,
+    "cinematic_home":  true,
     "dock_apps":  [
                       "org.smarttube.stable",
                       "com.google.android.youtube.tv",
@@ -15,6 +9,27 @@
                       "com.sonyliv",
                       "com.android.vending"
                   ],
+    "dock_opacity":  50,
+    "wifi_status_color":  true,
+    "settings_key_keycodes":  [
+                                  82,
+                                  83,
+                                  176,
+                                  240,
+                                  312
+                              ],
+    "cinematic_scrim":  0,
+    "wallpaper":  true,
+    "clock_wallpaper":  true,
+    "show_recents_pill":  true,
+    "advanced_effects":  true,
+    "icon_only_inputs":  true,
+    "icon_only_buttons":  true,
+    "settings_key_panel":  true,
+    "clock_glow":  true,
+    "glow_style":  "horizon",
+    "dock_glass":  true,
     "restore_key_services":  true,
-    "wallpaper":  true
+    "background_color":  "#070A14",
+    "dock_even_padding":  true
 }
