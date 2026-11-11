@@ -330,6 +330,8 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             // The icon is only drawn (and sampled for the glow) when there is no banner, so a tile with a
             // banner skips loading and decoding it.
             Drawable icon = banner == null ? ri.loadIcon(pm) : null;
+            banner = optimizeDrawable(ctx, banner, 400, 225);
+            icon = optimizeDrawable(ctx, icon, 144, 144);
             if (card != null) {
                 fresh.add(new Entry(Entry.CARD, label, component, banner, icon, card.caption, card.accent));
             } else {
@@ -412,6 +414,35 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
      */
     static boolean isBannerShaped(int width, int height) {
         return width <= 0 || height <= 0 || width >= height * 1.4f;
+    }
+
+    /**
+     * Clamps oversized banners and icons to the maximum physical card resolution on TV.
+     * Rendering oversized 1080p/720p drawables directly into Native Heap wastes dozens of megabytes
+     * while offering zero visual benefit on ~350x195px cards. Downscaling with bilinear filtering
+     * preserves 100% visual sharpness and eliminates GPU moiré/aliasing.
+     */
+    private static Drawable optimizeDrawable(Context ctx, Drawable live, int maxW, int maxH) {
+        if (live == null) return null;
+        int w = live.getIntrinsicWidth();
+        int h = live.getIntrinsicHeight();
+        if (w <= 0 || h <= 0 || (w <= maxW && h <= maxH)) {
+            return live;
+        }
+        float ratio = Math.min((float) maxW / w, (float) maxH / h);
+        int targetW = Math.max(1, Math.round(w * ratio));
+        int targetH = Math.max(1, Math.round(h * ratio));
+        try {
+            Bitmap bmp = Bitmap.createBitmap(targetW, targetH, Bitmap.Config.ARGB_8888);
+            Canvas canvas = new Canvas(bmp);
+            Rect saved = new Rect(live.getBounds());
+            live.setBounds(0, 0, targetW, targetH);
+            live.draw(canvas);
+            live.setBounds(saved);
+            return new android.graphics.drawable.BitmapDrawable(ctx.getResources(), bmp);
+        } catch (Throwable ignored) {
+            return live;
+        }
     }
 
     /** Lets go of every tile and its artwork (Home is in the background and memory is short). */
