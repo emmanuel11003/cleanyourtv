@@ -438,6 +438,40 @@
                             android:singleLine="true" />
                     </LinearLayout>
                 </LinearLayout>
+
+                <!-- Row 5: Notifications (Full-width) -->
+                <LinearLayout
+                    android:id="@+id/tileNotifications"
+                    android:layout_width="match_parent"
+                    android:layout_height="52dp"
+                    android:layout_marginTop="6dp"
+                    android:background="@drawable/quick_settings_tile_bg"
+                    android:focusable="true"
+                    android:clickable="true"
+                    android:gravity="center_vertical"
+                    android:paddingStart="12dp"
+                    android:paddingEnd="12dp"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="18dp"
+                        android:layout_height="18dp"
+                        android:src="@drawable/ic_notifications"
+                        android:tint="@color/quick_tile_icon_color"
+                        android:duplicateParentState="true"
+                        android:contentDescription="@null" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:text="@string/tile_notifications"
+                        android:textColor="@color/quick_tile_text_color"
+                        android:textSize="12sp"
+                        android:fontFamily="@string/font_medium"
+                        android:duplicateParentState="true"
+                        android:singleLine="true" />
+                </LinearLayout>
             </LinearLayout>
 
             <!-- Bottom Spacer to push footer to bottom -->

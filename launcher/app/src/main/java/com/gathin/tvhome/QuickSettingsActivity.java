@@ -77,6 +77,12 @@ public final class QuickSettingsActivity extends Activity {
         // 8. Reorder apps -> Triggers CleanYourTV reorder mode directly
         findViewById(R.id.tileRearrange).setOnClickListener(v -> openRearrange());
 
+        // 9. Notifications -> Opens the Notification Center add-on
+        View tileNotif = findViewById(R.id.tileNotifications);
+        if (tileNotif != null) {
+            tileNotif.setOnClickListener(v -> openNotifications());
+        }
+
         // Initial focus on first tile for immediate D-pad readiness
         View firstTile = findViewById(R.id.tileScreensaver);
         if (firstTile != null) firstTile.requestFocus();
@@ -173,6 +179,25 @@ public final class QuickSettingsActivity extends Activity {
         }
 
         Toast.makeText(this, R.string.sleep_timer_addon_help, Toast.LENGTH_LONG).show();
+    }
+
+    /** 9. Notifications: Directs user to the official Notification Center add-on. */
+    private void openNotifications() {
+        Intent panelIntent = new Intent()
+                .setComponent(new ComponentName("io.github.emmanuel11003.tvnotifications",
+                        "io.github.emmanuel11003.tvnotifications.PanelActivity"))
+                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        if (safeStart(panelIntent)) {
+            return;
+        }
+
+        Intent actionIntent = new Intent("io.github.emmanuel11003.tvnotifications.action.PANEL")
+                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        if (safeStart(actionIntent)) {
+            return;
+        }
+
+        Toast.makeText(this, R.string.notifications_addon_help, Toast.LENGTH_LONG).show();
     }
 
     /** 8. Reorder apps: triggers CleanYourTV's native app rearranging mode. */
