@@ -381,6 +381,10 @@ final class RemoteKeys {
             case "settings":
                 start(ctx, SystemSettings.intent(ctx, Settings.ACTION_SETTINGS));
                 break;
+            case "panel":
+            case "quick_settings":
+                start(ctx, new Intent(ctx, QuickSettingsActivity.class).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP));
+                break;
             case "wifi":
                 start(ctx, SystemSettings.intent(ctx, Settings.ACTION_WIFI_SETTINGS));
                 break;

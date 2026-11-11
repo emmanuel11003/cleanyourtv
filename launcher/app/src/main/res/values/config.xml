@@ -164,6 +164,7 @@
          evdev MSC_SCAN there, which is not always the scanCode the framework reports, so a number that takes
          nothing is no proof the press never arrived. Leave empty to omit. -->
     <integer-array name="settings_key_scancodes">
+        <item>240</item>
     </integer-array>
     <!-- The same by Android keycode, for buttons whose scancode is shared. TCL Google TV remotes send their
          Settings button as keycode 83 (KEYCODE_NOTIFICATION, which the stock Google TV home turned into its quick
@@ -231,8 +232,14 @@
     <string-array name="app_keys" translatable="false">
         <item>scan:225:com.mediatek.wwtv.tvcenter</item>
         <item>scan:225:input:com.mediatek.dtv.tvinput.dvbtuner/.DvbTvInputService/HW0</item>
+        <item>scan:240:com.gathin.tvhome/.QuickSettingsActivity</item>
         <item>83:com.gathin.tvhome/.QuickSettingsActivity</item>
         <item>KEYCODE_NOTIFICATION:com.gathin.tvhome/.QuickSettingsActivity</item>
+        <item>206:com.gathin.tvhome/.QuickSettingsActivity</item>
+        <item>176:com.gathin.tvhome/.QuickSettingsActivity</item>
+        <item>KEYCODE_SETTINGS:com.gathin.tvhome/.QuickSettingsActivity</item>
+        <item>82:com.gathin.tvhome/.QuickSettingsActivity</item>
+        <item>312:com.gathin.tvhome/.QuickSettingsActivity</item>
     </string-array>
 
     <!-- Package of the stock launcher, for TVs whose firmware turns it back on after it was disabled. XGIMI's

@@ -235,7 +235,8 @@ public final class QuickSettingsActivity extends Activity {
     public boolean dispatchKeyEvent(KeyEvent event) {
         int kc = event.getKeyCode();
         if (kc == KeyEvent.KEYCODE_SETTINGS || kc == KeyEvent.KEYCODE_NOTIFICATION
-                || kc == KeyEvent.KEYCODE_MENU || kc == 312 || kc == 240) {
+                || kc == KeyEvent.KEYCODE_MENU || kc == 312 || kc == 240
+                || event.getScanCode() == 240) {
             if (event.getAction() == KeyEvent.ACTION_UP && !event.isCanceled()) {
                 finish();
             }

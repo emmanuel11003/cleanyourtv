@@ -11,10 +11,14 @@
                   ],
     "dock_opacity":  50,
     "wifi_status_color":  true,
+    "settings_key_scancodes":  [
+                                  240
+                              ],
     "settings_key_keycodes":  [
                                   82,
                                   83,
                                   176,
+                                  206,
                                   240,
                                   312
                               ],
@@ -36,7 +40,13 @@
     "app_keys":  [
                      "scan:225:com.mediatek.wwtv.tvcenter",
                      "scan:225:input:com.mediatek.dtv.tvinput.dvbtuner/.DvbTvInputService/HW0",
+                     "scan:240:com.gathin.tvhome/.QuickSettingsActivity",
                      "83:com.gathin.tvhome/.QuickSettingsActivity",
-                     "KEYCODE_NOTIFICATION:com.gathin.tvhome/.QuickSettingsActivity"
+                     "KEYCODE_NOTIFICATION:com.gathin.tvhome/.QuickSettingsActivity",
+                     "206:com.gathin.tvhome/.QuickSettingsActivity",
+                     "176:com.gathin.tvhome/.QuickSettingsActivity",
+                     "KEYCODE_SETTINGS:com.gathin.tvhome/.QuickSettingsActivity",
+                     "82:com.gathin.tvhome/.QuickSettingsActivity",
+                     "312:com.gathin.tvhome/.QuickSettingsActivity"
                  ]
 }
