@@ -31,5 +31,12 @@
     "dock_glass":  true,
     "restore_key_services":  true,
     "background_color":  "#070A14",
-    "dock_even_padding":  true
+    "dock_even_padding":  true,
+    "live_tv_package":  "com.mediatek.wwtv.tvcenter",
+    "app_keys":  [
+                     "scan:225:com.mediatek.wwtv.tvcenter",
+                     "scan:225:input:com.mediatek.dtv.tvinput.dvbtuner/.DvbTvInputService/HW0",
+                     "83:com.gathin.tvhome/.QuickSettingsActivity",
+                     "KEYCODE_NOTIFICATION:com.gathin.tvhome/.QuickSettingsActivity"
+                 ]
 }

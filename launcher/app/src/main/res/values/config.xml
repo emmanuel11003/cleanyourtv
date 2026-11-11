@@ -229,6 +229,10 @@
          where the firmware hands KEYCODE_GUIDE (172) to the stock launcher and no app ever receives it. Leave empty
          to omit. -->
     <string-array name="app_keys" translatable="false">
+        <item>scan:225:com.mediatek.wwtv.tvcenter</item>
+        <item>scan:225:input:com.mediatek.dtv.tvinput.dvbtuner/.DvbTvInputService/HW0</item>
+        <item>83:com.gathin.tvhome/.QuickSettingsActivity</item>
+        <item>KEYCODE_NOTIFICATION:com.gathin.tvhome/.QuickSettingsActivity</item>
     </string-array>
 
     <!-- Package of the stock launcher, for TVs whose firmware turns it back on after it was disabled. XGIMI's

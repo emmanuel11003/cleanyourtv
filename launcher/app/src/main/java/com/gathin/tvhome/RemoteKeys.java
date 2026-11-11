@@ -465,7 +465,12 @@ final class RemoteKeys {
         }
         Intent open = ctx.getPackageManager().getLeanbackLaunchIntentForPackage(pkg);
         if (open == null) open = ctx.getPackageManager().getLaunchIntentForPackage(pkg);
-        if (open == null) return;
+        if (open == null) {
+            if ("com.mediatek.wwtv.tvcenter".equals(pkg) || "com.mediatek.tv.oneworld.tvcenter".equals(pkg)) {
+                launch(ctx, "input:com.mediatek.dtv.tvinput.dvbtuner/.DvbTvInputService/HW0");
+            }
+            return;
+        }
         try {
             ctx.startActivity(open.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
         } catch (ActivityNotFoundException ignored) {
