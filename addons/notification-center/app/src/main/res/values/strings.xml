@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Notification Center</string>
+    <string name="header_title">Notifications</string>
+    <string name="clear_all">Clear all</string>
+    <string name="no_notifications">No notifications</string>
+    <string name="notification_access_off">Notification access is off</string>
+    <string name="grant_access_action">Press OK to grant access in Settings</string>
+    <string name="time_just_now">Just now</string>
+</resources>

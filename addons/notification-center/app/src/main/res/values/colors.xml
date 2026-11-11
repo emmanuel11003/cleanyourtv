@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="panel_bg">#F2131D23</color>
+    <color name="tile_bg_normal">#1C262C</color>
+    <color name="tile_bg_focused">#CCE8FF</color>
+    <color name="text_primary">#FFFFFF</color>
+    <color name="text_secondary">#9AA0A6</color>
+    <color name="text_focused">#001D35</color>
+</resources>

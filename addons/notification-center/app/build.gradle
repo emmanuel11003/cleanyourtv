@@ -1,0 +1,41 @@
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    namespace 'io.github.emmanuel11003.tvnotifications'
+    compileSdk 34
+
+    defaultConfig {
+        applicationId 'io.github.emmanuel11003.tvnotifications'
+        minSdk 26
+        targetSdk 34
+        versionCode 1
+        versionName '5.1'
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            // Sideloaded over ADB, never published: signed with the debug key, like the launcher.
+            signingConfig signingConfigs.debug
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+
+    testOptions {
+        unitTests.returnDefaultValues = true
+    }
+}
+
+dependencies {
+    // Plain Java add-on, no AndroidX dependencies.
+    // Test only (never in the APK): plain JVM tests, src/test.
+    testImplementation 'junit:junit:4.13.2'
+}

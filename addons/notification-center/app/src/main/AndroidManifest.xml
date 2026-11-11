@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <uses-feature android:name="android.software.leanback" android:required="false" />
+    <uses-feature android:name="android.hardware.touchscreen" android:required="false" />
+
+    <application
+        android:allowBackup="false"
+        android:banner="@drawable/icon"
+        android:icon="@drawable/icon"
+        android:label="@string/app_name"
+        android:supportsRtl="true">
+
+        <!-- NotificationListenerService bound by Android OS.
+             Grant with: cmd notification allow_listener io.github.emmanuel11003.tvnotifications/.Notifications -->
+        <service
+            android:name=".Notifications"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE">
+            <intent-filter>
+                <action android:name="android.service.notification.NotificationListenerService" />
+            </intent-filter>
+        </service>
+
+        <!-- Google TV-style translucent notification center panel -->
+        <activity
+            android:name=".PanelActivity"
+            android:exported="true"
+            android:taskAffinity=""
+            android:excludeFromRecents="true"
+            android:noHistory="true"
+            android:theme="@style/Theme.PanelActivity">
+            <intent-filter>
+                <action android:name="io.github.emmanuel11003.tvnotifications.action.PANEL" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+    </application>
+</manifest>

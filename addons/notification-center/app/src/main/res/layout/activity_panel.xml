@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Google TV Stock Style Translucent Notification Center Panel -->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/scrim"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#70000000">
+
+    <!-- Floating Rounded Panel (Google TV Exact Bounds) -->
+    <FrameLayout
+        android:id="@+id/panel"
+        android:layout_width="290dp"
+        android:layout_height="match_parent"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp"
+        android:layout_marginEnd="24dp"
+        android:layout_gravity="end|center_vertical"
+        android:background="@drawable/quick_settings_panel_bg"
+        android:paddingStart="14dp"
+        android:paddingEnd="14dp"
+        android:paddingTop="18dp"
+        android:paddingBottom="14dp"
+        android:clickable="true"
+        android:focusable="false"
+        android:elevation="20dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <!-- Top Header: Title & Clear all button -->
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:layout_marginEnd="4dp">
+
+                <TextView
+                    android:id="@+id/txtHeaderTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:layout_centerVertical="true"
+                    android:text="@string/header_title"
+                    android:textSize="18sp"
+                    android:textColor="#FFFFFF"
+                    android:fontFamily="@string/font_medium"
+                    android:singleLine="true" />
+
+                <TextView
+                    android:id="@+id/btnClearAll"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:background="@drawable/button_clear_all_bg"
+                    android:focusable="true"
+                    android:clickable="true"
+                    android:paddingStart="10dp"
+                    android:paddingEnd="10dp"
+                    android:paddingTop="4dp"
+                    android:paddingBottom="4dp"
+                    android:text="@string/clear_all"
+                    android:textSize="12sp"
+                    android:textColor="@color/quick_tile_text_color"
+                    android:fontFamily="@string/font_medium" />
+            </RelativeLayout>
+
+            <!-- Spacer between Header and List -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="12dp" />
+
+            <!-- Active Notifications Scroll List -->
+            <ScrollView
+                android:id="@+id/scrollView"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:scrollbars="none">
+
+                <LinearLayout
+                    android:id="@+id/layoutNotificationsList"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical" />
+            </ScrollView>
+
+            <!-- Empty State View -->
+            <LinearLayout
+                android:id="@+id/viewEmpty"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <ImageView
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:src="@drawable/ic_notifications"
+                    android:tint="#5F6368"
+                    android:contentDescription="@null" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:text="@string/no_notifications"
+                    android:textColor="#9AA0A6"
+                    android:textSize="13sp"
+                    android:fontFamily="@string/font_body" />
+            </LinearLayout>
+
+            <!-- Access Not Granted Warning View -->
+            <LinearLayout
+                android:id="@+id/viewAccessOff"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <LinearLayout
+                    android:id="@+id/cardGrantAccess"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/quick_settings_tile_bg"
+                    android:focusable="true"
+                    android:clickable="true"
+                    android:orientation="vertical"
+                    android:padding="14dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/notification_access_off"
+                        android:textColor="@color/quick_tile_text_color"
+                        android:textSize="13sp"
+                        android:fontFamily="@string/font_medium"
+                        android:duplicateParentState="true" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:text="@string/grant_access_action"
+                        android:textColor="@color/quick_tile_icon_color"
+                        android:textSize="11sp"
+                        android:fontFamily="@string/font_body"
+                        android:duplicateParentState="true" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Google TV Style Footer -->
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:paddingStart="4dp"
+                android:paddingEnd="4dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:layout_centerVertical="true"
+                    android:text="Google TV"
+                    android:textColor="#5F6368"
+                    android:textSize="12sp"
+                    android:fontFamily="@string/font_medium" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:text="Back"
+                    android:textColor="#5F6368"
+                    android:textSize="11sp"
+                    android:fontFamily="@string/font_body" />
+            </RelativeLayout>
+
+        </LinearLayout>
+    </FrameLayout>
+</FrameLayout>
