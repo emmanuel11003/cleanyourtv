@@ -43,8 +43,8 @@ TV_HOST=<tv ip> addons/notification-center/install.sh
 Or build and sideload manually:
 
 ```bash
-cd addons/notification-center && ./gradlew assembleRelease
-TV_HOST=<tv ip> tools/venv/bin/python -I tools/tv.py --push app/build/outputs/apk/release/app-release.apk /data/local/tmp/tvnotifications.apk
+cd addons/notification-center && ./gradlew assembleRelease && cd ../..
+TV_HOST=<tv ip> tools/venv/bin/python -I tools/tv.py --push addons/notification-center/app/build/outputs/apk/release/app-release.apk /data/local/tmp/tvnotifications.apk
 TV_HOST=<tv ip> tools/venv/bin/python -I tools/tv.py "pm install -r /data/local/tmp/tvnotifications.apk; rm -f /data/local/tmp/tvnotifications.apk"
 TV_HOST=<tv ip> tools/venv/bin/python -I tools/tv.py "cmd notification allow_listener io.github.emmanuel11003.tvnotifications/.Notifications"
 ```
