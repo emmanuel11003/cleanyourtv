@@ -88,7 +88,7 @@ final class ClockRefresh implements Runnable, DisplayManager.DisplayListener {
             TextClock c = (TextClock) v;
             c.setFormat12Hour(c.getFormat12Hour());
         } else if (v instanceof LiveClockView) {
-            ((LiveClockView) v).updateTime();
+            ((LiveClockView) v).startTicking();
         } else if (v instanceof ViewGroup) {
             ViewGroup g = (ViewGroup) v;
             for (int i = 0; i < g.getChildCount(); i++) redraw(g.getChildAt(i));

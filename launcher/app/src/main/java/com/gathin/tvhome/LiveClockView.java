@@ -98,7 +98,7 @@ public class LiveClockView extends TextView {
             if (!attached || !shouldTick) {
                 return;
             }
-            if (getVisibility() == View.VISIBLE && getWindowVisibility() == View.VISIBLE) {
+            if (getVisibility() == View.VISIBLE) {
                 updateTime();
             }
             long now = System.currentTimeMillis();
@@ -112,9 +112,10 @@ public class LiveClockView extends TextView {
         @Override
         public void onReceive(Context context, Intent intent) {
             cachedIs24 = null;
-            updateTime();
-            if (shouldTick) {
+            if (attached) {
                 startTicking();
+            } else {
+                updateTime();
             }
         }
     };
@@ -122,9 +123,11 @@ public class LiveClockView extends TextView {
     private final DisplayManager.DisplayListener displayListener = new DisplayManager.DisplayListener() {
         @Override
         public void onDisplayChanged(int displayId) {
-            updateTime();
-            if (shouldTick) {
+            Display d = getDisplay();
+            if (d != null && d.getState() == Display.STATE_ON && attached) {
                 startTicking();
+            } else if (d != null && d.getState() == Display.STATE_OFF) {
+                handler.removeCallbacks(ticker);
             }
         }
 
@@ -206,10 +209,11 @@ public class LiveClockView extends TextView {
     @Override
     protected void onVisibilityChanged(View changedView, int visibility) {
         super.onVisibilityChanged(changedView, visibility);
-        if (changedView == this && visibility == View.VISIBLE) {
-            updateTime();
-            if (shouldTick) {
+        if (changedView == this) {
+            if (visibility == View.VISIBLE && attached) {
                 startTicking();
+            } else if (visibility != View.VISIBLE) {
+                handler.removeCallbacks(ticker);
             }
         }
     }
@@ -217,22 +221,18 @@ public class LiveClockView extends TextView {
     @Override
     protected void onWindowVisibilityChanged(int visibility) {
         super.onWindowVisibilityChanged(visibility);
-        if (visibility == View.VISIBLE) {
-            updateTime();
-            if (shouldTick) {
-                startTicking();
-            }
+        if (visibility == View.VISIBLE && attached) {
+            startTicking();
+        } else if (visibility != View.VISIBLE) {
+            handler.removeCallbacks(ticker);
         }
     }
 
     @Override
     public void onWindowFocusChanged(boolean hasWindowFocus) {
         super.onWindowFocusChanged(hasWindowFocus);
-        if (hasWindowFocus) {
-            updateTime();
-            if (shouldTick) {
-                startTicking();
-            }
+        if (hasWindowFocus && attached) {
+            startTicking();
         }
     }
 

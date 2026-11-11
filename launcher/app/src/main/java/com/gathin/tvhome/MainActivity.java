@@ -1115,6 +1115,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         } else {
             registerReceiver(timeReceiver, timeFilter);
         }
+        View clockView = findViewById(R.id.clock);
+        if (clockView instanceof LiveClockView) {
+            ((LiveClockView) clockView).startTicking();
+        }
         updateClockVisibility();
         clockRefresh.start();   // with timeReceiver: while Home is visible, paused or not
         tileRefresh.onStart();
@@ -1374,10 +1378,6 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         if (cardPrompt != null) cardPrompt.dismiss();
         if (appLibrary != null) appLibrary.close();
         if (openPopup != null) openPopup.dismiss();
-        View clockView = findViewById(R.id.clock);
-        if (clockView instanceof LiveClockView) {
-            ((LiveClockView) clockView).stopTicking();
-        }
         if (adapter != null) {
             adapter.launchController.onActivityPaused();
         }

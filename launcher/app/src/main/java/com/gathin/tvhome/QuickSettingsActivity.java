@@ -43,9 +43,16 @@ public final class QuickSettingsActivity extends Activity {
         // Scrim click closes the panel
         findViewById(R.id.scrim).setOnClickListener(v -> finish());
 
-        // Update Date (quickClock is a live TextClock that ticks with seconds automatically)
+        // Update Date and start ticking quickClock
         TextView date = findViewById(R.id.quickDate);
-        date.setText(DateFormat.getDateInstance(DateFormat.FULL).format(new Date()));
+        if (date != null) {
+            date.setText(DateFormat.getDateInstance(DateFormat.FULL).format(new Date()));
+        }
+        View quickClock = findViewById(R.id.quickClock);
+        if (quickClock instanceof LiveClockView) {
+            ((LiveClockView) quickClock).updateTime();
+            ((LiveClockView) quickClock).startTicking();
+        }
 
         // Top Header: "All settings" -> Native TV Settings (MainSettings)
         findViewById(R.id.btnAllSettings).setOnClickListener(v ->
