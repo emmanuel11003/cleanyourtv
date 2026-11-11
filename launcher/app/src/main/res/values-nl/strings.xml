@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Home</string>
     <string name="inputs">Ingangen</string>
     <string name="wifi">Wifi</string>
     <string name="settings">Instellingen</string>
@@ -15,16 +14,12 @@
     <string name="good_afternoon">Goedemiddag</string>
     <string name="good_evening">Goedenavond</string>
     <string name="good_night">Goedenacht</string>
-    <string name="ethernet">Ethernet</string>
-    <string name="offline">Offline</string>
     <string name="not_available">Niet beschikbaar op deze tv</string>
     <string name="cant_open">Kan %1$s niet openen</string>
     <string name="date_format">EEEE d MMMM</string>
-    <string name="stats_cpu">CPU %1$d%%</string>
     <string name="stats_memory">Geheugen %1$d / %2$d MB</string>
     <string name="stats_storage">Opslag %1$s vrij</string>
     <string name="dream_name">Klok</string>
-    <string name="vpn">VPN</string>
     <string name="vpn_off">VPN uit</string>
     <string name="home_settings">Standaard startscherm kiezen</string>
     <string name="home_settings_help">Kies je oorspronkelijke startscherm om CleanYourTV niet meer als Home te gebruiken, of CleanYourTV om terug te schakelen. De oorspronkelijke launcher moet ingeschakeld zijn en je tv moet een keuzescherm voor het startscherm hebben; gebruik eerst het herstelscript als hij uitgeschakeld is.</string>
@@ -49,7 +44,6 @@
     <string name="tv_settings">Systeeminstellingen van de tv</string>
     <string name="quick_picture">Beeld</string>
     <string name="quick_network">Netwerk</string>
-    <string name="quick_apps">Apps</string>
     <string name="quick_apps_hint">Weer inschakelen</string>
     <string name="on">Aan</string>
     <string name="off">Uit</string>
@@ -69,7 +63,6 @@
     <string name="card_not_saved">Kon de keuze niet opslaan</string>
     <string name="module_cards">Modulekaarten</string>
     <string name="no_module_cards">Geen modulekaarten geïnstalleerd</string>
-    <string name="card_app_name">App: %1$s</string>
     <string name="card_state_shown">Getoond</string>
     <string name="card_state_over_limit">Getoond, boven de limiet van 8</string>
     <string name="card_state_hidden">Verborgen</string>
@@ -102,13 +95,11 @@
         <item quantity="one">%1$d app</item>
         <item quantity="other">%1$d apps</item>
     </plurals>
-    <string name="greeting_with_name">%1$s, %2$s</string>
 
     <string name="race_kicker">Ronde %1$d · %2$s · %3$s</string>
     <string name="race_kicker_no_place">Ronde %1$d · %2$s</string>
     <string name="race_next">%1$s over %2$s</string>
     <string name="race_lights_out">Lights out over %1$s</string>
-    <string name="race_live">%1$s · live</string>
     <string name="race_finished">Geblokte vlag</string>
     <string name="last_opened">Laatst geopend %1$s</string>
     <string name="game_live">Nu live</string>

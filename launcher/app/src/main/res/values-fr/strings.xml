@@ -2,7 +2,6 @@
 <resources>
     <string name="app_name">Accueil</string>
     <string name="inputs">Sources</string>
-    <string name="wifi">Wi-Fi</string>
     <string name="settings">Paramètres</string>
     <string name="choose_input">Sources</string>
     <string name="connected">Connecté</string>
@@ -15,16 +14,13 @@
     <string name="good_afternoon">Bon après-midi</string>
     <string name="good_evening">Bonsoir</string>
     <string name="good_night">Bonne nuit</string>
-    <string name="ethernet">Ethernet</string>
     <string name="offline">Hors ligne</string>
     <string name="not_available">Indisponible sur cette TV</string>
     <string name="cant_open">Impossible d\'ouvrir %1$s</string>
     <string name="date_format">EEEE d MMMM</string>
-    <string name="stats_cpu">CPU %1$d%%</string>
     <string name="stats_memory">Mémoire %1$d / %2$d Mo</string>
     <string name="stats_storage">Stockage %1$s libre</string>
     <string name="dream_name">Horloge</string>
-    <string name="vpn">VPN</string>
     <string name="vpn_off">VPN désactivé</string>
     <string name="home_settings">Accueil par défaut</string>
     <string name="home_settings_help">Choisissez un écran d\'accueil dans les paramètres système, puis appuyez sur Accueil.</string>
@@ -92,7 +88,6 @@
         <item quantity="one">%1$d application</item>
         <item quantity="other">%1$d applications</item>
     </plurals>
-    <string name="greeting_with_name">%1$s, %2$s</string>
     <string name="last_opened">Dernière ouverture : %1$s</string>
     <string name="game_live">En direct</string>
     <string name="clock_format_system">Système</string>

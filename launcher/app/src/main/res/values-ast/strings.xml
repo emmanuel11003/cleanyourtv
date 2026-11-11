@@ -22,7 +22,6 @@
     <string name="cant_open">Nun se pue abrir %1$s</string>
     <string name="date_format">EEEE d MMMM</string>
     <string name="date_format_home">EEEE\nd MMMM</string>
-    <string name="stats_cpu">CPU %1$d%%</string>
     <string name="stats_memory">Memoria %1$d / %2$d MB</string>
     <string name="stats_storage">Almacenamientu %1$s llibre</string>
     <string name="dream_name">Reló</string>
@@ -103,7 +102,6 @@
         <item quantity="one">%1$d aplicación</item>
         <item quantity="other">%1$d aplicaciones</item>
     </plurals>
-    <string name="greeting_with_name">%1$s, %2$s</string>
     <string name="race_kicker">Ronda %1$d · %2$s · %3$s</string>
     <string name="race_kicker_no_place">Ronda %1$d · %2$s</string>
     <string name="race_next">%1$s en %2$s</string>

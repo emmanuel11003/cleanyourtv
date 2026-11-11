@@ -2,7 +2,6 @@
 <resources>
     <string name="app_name">Domů</string>
     <string name="inputs">Vstupy</string>
-    <string name="wifi">Wi-Fi</string>
     <string name="settings">Nastavení</string>
     <string name="choose_input">Vstupy</string>
     <string name="connected">Připojeno</string>
@@ -15,13 +14,11 @@
     <string name="good_afternoon">Dobré odpoledne</string>
     <string name="good_evening">Dobrý večer</string>
     <string name="good_night">Dobrou noc</string>
-    <string name="ethernet">Ethernet</string>
     <string name="offline">Bez připojení</string>
     <string name="not_available">Na této televizi není k dispozici</string>
     <string name="cant_open">Nelze otevřít: %1$s</string>
     <string name="date_format">EEEE d. MMMM</string>
     <string name="dream_name">Hodiny</string>
-    <string name="vpn">VPN</string>
     <string name="vpn_off">VPN vypnutá</string>
     <string name="home_settings">Výchozí domovská obrazovka</string>
     <string name="home_settings_help">Vyberte původní domovskou obrazovku, pokud už nechcete CleanYourTV používat jako domovskou, nebo CleanYourTV, pokud se k ní chcete vrátit. Původní launcher musí být zapnutý a televize musí nabízet výběr domovské obrazovky. Pokud byl vypnutý, spusťte nejdřív skript pro obnovení.</string>
@@ -69,11 +66,8 @@
     <string name="card_state_new">Nová</string>
     <string name="card_state_new_key">Nový klíč</string>
     <string name="card_state_new_label">Nový název</string>
-    <string name="stats_cpu">CPU %1$d%%</string>
     <string name="stats_memory">Paměť %1$d / %2$d MB</string>
     <string name="stats_storage">Volné místo %1$s</string>
-    <string name="storage_gb_whole">%1$.0f GB</string>
-    <string name="storage_gb_decimal">%1$.1f GB</string>
     <string name="quick_picture">Obraz</string>
     <string name="quick_network">Síť</string>
     <string name="quick_apps">Aplikace</string>
@@ -106,7 +100,6 @@
         <item quantity="many">%1$d aplikace</item>
         <item quantity="other">%1$d aplikací</item>
     </plurals>
-    <string name="greeting_with_name">%1$s, %2$s</string>
     <string name="last_opened">Naposledy otevřeno: %1$s</string>
     <string name="game_live">Právě živě</string>
     <string name="clock_format_system">Systém</string>

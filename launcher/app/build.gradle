@@ -13,8 +13,21 @@ android {
         applicationId providers.gradleProperty('launcherApplicationId').getOrElse('com.gathin.tvhome')
         minSdk 26
         targetSdk 34
-        versionCode 16
-        versionName '5.1'
+        versionCode 17
+        versionName '6.0'
+    }
+
+    // Version 6: nothing in the APK that the TV never reads. The dependency report only matters to Play Store
+    // uploads, and BuildConfig / AIDL / RenderScript are not used by this launcher.
+    dependenciesInfo {
+        includeInApk false
+        includeInBundle false
+    }
+    buildFeatures {
+        buildConfig false
+        aidl false
+        renderScript false
+        shaders false
     }
 
     buildTypes {
@@ -32,7 +45,9 @@ android {
         resources {
             // Kotlin metadata pulled in by AndroidX's dependencies. This launcher is plain Java and never reads it;
             // leaving it out saves about 14 KB of every install.
-            excludes += ['kotlin/**', 'META-INF/*.version', 'META-INF/*.kotlin_module', 'DebugProbesKt.bin']
+            excludes += ['kotlin/**', 'META-INF/*.version', 'META-INF/*.kotlin_module', 'DebugProbesKt.bin',
+                         'META-INF/**/*.properties', 'META-INF/**/LICENSE*', 'META-INF/**/NOTICE*',
+                         'META-INF/proguard/**', 'META-INF/com.android.tools/**', '**/*.txt.gz']
         }
     }
 
@@ -40,6 +55,55 @@ android {
         sourceCompatibility JavaVersion.VERSION_17
         targetCompatibility JavaVersion.VERSION_17
     }
+}
+
+// Version 6 final pass over the release APK (build-tools only, nothing added to the app):
+//  1. aapt2 optimize collapses resource entry names in resources.arsc (about 15 KB). Code reads
+//     resources through R ids; the only lookup by name is banner_* drawables (AppAdapter.bundledBanner),
+//     which stay named.
+//  2. zipalign, then sign with APK Signature Scheme v2 only: minSdk 26 never reads the v1 JAR signature.
+// Output: app/build/outputs/apk/release/tvhome-v6.0-release.apk
+def v6BuildTools = "${android.sdkDirectory}/build-tools/${android.buildToolsVersion}"
+def v6Exe = { String name -> org.gradle.internal.os.OperatingSystem.current().isWindows() ? (name == 'apksigner' ? "${name}.bat" : "${name}.exe") : name }
+tasks.register('optimizeReleaseApk') {
+    def apkDir = layout.buildDirectory.dir('outputs/apk/release')
+    def work = layout.buildDirectory.dir('v6opt')
+    def resDir = file('src/main/res')
+    inputs.file(apkDir.map { it.file('app-release.apk') })
+    outputs.file(apkDir.map { it.file("tvhome-v${android.defaultConfig.versionName}-release.apk") })
+    doLast {
+        def bt = v6BuildTools
+        def w = work.get().asFile
+        w.mkdirs()
+        def src = apkDir.get().file('app-release.apk').asFile
+        def keep = new File(w, 'keep-names.cfg')
+        def names = new TreeSet<String>()
+        resDir.eachDirMatch(~/drawable.*/) { d -> d.eachFileMatch(~/banner_.*/) { f -> names << f.name.replaceFirst(/\..*$/, '') } }
+        keep.text = names.collect { "drawable/${it}#no_collapse" }.join('\n') + '\n'
+        def opt = new File(w, 'optimized.apk')
+        def aligned = new File(w, 'aligned.apk')
+        def out = outputs.files.singleFile
+        def run = { List<String> cmd ->
+            def p = cmd.execute()
+            def err = new StringBuffer(), std = new StringBuffer()
+            p.consumeProcessOutput(std, err)
+            if (p.waitFor() != 0) throw new GradleException("${cmd[0]} failed:\n${std}${err}")
+        }
+        run(["${bt}/${v6Exe('aapt2')}", 'optimize', '--collapse-resource-names',
+             '--resources-config-path', keep.absolutePath, '-o', opt.absolutePath, src.absolutePath])
+        run(["${bt}/${v6Exe('zipalign')}", '-f', '-p', '4', opt.absolutePath, aligned.absolutePath])
+        def sc = android.signingConfigs.debug
+        run(["${bt}/${v6Exe('apksigner')}", 'sign', '--v1-signing-enabled', 'false', '--v2-signing-enabled', 'true',
+             '--v3-signing-enabled', 'false', '--ks', sc.storeFile.absolutePath, '--ks-pass', "pass:${sc.storePassword}",
+             '--key-pass', "pass:${sc.keyPassword}", '--ks-key-alias', sc.keyAlias, '--out', out.absolutePath, aligned.absolutePath])
+        run(["${bt}/${v6Exe('apksigner')}", 'verify', out.absolutePath])
+        logger.lifecycle("CleanYourTV v${android.defaultConfig.versionName}: ${out} (${out.length()} bytes, gate 589824)")
+        if (out.length() >= 589824) throw new GradleException("APK size gate exceeded: ${out.length()} >= 589824 bytes")
+    }
+}
+afterEvaluate {
+    tasks.named('assembleRelease') { finalizedBy 'optimizeReleaseApk' }
+    tasks.named('optimizeReleaseApk') { dependsOn 'packageRelease' }
 }
 
 dependencies {

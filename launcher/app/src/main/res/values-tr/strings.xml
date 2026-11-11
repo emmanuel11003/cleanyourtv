@@ -2,7 +2,6 @@
 <resources>
     <string name="app_name">Ana Ekran</string>
     <string name="inputs">Girişler</string>
-    <string name="wifi">Wi-Fi</string>
     <string name="settings">Ayarlar</string>
     <string name="choose_input">Girişler</string>
     <string name="connected">Bağlı</string>
@@ -15,16 +14,13 @@
     <string name="good_afternoon">İyi Günler</string>
     <string name="good_evening">İyi Akşamlar</string>
     <string name="good_night">İyi Geceler</string>
-    <string name="ethernet">Ethernet</string>
     <string name="offline">Çevrimdışı</string>
     <string name="not_available">Bu TV’de kullanılamıyor</string>
     <string name="cant_open">%1$s açılamıyor</string>
     <string name="date_format">d MMMM EEEE</string>
-    <string name="stats_cpu">CPU %1$d%%</string>
     <string name="stats_memory">Bellek %1$d / %2$d MB</string>
     <string name="stats_storage">Depolama %1$s boş</string>
     <string name="dream_name">Saat</string>
-    <string name="vpn">VPN</string>
     <string name="vpn_off">VPN Kapalı</string>
     <string name="home_settings">Varsayılan ana ekran</string>
     <string name="home_settings_help">CleanYourTV yerine özgün ana ekranı seçin; geri dönmek için CleanYourTV seçin. Özgün başlatıcı etkin olmalı ve TV ana ekran seçicisini desteklemelidir. Devre dışıysa önce geri yükleme betiğini kullanın.</string>
@@ -92,7 +88,6 @@
         <item quantity="one">%1$d uygulama</item>
         <item quantity="other">%1$d uygulama</item>
     </plurals>
-    <string name="greeting_with_name">%1$s, %2$s</string>
     <string name="game_live">Şimdi canlı</string>
     <string name="clock_format_system">Sistem</string>
     <string name="clock_format_12">12 saat</string>

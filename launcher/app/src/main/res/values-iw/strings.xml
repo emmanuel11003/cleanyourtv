@@ -2,7 +2,6 @@
 <resources>
     <string name="app_name">בית</string>
     <string name="inputs">כניסות</string>
-    <string name="wifi">Wi-Fi</string>
     <string name="settings">הגדרות</string>
     <string name="choose_input">כניסות</string>
     <string name="connected">מחובר</string>
@@ -39,10 +38,7 @@
     <string name="stats_cpu">מעבד %1$d%%</string>
     <string name="stats_memory">זיכרון %1$d / %2$d MB</string>
     <string name="stats_storage">אחסון %1$s פנוי</string>
-    <string name="storage_gb_whole">%1$.0f GB</string>
-    <string name="storage_gb_decimal">%1$.1f GB</string>
     <string name="dream_name">שעון</string>
-    <string name="vpn">VPN</string>
     <string name="vpn_off">ה־VPN כבוי</string>
     <string name="home_settings">בחירת מסך הבית כברירת מחדל</string>
     <string name="home_settings_help">כדי להפסיק להשתמש ב־CleanYourTV כמסך הבית, יש לבחור במסך הבית המקורי. כדי לחזור, יש לבחור ב־CleanYourTV. אפליקציית מסך הבית המקורית חייבת להיות פעילה, והטלוויזיה צריכה לתמוך בבחירת מסך בית. אם האפליקציה הושבתה, יש להפעיל תחילה את סקריפט השחזור.</string>
@@ -115,7 +111,6 @@
         <item quantity="two">שתי אפליקציות</item>
         <item quantity="other">%1$d אפליקציות</item>
     </plurals>
-    <string name="greeting_with_name">%1$s, %2$s</string>
     <string name="rows_below_dock_label">שורות מתחת לשורת המועדפים</string>
     <string name="wallpaper_label">טפט</string>
     <string name="wallpaper_state">טפט: %1$s</string>

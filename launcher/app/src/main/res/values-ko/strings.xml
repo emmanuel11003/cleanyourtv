@@ -2,7 +2,6 @@
 <resources>
     <string name="app_name">홈</string>
     <string name="inputs">입력</string>
-    <string name="wifi">Wi-Fi</string>
     <string name="settings">설정</string>
     <string name="choose_input">입력</string>
     <string name="connected">연결됨</string>
@@ -35,13 +34,9 @@
     <string name="shamsi_month_dey">데이</string>
     <string name="shamsi_month_bahman">바흐만</string>
     <string name="shamsi_month_esfand">에스판드</string>
-    <string name="stats_cpu">CPU %1$d%%</string>
     <string name="stats_memory">메모리 %1$d / %2$d MB</string>
     <string name="stats_storage">저장공간 %1$s 남음</string>
-    <string name="storage_gb_whole">%1$.0f GB</string>
-    <string name="storage_gb_decimal">%1$.1f GB</string>
     <string name="dream_name">시계</string>
-    <string name="vpn">VPN</string>
     <string name="vpn_off">VPN 꺼짐</string>
     <string name="home_settings">기본 홈 선택</string>
     <string name="home_settings_help">기존 홈을 선택하면 CleanYourTV를 홈으로 쓰지 않고, CleanYourTV를 선택하면 다시 돌아옵니다. 기존 런처가 활성화되어 있고 TV에 홈 선택 기능이 있어야 합니다. 기존 런처를 비활성화했다면 먼저 복원 스크립트를 실행하세요.</string>
@@ -119,7 +114,6 @@
         <item quantity="other">앱 %1$d개</item>
     </plurals>
     <!-- The greeting, then greeting_name: "좋은 아침이에요, 길동 님". -->
-    <string name="greeting_with_name">%1$s, %2$s</string>
 
     <!-- Race-weekend panel (RaceWeekend). -->
     <string name="race_kicker">라운드 %1$d · %2$s · %3$s</string>
@@ -135,10 +129,6 @@
     <string name="race_sprint">스프린트</string>
     <string name="race_qualifying">예선</string>
     <string name="race_race">결승</string>
-    <string name="race_practice_1_short">FP1</string>
-    <string name="race_practice_2_short">FP2</string>
-    <string name="race_practice_3_short">FP3</string>
-    <string name="race_sprint_qualifying_short">SQ</string>
     <string name="race_sprint_short">스프린트</string>
     <string name="race_qualifying_short">예선</string>
     <string name="race_race_short">결승</string>

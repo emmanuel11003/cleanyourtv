@@ -25,7 +25,6 @@
     <string name="stats_memory">মেমরি %1$d / %2$d MB</string>
     <string name="stats_storage">স্টোরেজ %1$s খালি</string>
     <string name="dream_name">ঘড়ি</string>
-    <string name="vpn">VPN</string>
     <string name="vpn_off">VPN বন্ধ</string>
     <string name="home_settings">ডিফল্ট হোম বেছে নিন</string>
     <string name="home_settings_help">CleanYourTV-কে আর হোম হিসেবে ব্যবহার না করতে আপনার আগের হোম বেছে নিন, আবার ফিরতে CleanYourTV বেছে নিন। আগের লঞ্চারটি চালু থাকতে হবে এবং আপনার টিভিতে হোম বেছে নেওয়ার ব্যবস্থা থাকতে হবে; সেটি বন্ধ করা থাকলে আগে রিস্টোর স্ক্রিপ্ট চালান।</string>
@@ -97,7 +96,6 @@
         <item quantity="one">%1$dটি অ্যাপ</item>
         <item quantity="other">%1$dটি অ্যাপ</item>
     </plurals>
-    <string name="greeting_with_name">%1$s, %2$s</string>
     <string name="game_live">এখন সরাসরি</string>
     <string name="clock_format_system">সিস্টেম</string>
     <string name="clock_format_12">১২ ঘণ্টা</string>

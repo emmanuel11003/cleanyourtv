@@ -130,10 +130,12 @@ final class AppLibraryDialog {
     }
 
     private GradientDrawable surface(int color, int radius) {
-        GradientDrawable bg = new GradientDrawable();
-        bg.setColor(color);
+        // The launcher's one glass look (drawable/pill_bg rest state), tinted when the colour carries a hue.
+        int tint = color & 0x00FFFFFF;
+        GradientDrawable bg = new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, tint == 0xFFFFFF
+                ? new int[]{0x2EFFFFFF, 0x14FFFFFF} : new int[]{0x40000000 | tint, 0x1F000000 | tint});
         bg.setCornerRadius(dp(radius));
-        bg.setStroke(dp(1), 0x18FFFFFF);
+        bg.setStroke(dp(1), 0x38FFFFFF);
         return bg;
     }
 

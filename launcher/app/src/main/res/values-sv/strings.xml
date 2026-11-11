@@ -2,7 +2,6 @@
 <resources>
     <string name="app_name">Hem</string>
     <string name="inputs">Ingångar</string>
-    <string name="wifi">Wi-Fi</string>
     <string name="settings">Inställningar</string>
     <string name="choose_input">Ingångar</string>
     <string name="connected">Ansluten</string>
@@ -19,7 +18,6 @@
     <string name="festival_dussehra_greeting">Glad Dussehra</string>
     <string name="festival_diwali_greeting">Glad Diwali</string>
     <string name="festival_halloween_greeting">Glad halloween</string>
-    <string name="ethernet">Ethernet</string>
     <string name="offline">Frånkopplad</string>
     <string name="not_available">Inte tillgängligt på den här TV:n</string>
     <string name="cant_open">Kan inte öppna %1$s</string>
@@ -28,7 +26,6 @@
     <string name="stats_memory">Minne: %1$d / %2$d MB</string>
     <string name="stats_storage">Lagring: %1$s ledigt</string>
     <string name="dream_name">Klocka</string>
-    <string name="vpn">VPN</string>
     <string name="vpn_off">VPN av</string>
     <string name="home_settings">Välj standardstartskärm</string>
     <string name="home_settings_help">Välj den ursprungliga startskärmen för att sluta använda CleanYourTV, eller CleanYourTV för att byta tillbaka. Den ursprungliga startskärmen måste vara aktiverad och TV:n måste kunna välja startskärm. Kör återställningsskriptet först om den har inaktiverats.</string>
@@ -73,7 +70,6 @@
     <string name="card_not_saved">Kunde inte spara valet</string>
     <string name="module_cards">Modulkort</string>
     <string name="no_module_cards">Inga modulkort installerade</string>
-    <string name="card_app_name">App: %1$s</string>
     <string name="card_state_shown">Visas</string>
     <string name="card_state_over_limit">Visas, över gränsen på 8</string>
     <string name="card_state_hidden">Dold</string>
@@ -106,7 +102,6 @@
         <item quantity="one">%1$d app</item>
         <item quantity="other">%1$d appar</item>
     </plurals>
-    <string name="greeting_with_name">%1$s, %2$s</string>
     <string name="race_kicker">Omgång %1$d · %2$s · %3$s</string>
     <string name="race_kicker_no_place">Omgång %1$d · %2$s</string>
     <string name="race_next">%1$s om %2$s</string>
@@ -117,12 +112,10 @@
     <string name="race_practice_2">Träning 2</string>
     <string name="race_practice_3">Träning 3</string>
     <string name="race_sprint_qualifying">Sprintkval</string>
-    <string name="race_sprint">Sprint</string>
     <string name="race_qualifying">Kval</string>
     <string name="race_race">Lopp</string>
     <string name="last_opened">Senast öppnad %1$s</string>
     <string name="game_live">Direkt nu</string>
-    <string name="clock_format_system">System</string>
     <string name="clock_format_12">12 timmar</string>
     <string name="clock_format_24">24 timmar</string>
 </resources>

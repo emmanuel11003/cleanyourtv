@@ -86,6 +86,7 @@ public final class RecentAppsActivity extends Activity {
         recentsRecycler.setAdapter(adapter);
 
         setupActionButtons();
+        LastOpened.recordClosed(this);
         loadRecentApps();
     }
 

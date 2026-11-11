@@ -1162,8 +1162,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         if (adapter != null) {
             adapter.launchController.onActivityResumed();
         }
-        // Back from an app opened from its tile, focus is still on that tile, so the cinematic "Last opened" line kept
-        // the time from before this launch ("2 days ago" right after opening it). Refresh it.
+        // Record closed time for any app that was active before Home resumed
+        LastOpened.recordClosed(this);
+        // Back from an app opened from its tile, focus is still on that tile, so the cinematic "last used" line kept
+        // the time from before this launch ("2 days ago" right after opening it). Refresh it with the closed time.
         if (cinematic && heroMeta != null && lastFocused >= 0 && lastFocused < adapter.appCount()) updateHeroMeta(lastFocused);
         // The network and Inputs pills keep their state while Home is in the background, and callbacks update them
         // when the network or the inputs change, so this refresh only catches anything missed. Its binder calls

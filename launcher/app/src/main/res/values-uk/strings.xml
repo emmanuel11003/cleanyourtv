@@ -2,7 +2,6 @@
 <resources>
     <string name="app_name">Головний екран</string>
     <string name="inputs">Джерела</string>
-    <string name="wifi">Wi-Fi</string>
     <string name="settings">Налаштування</string>
     <string name="choose_input">Джерела</string>
     <string name="connected">Під’єднано</string>
@@ -18,7 +17,6 @@
     <string name="festival_dussehra_greeting">Зі святом Дашахра!</string>
     <string name="festival_diwali_greeting">Зі святом Дівалі!</string>
     <string name="festival_halloween_greeting">Щасливого Гелловіну!</string>
-    <string name="ethernet">Ethernet</string>
     <string name="offline">Не в мережі</string>
     <string name="not_available">Недоступно на цьому телевізорі</string>
     <string name="cant_open">Не вдалося відкрити %1$s</string>
@@ -36,13 +34,11 @@
     <string name="shamsi_month_dey">дея</string>
     <string name="shamsi_month_bahman">бахмана</string>
     <string name="shamsi_month_esfand">есфанда</string>
-    <string name="stats_cpu">CPU %1$d%%</string>
     <string name="stats_memory">Пам’ять %1$d / %2$d МБ</string>
     <string name="stats_storage">Сховище: %1$s вільно</string>
     <string name="storage_gb_whole">%1$.0f ГБ</string>
     <string name="storage_gb_decimal">%1$.1f ГБ</string>
     <string name="dream_name">Годинник</string>
-    <string name="vpn">VPN</string>
     <string name="vpn_off">VPN вимкнено</string>
     <string name="home_settings">Головний екран за замовчуванням</string>
     <string name="home_settings_help">Виберіть оригінальний головний екран, щоб більше не використовувати CleanYourTV як головний екран, або CleanYourTV, щоб повернутися. Оригінальний головний екран має бути увімкнений, а телевізор має показувати вибір головного екрана; якщо його було вимкнено, спершу скористайтеся скриптом відновлення.</string>
@@ -121,7 +117,6 @@
         <item quantity="many">%1$d застосунків</item>
         <item quantity="other">%1$d застосунка</item>
     </plurals>
-    <string name="greeting_with_name">%1$s, %2$s</string>
 
     <!-- Race-weekend panel (RaceWeekend). -->
     <string name="race_kicker">Етап %1$d · %2$s · %3$s</string>

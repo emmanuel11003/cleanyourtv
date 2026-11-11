@@ -2,7 +2,6 @@
 <resources>
     <string name="app_name">Início</string>
     <string name="inputs">Entradas</string>
-    <string name="wifi">Wi-Fi</string>
     <string name="settings">Configurações</string>
     <string name="choose_input">Entradas</string>
     <string name="connected">Conectado</string>
@@ -18,31 +17,14 @@
     <string name="festival_dussehra_greeting">Feliz Dussehra</string>
     <string name="festival_diwali_greeting">Feliz Diwali</string>
     <string name="festival_halloween_greeting">Feliz Halloween</string>
-    <string name="shamsi_month_farvardin">Farvardin</string>
-    <string name="shamsi_month_ordibehesht">Ordibehesht</string>
-    <string name="shamsi_month_khordad">Khordad</string>
-    <string name="shamsi_month_tir">Tir</string>
-    <string name="shamsi_month_mordad">Mordad</string>
-    <string name="shamsi_month_shahrivar">Shahrivar</string>
-    <string name="shamsi_month_mehr">Mehr</string>
-    <string name="shamsi_month_aban">Aban</string>
-    <string name="shamsi_month_azar">Azar</string>
-    <string name="shamsi_month_dey">Dey</string>
-    <string name="shamsi_month_bahman">Bahman</string>
-    <string name="shamsi_month_esfand">Esfand</string>
-    <string name="ethernet">Ethernet</string>
     <string name="offline">Sem conexão</string>
     <string name="not_available">Não disponível nesta TV</string>
     <string name="cant_open">Não foi possível abrir %1$s</string>
     <string name="date_format">EEEE  d \'de\' MMMM</string>
     <string name="date_format_home">EEEE\nd \'de\' MMMM</string>
-    <string name="stats_cpu">CPU %1$d%%</string>
     <string name="stats_memory">Memória %1$d / %2$d MB</string>
     <string name="stats_storage">Armazenamento %1$s livre</string>
-    <string name="storage_gb_whole">%1$.0f GB</string>
-    <string name="storage_gb_decimal">%1$.1f GB</string>
     <string name="dream_name">Relógio</string>
-    <string name="vpn">VPN</string>
     <string name="vpn_off">VPN desligada</string>
     <string name="home_settings">Tela inicial padrão</string>
     <string name="home_settings_help">Escolha a tela inicial original para deixar de usar o CleanYourTV, ou o CleanYourTV para voltar a ele. O launcher original precisa estar ativado e a TV precisa ter um seletor de tela inicial; se ele foi desativado, rode antes o script de restauração.</string>
@@ -61,7 +43,6 @@
     <string name="card_not_saved">Não foi possível salvar a escolha</string>
     <string name="module_cards">Cartões de módulo</string>
     <string name="no_module_cards">Nenhum cartão de módulo instalado</string>
-    <string name="card_app_name">App: %1$s</string>
     <string name="card_state_shown">Visível</string>
     <string name="card_state_over_limit">Visível, acima do limite de 8</string>
     <string name="card_state_hidden">Oculto</string>
@@ -95,7 +76,6 @@
         <item quantity="many">%1$d apps</item>
         <item quantity="other">%1$d apps</item>
     </plurals>
-    <string name="greeting_with_name">%1$s, %2$s</string>
 
     <!-- Launcher settings, quick settings panel, race-weekend panel and cinematic shelf. -->
     <string name="launcher_settings">Configurações do launcher</string>
@@ -119,7 +99,6 @@
     <string name="tv_settings">Configurações do sistema da TV</string>
     <string name="quick_picture">Imagem</string>
     <string name="quick_network">Rede</string>
-    <string name="quick_apps">Apps</string>
     <string name="quick_apps_hint">Reativar</string>
     <string name="on">Ativado</string>
     <string name="off">Desativado</string>
@@ -134,19 +113,15 @@
     <string name="race_practice_2">Treino Livre 2</string>
     <string name="race_practice_3">Treino Livre 3</string>
     <string name="race_sprint_qualifying">Classificação Sprint</string>
-    <string name="race_sprint">Sprint</string>
     <string name="race_qualifying">Classificação</string>
     <string name="race_race">Corrida</string>
     <string name="race_practice_1_short">TL1</string>
     <string name="race_practice_2_short">TL2</string>
     <string name="race_practice_3_short">TL3</string>
     <string name="race_sprint_qualifying_short">CS</string>
-    <string name="race_sprint_short">SPRINT</string>
     <string name="race_qualifying_short">CLASS</string>
     <string name="race_race_short">CORRIDA</string>
-    <string name="race_countdown_minutes">%1$d min</string>
     <string name="race_countdown_hours">%1$dh %2$dmin</string>
-    <string name="race_countdown_days">%1$dd %2$dh</string>
     <string name="last_opened">Aberto %1$s</string>
     <string name="game_live">Ao vivo agora</string>
     <string name="clock_format_system">Sistema</string>
