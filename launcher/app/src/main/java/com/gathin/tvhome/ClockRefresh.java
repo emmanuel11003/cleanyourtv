@@ -37,15 +37,18 @@ final class ClockRefresh implements Runnable, DisplayManager.DisplayListener {
      * re-aligns after the wall clock was set (registering the same listener twice is a no-op).
      */
     void start() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) return;
-        displays.registerDisplayListener(this, null);
+        try {
+            displays.registerDisplayListener(this, null);
+        } catch (Exception ignored) {}
         schedule();
     }
 
     /** Safe to call when never started. */
     void stop() {
         root.removeCallbacks(this);
-        displays.unregisterDisplayListener(this);
+        try {
+            displays.unregisterDisplayListener(this);
+        } catch (Exception ignored) {}
     }
 
     @Override
@@ -54,14 +57,13 @@ final class ClockRefresh implements Runnable, DisplayManager.DisplayListener {
         schedule();
     }
 
-    /** Redraws when our display goes from off to on, not on its other changes. */
+    /** Redraws when our display goes from off to on, or display state changes. */
     @Override
     public void onDisplayChanged(int displayId) {
         Display d = root.getDisplay();
-        if (d == null || d.getDisplayId() != displayId) return;
-        boolean nowOn = d.getState() == Display.STATE_ON;
-        if (nowOn && !on) run();
-        on = nowOn;
+        if (d != null && d.getState() == Display.STATE_ON) {
+            run();
+        }
     }
 
     @Override

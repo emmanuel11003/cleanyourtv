@@ -445,6 +445,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             View clockView = findViewById(R.id.clock);
             if (clockView instanceof LiveClockView) {
                 ((LiveClockView) clockView).updateTime();
+                ((LiveClockView) clockView).startTicking();
             }
         }
     };

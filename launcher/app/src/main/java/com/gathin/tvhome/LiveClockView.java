@@ -85,6 +85,7 @@ public class LiveClockView extends TextView {
     private final Handler handler = new Handler(Looper.getMainLooper());
 
     private boolean attached;
+    private boolean shouldTick = false;
     private boolean receiverRegistered;
     private DisplayManager displayManager;
     private Boolean cachedIs24 = null;
@@ -93,10 +94,10 @@ public class LiveClockView extends TextView {
     private final Runnable ticker = new Runnable() {
         @Override
         public void run() {
-            if (!attached || getWindowVisibility() != View.VISIBLE) {
+            if (!attached || !shouldTick) {
                 return;
             }
-            if (getVisibility() == View.VISIBLE) {
+            if (getVisibility() == View.VISIBLE && getWindowVisibility() == View.VISIBLE) {
                 updateTime();
             }
             long now = System.currentTimeMillis();
@@ -110,8 +111,8 @@ public class LiveClockView extends TextView {
         @Override
         public void onReceive(Context context, Intent intent) {
             cachedIs24 = null;
-            if (attached && getWindowVisibility() == View.VISIBLE) {
-                updateTime();
+            updateTime();
+            if (shouldTick) {
                 startTicking();
             }
         }
@@ -120,12 +121,9 @@ public class LiveClockView extends TextView {
     private final DisplayManager.DisplayListener displayListener = new DisplayManager.DisplayListener() {
         @Override
         public void onDisplayChanged(int displayId) {
-            Display d = getDisplay();
-            if (d != null && d.getDisplayId() == displayId && d.getState() == Display.STATE_ON) {
-                if (attached && getWindowVisibility() == View.VISIBLE) {
-                    updateTime();
-                    startTicking();
-                }
+            updateTime();
+            if (shouldTick) {
+                startTicking();
             }
         }
 
@@ -207,12 +205,10 @@ public class LiveClockView extends TextView {
     @Override
     protected void onVisibilityChanged(View changedView, int visibility) {
         super.onVisibilityChanged(changedView, visibility);
-        if (changedView == this) {
-            if (visibility == View.VISIBLE && getWindowVisibility() == View.VISIBLE) {
-                updateTime();
+        if (changedView == this && visibility == View.VISIBLE) {
+            updateTime();
+            if (shouldTick) {
                 startTicking();
-            } else {
-                stopTicking();
             }
         }
     }
@@ -220,46 +216,45 @@ public class LiveClockView extends TextView {
     @Override
     protected void onWindowVisibilityChanged(int visibility) {
         super.onWindowVisibilityChanged(visibility);
-        if (visibility == View.VISIBLE && getVisibility() == View.VISIBLE) {
+        if (visibility == View.VISIBLE) {
             updateTime();
-            startTicking();
-        } else {
-            stopTicking();
+            if (shouldTick) {
+                startTicking();
+            }
         }
     }
 
     @Override
     public void onWindowFocusChanged(boolean hasWindowFocus) {
         super.onWindowFocusChanged(hasWindowFocus);
-        if (hasWindowFocus && getVisibility() == View.VISIBLE && getWindowVisibility() == View.VISIBLE) {
+        if (hasWindowFocus) {
             updateTime();
-            startTicking();
+            if (shouldTick) {
+                startTicking();
+            }
         }
     }
 
     public void setClockFormat(String mode) {
         this.cachedClockFormat = mode;
         this.cachedIs24 = ClockFormat.is24(getContext(), mode);
-        if (attached && getWindowVisibility() == View.VISIBLE) {
-            updateTime();
-        }
+        updateTime();
     }
 
     public void startTicking() {
+        shouldTick = true;
         handler.removeCallbacks(ticker);
-        if (!attached || getWindowVisibility() != View.VISIBLE) {
-            return;
+        updateTime();
+        if (attached) {
+            long now = System.currentTimeMillis();
+            long delay = 1000L - (now % 1000L);
+            if (delay <= 0) delay = 1000L;
+            handler.postDelayed(ticker, delay);
         }
-        if (getVisibility() == View.VISIBLE) {
-            updateTime();
-        }
-        long now = System.currentTimeMillis();
-        long delay = 1000L - (now % 1000L);
-        if (delay <= 0) delay = 1000L;
-        handler.postDelayed(ticker, delay);
     }
 
     public void stopTicking() {
+        shouldTick = false;
         handler.removeCallbacks(ticker);
     }
 

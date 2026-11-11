@@ -255,8 +255,26 @@ public final class QuickSettingsActivity extends Activity {
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        View quickClock = findViewById(R.id.quickClock);
+        if (quickClock instanceof LiveClockView) {
+            ((LiveClockView) quickClock).updateTime();
+            ((LiveClockView) quickClock).startTicking();
+        }
+        TextView date = findViewById(R.id.quickDate);
+        if (date != null) {
+            date.setText(DateFormat.getDateInstance(DateFormat.FULL).format(new Date()));
+        }
+    }
+
+    @Override
     protected void onPause() {
         super.onPause();
+        View quickClock = findViewById(R.id.quickClock);
+        if (quickClock instanceof LiveClockView) {
+            ((LiveClockView) quickClock).stopTicking();
+        }
         if (!isFinishing()) {
             finish();
         }
