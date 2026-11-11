@@ -9,6 +9,7 @@ import android.graphics.Typeface;
 import android.hardware.display.DisplayManager;
 import android.os.Handler;
 import android.os.Looper;
+import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.format.DateFormat;
@@ -102,7 +103,7 @@ public class LiveClockView extends TextView {
             }
             long now = System.currentTimeMillis();
             long delay = 1000L - (now % 1000L);
-            if (delay <= 0) delay = 1000L;
+            if (delay < 20L) delay += 1000L;
             handler.postDelayed(this, delay);
         }
     };
@@ -248,7 +249,7 @@ public class LiveClockView extends TextView {
         if (attached) {
             long now = System.currentTimeMillis();
             long delay = 1000L - (now % 1000L);
-            if (delay <= 0) delay = 1000L;
+            if (delay < 20L) delay += 1000L;
             handler.postDelayed(ticker, delay);
         }
     }
@@ -309,6 +310,7 @@ public class LiveClockView extends TextView {
         spanBuilder.setSpan(sizeSpan, secStart, secEnd, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         spanBuilder.setSpan(colorSpan, secStart, secEnd, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
 
-        setText(spanBuilder, BufferType.SPANNABLE);
+        setText(new SpannableString(spanBuilder));
+        invalidate();
     }
 }
