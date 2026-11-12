@@ -274,6 +274,7 @@ public class HomeKeyService extends AccessibilityService {
 
     private boolean isInputKey(int keyCode) {
         if (keyCode == KeyEvent.KEYCODE_TV || keyCode == KeyEvent.KEYCODE_TV_INPUT) return true;
+        if (keyCode >= KeyEvent.KEYCODE_TV_INPUT_HDMI_1 && keyCode <= KeyEvent.KEYCODE_TV_INPUT_VGA_1) return true;
         for (int code : inputKeycodes) if (keyCode == code) return true;
         return false;
     }
@@ -291,6 +292,7 @@ public class HomeKeyService extends AccessibilityService {
 
     @Override
     protected boolean onKeyEvent(KeyEvent event) {
+        android.util.Log.e("TVHOME_KEY", "onKeyEvent: action=" + event.getAction() + " keyCode=" + event.getKeyCode() + " scanCode=" + event.getScanCode());
         // power_on_home: the first key after power-on hands the TV to the user (power and wake keys don't count).
         if (powerOnUntil != 0 && event.getAction() == KeyEvent.ACTION_DOWN
                 && event.getKeyCode() != KeyEvent.KEYCODE_POWER && event.getKeyCode() != KeyEvent.KEYCODE_WAKEUP) {

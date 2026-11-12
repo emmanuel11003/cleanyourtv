@@ -63,12 +63,14 @@ public class InputKeyService extends AccessibilityService {
 
     private boolean isInputKey(int keyCode) {
         if (keyCode == KeyEvent.KEYCODE_TV || keyCode == KeyEvent.KEYCODE_TV_INPUT) return true;
+        if (keyCode >= KeyEvent.KEYCODE_TV_INPUT_HDMI_1 && keyCode <= KeyEvent.KEYCODE_TV_INPUT_VGA_1) return true;
         for (int code : inputKeycodes) if (keyCode == code) return true;
         return false;
     }
 
     @Override
     protected boolean onKeyEvent(KeyEvent event) {
+        android.util.Log.e("TVHOME_KEY", "InputKeyService: action=" + event.getAction() + " keyCode=" + event.getKeyCode() + " scanCode=" + event.getScanCode());
         if (consumeVolumeKeys && VolumeKeys.handle(this, event)) return true;
         if (isInputKey(event.getKeyCode())) {
             if (event.getAction() == KeyEvent.ACTION_UP && !event.isCanceled()) {
