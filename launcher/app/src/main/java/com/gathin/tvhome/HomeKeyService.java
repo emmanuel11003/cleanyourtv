@@ -214,8 +214,6 @@ public class HomeKeyService extends AccessibilityService {
         // in onServiceConnected: the note is in credential-protected storage too, readable only after the unlock.
         repairRecord = config.restoreKeyServices;
         if (repairRecord) ServiceRepair.connected(this, getClass());
-        ServiceRepair.disconnected(this, InputKeyService.class);
-        ButtonMapper.clearAll(this);
         settingsKeycodes = config.settingsKeycodes;
         settingsPanel = config.settingsKeyPanel;
         consumeVolumeKeys = config.consumeVolumeKeys;

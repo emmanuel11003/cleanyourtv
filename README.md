@@ -2,10 +2,10 @@
   <a href="https://cleanyour.tv"><img src="https://raw.githubusercontent.com/Gathin23/cleanyourtv/main/docs/banner.png" alt="CleanYourTV. Your TV, minus the ads. Strip the bloatware from any Android TV or Google TV over Wi-Fi and replace the ad-filled home screen with a clean launcher that looks like an Apple TV. No root, no cable, nothing uninstalled, and a one-line restore." width="800"></a>
 </p>
 
-# CleanYourTV — Optimised Version (v6.2)
+# CleanYourTV — Optimised Version (v6.3)
 
 > [!TIP]
-> **High-Performance Optimised Edition**  
+> **High-Performance Optimised Edition (v6.3)**  
 > Maintained by [@emmanuel11003](https://github.com/emmanuel11003). Thoroughly optimized, tested, and verified on real hardware (**Haier MatrixTV DE 55" Google TV**, Android 14, MediaTek MT9676).  
 > 
 > 📖 **Full Release Notes & Telemetry**: [V6_2_RELEASE_NOTES.md](V6_2_RELEASE_NOTES.md) | [V6_1_RELEASE_NOTES.md](V6_1_RELEASE_NOTES.md) | [V6_RELEASE_NOTES.md](V6_RELEASE_NOTES.md)

@@ -13,8 +13,8 @@ android {
         applicationId providers.gradleProperty('launcherApplicationId').getOrElse('com.gathin.tvhome')
         minSdk 26
         targetSdk 34
-        versionCode 19
-        versionName '6.2'
+        versionCode 20
+        versionName '6.3'
     }
 
     // Version 6: nothing in the APK that the TV never reads. The dependency report only matters to Play Store
