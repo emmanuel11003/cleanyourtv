@@ -12,6 +12,7 @@
     "dock_opacity": 50,
     "wifi_status_color": true,
     "settings_key_keycodes": [
+        80,
         83
     ],
     "input_key_keycodes": [],
@@ -22,7 +23,7 @@
     "advanced_effects": true,
     "icon_only_inputs": true,
     "icon_only_buttons": true,
-    "settings_key_panel": false,
+    "settings_key_panel": true,
     "clock_glow": true,
     "glow_style": "horizon",
     "dock_glass": true,
