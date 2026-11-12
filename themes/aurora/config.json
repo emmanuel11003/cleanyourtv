@@ -11,21 +11,10 @@
     ],
     "dock_opacity": 50,
     "wifi_status_color": true,
-    "settings_key_scancodes": [
-        240
-    ],
     "settings_key_keycodes": [
-        82,
-        83,
-        176,
-        206,
-        240,
-        312
+        83
     ],
-    "input_key_keycodes": [
-        178,
-        170
-    ],
+    "input_key_keycodes": [],
     "cinematic_scrim": 0,
     "wallpaper": true,
     "clock_wallpaper": true,
@@ -40,32 +29,19 @@
     "restore_key_services": true,
     "background_color": "#070A14",
     "dock_even_padding": true,
-    "live_tv_package": "com.mediatek.wwtv.tvcenter",
+    "live_tv_package": "com.cltv.hybrid",
     "app_keys": [
-        "scan:225:com.mediatek.wwtv.tvcenter",
-        "scan:225:input:com.mediatek.dtv.tvinput.dvbtuner/.DvbTvInputService/HW0",
-        "scan:362:com.mediatek.wwtv.tvcenter",
-        "172:com.mediatek.wwtv.tvcenter",
-        "KEYCODE_GUIDE:com.mediatek.wwtv.tvcenter",
+        "172:com.cltv.hybrid",
+        "KEYCODE_GUIDE:com.cltv.hybrid",
+        "front:172:guide:com.cltv.hybrid",
+        "front:KEYCODE_GUIDE:guide:com.cltv.hybrid",
         "297:com.google.android.youtube.tv",
         "KEYCODE_FEATURED_APP_1:com.google.android.youtube.tv",
-        "190:com.google.android.youtube.tv",
-        "KEYCODE_BUTTON_3:com.google.android.youtube.tv",
         "298:com.netflix.ninja",
         "KEYCODE_FEATURED_APP_2:com.netflix.ninja",
-        "191:com.netflix.ninja",
-        "KEYCODE_BUTTON_4:com.netflix.ninja",
         "299:com.amazon.amazonvideo.livingroom",
         "KEYCODE_FEATURED_APP_3:com.amazon.amazonvideo.livingroom",
-        "193:com.amazon.amazonvideo.livingroom",
-        "KEYCODE_BUTTON_6:com.amazon.amazonvideo.livingroom",
         "300:in.startv.hotstar",
-        "KEYCODE_FEATURED_APP_4:in.startv.hotstar",
-        "194:in.startv.hotstar",
-        "KEYCODE_BUTTON_7:in.startv.hotstar",
-        "178:inputs",
-        "KEYCODE_TV_INPUT:inputs",
-        "170:inputs",
-        "KEYCODE_TV:inputs"
+        "KEYCODE_FEATURED_APP_4:in.startv.hotstar"
     ]
 }

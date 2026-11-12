@@ -1,6 +1,7 @@
 package com.gathin.tvhome;
 
 import android.accessibilityservice.AccessibilityService;
+import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.view.KeyEvent;
 import android.view.accessibility.AccessibilityEvent;
@@ -16,6 +17,8 @@ import java.util.Map;
  * Opt-in: INPUT_KEY_SERVICE=1 build-and-install.sh (or -InputKeyService on Windows) enables it.
  */
 public class InputKeyService extends AccessibilityService {
+
+    private static final String ACTION_VIEW_INPUTS = "com.android.tv.action.VIEW_INPUTS";
 
     private int[] inputKeycodes = new int[0];
     private Map<Integer, String> appKeys = Collections.emptyMap();
@@ -58,25 +61,35 @@ public class InputKeyService extends AccessibilityService {
         }
     }
 
+    private boolean isInputKey(int keyCode) {
+        if (keyCode == KeyEvent.KEYCODE_TV || keyCode == KeyEvent.KEYCODE_TV_INPUT) return true;
+        for (int code : inputKeycodes) if (keyCode == code) return true;
+        return false;
+    }
+
     @Override
     protected boolean onKeyEvent(KeyEvent event) {
-        // Debug builds only: R8 strips Log.d from the release build (proguard-rules.pro), so no cost per key press.
-        android.util.Log.d("TVHOME_KEY", "InputKeyService: action=" + event.getAction() + " keyCode=" + event.getKeyCode() + " scanCode=" + event.getScanCode());
         if (consumeVolumeKeys && VolumeKeys.handle(this, event)) return true;
-        // The Input button first: the stock input selector, else the Inputs menu (RemoteKeys.launch "inputs").
-        if (RemoteKeys.handleInputKey(this, event, inputKeycodes)) return true;
         // A scancode entry is more specific than any keycode, so it goes first.
         if (RemoteKeys.handle(this, event, appScancodes.get(event.getScanCode()),
                 holdAppScancodes.get(event.getScanCode()))) return true;
         if (RemoteKeys.handle(this, event, appKeys.get(event.getKeyCode()),
                 holdAppKeys.get(event.getKeyCode()))) return true;
-        return false;
+        if (!isInputKey(event.getKeyCode())) return false;
+        if (event.getAction() == KeyEvent.ACTION_UP && !event.isCanceled()) {
+            try {
+                startActivity(new Intent(ACTION_VIEW_INPUTS).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+            } catch (ActivityNotFoundException ignored) {
+            }
+        }
+        return true;
     }
 
     /** Unbound by Android: the user turned the helper off, so Home doesn't put it back (ServiceRepair). */
     @Override
     public boolean onUnbind(Intent intent) {
         RemoteKeys.release(this);
+        if (repairRecord) ServiceRepair.disconnected(this, getClass());
         return super.onUnbind(intent);
     }
 

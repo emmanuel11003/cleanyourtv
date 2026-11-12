@@ -57,7 +57,6 @@ public class HomeKeyService extends AccessibilityService {
     /** Remote buttons that should open Settings (config.xml, settings_key_scancodes and settings_key_keycodes). */
     private int[] settingsScancodes = new int[0];
     private int[] settingsKeycodes = new int[0];
-    private int[] inputKeycodes = new int[0];
     private boolean settingsPanel;
     /** consume_volume_keys: Volume Up/Down go to VolumeKeys instead of on to the firmware. */
     private boolean consumeVolumeKeys;
@@ -215,8 +214,9 @@ public class HomeKeyService extends AccessibilityService {
         // in onServiceConnected: the note is in credential-protected storage too, readable only after the unlock.
         repairRecord = config.restoreKeyServices;
         if (repairRecord) ServiceRepair.connected(this, getClass());
+        ServiceRepair.disconnected(this, InputKeyService.class);
+        ButtonMapper.clearAll(this);
         settingsKeycodes = config.settingsKeycodes;
-        inputKeycodes = config.inputKeycodes;
         settingsPanel = config.settingsKeyPanel;
         consumeVolumeKeys = config.consumeVolumeKeys;
         appKeys = RemoteKeys.parseAppKeys(config.appKeys);
@@ -273,11 +273,7 @@ public class HomeKeyService extends AccessibilityService {
     }
 
     private boolean isSettingsKey(KeyEvent event) {
-        if (RemoteKeys.isInputKey(event.getKeyCode(), inputKeycodes)) return false;
         if (event.getKeyCode() == KeyEvent.KEYCODE_SETTINGS) return true;
-        if (event.getKeyCode() == KeyEvent.KEYCODE_NOTIFICATION
-                || event.getKeyCode() == KeyEvent.KEYCODE_MENU
-                || event.getKeyCode() == 312) return true;
         for (int code : settingsScancodes) if (event.getScanCode() == code) return true;
         for (int code : settingsKeycodes) if (event.getKeyCode() == code) return true;
         return false;
@@ -285,8 +281,6 @@ public class HomeKeyService extends AccessibilityService {
 
     @Override
     protected boolean onKeyEvent(KeyEvent event) {
-        // Debug builds only: R8 strips Log.d from the release build (proguard-rules.pro), so no cost per key press.
-        android.util.Log.d("TVHOME_KEY", "onKeyEvent: action=" + event.getAction() + " keyCode=" + event.getKeyCode() + " scanCode=" + event.getScanCode());
         // power_on_home: the first key after power-on hands the TV to the user (power and wake keys don't count).
         if (powerOnUntil != 0 && event.getAction() == KeyEvent.ACTION_DOWN
                 && event.getKeyCode() != KeyEvent.KEYCODE_POWER && event.getKeyCode() != KeyEvent.KEYCODE_WAKEUP) {
@@ -294,8 +288,6 @@ public class HomeKeyService extends AccessibilityService {
         }
         if (consumeVolumeKeys && VolumeKeys.handle(this, event)) return true;
         if (ButtonMapper.handleKeyEvent(this, event)) return true;
-        // The Input button: the stock input selector, else the Inputs menu (RemoteKeys.launch "inputs").
-        if (RemoteKeys.handleInputKey(this, event, inputKeycodes)) return true;
         // A scancode entry is more specific than any keycode, so it goes first.
         if (RemoteKeys.handle(this, event, inFront(appScancodes, frontAppScancodes, event.getScanCode()),
                 holdAppScancodes.get(event.getScanCode()))) return true;
@@ -342,6 +334,7 @@ public class HomeKeyService extends AccessibilityService {
     @Override
     public boolean onUnbind(Intent intent) {
         RemoteKeys.release(this);
+        if (repairRecord && !steppingOut) ServiceRepair.disconnected(this, getClass());
         return super.onUnbind(intent);
     }
 

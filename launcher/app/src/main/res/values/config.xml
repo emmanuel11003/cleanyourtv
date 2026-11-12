@@ -35,7 +35,7 @@
     </string-array>
 
     <!-- The TV's Live TV / tuner app, offered at the end of the Inputs menu. Leave empty to omit. -->
-    <string name="live_tv_package" translatable="false">com.mediatek.wwtv.tvcenter</string>
+    <string name="live_tv_package" translatable="false">com.cltv.hybrid</string>
 
     <!-- Open the Live TV app above the first time Home comes up after the TV is switched on, for sets that are
          mostly used for broadcast TV. Once per boot: Home after that stays Home. Can also be set with
@@ -164,7 +164,6 @@
          evdev MSC_SCAN there, which is not always the scanCode the framework reports, so a number that takes
          nothing is no proof the press never arrived. Leave empty to omit. -->
     <integer-array name="settings_key_scancodes">
-        <item>240</item>
     </integer-array>
     <!-- The same by Android keycode, for buttons whose scancode is shared. TCL Google TV remotes send their
          Settings button as keycode 83 (KEYCODE_NOTIFICATION, which the stock Google TV home turned into its quick
@@ -174,12 +173,7 @@
          a temporary `Log.d` in the helper's `onKeyEvent`: `getKeyCode()`, `getScanCode()`, `getDeviceId()`, read
          after a HOME_KEY_SERVICE=1 rebuild. Leave empty to omit. -->
     <integer-array name="settings_key_keycodes">
-        <item>82</item>
         <item>83</item>
-        <item>176</item>
-        <item>206</item>
-        <item>240</item>
-        <item>312</item>
     </integer-array>
     <bool name="settings_key_panel">false</bool>
 
@@ -195,8 +189,6 @@
          app each such "global key" was routed to. Check with the real remote: keys injected over ADB never
          reach InputKeyService. Leave empty to omit. -->
     <integer-array name="input_key_keycodes">
-        <item>178</item>
-        <item>170</item>
     </integer-array>
     <!-- Answer the system input switcher (com.android.tv.action.VIEW_INPUTS) with the Inputs menu. For TVs whose
          stock launcher was the only handler of that action, so the remote's Input button does nothing once the
@@ -233,31 +225,18 @@
          where the firmware hands KEYCODE_GUIDE (172) to the stock launcher and no app ever receives it. Leave empty
          to omit. -->
     <string-array name="app_keys" translatable="false">
-        <item>scan:225:com.mediatek.wwtv.tvcenter</item>
-        <item>scan:225:input:com.mediatek.dtv.tvinput.dvbtuner/.DvbTvInputService/HW0</item>
-        <item>scan:362:com.mediatek.wwtv.tvcenter</item>
-        <item>172:com.mediatek.wwtv.tvcenter</item>
-        <item>KEYCODE_GUIDE:com.mediatek.wwtv.tvcenter</item>
+        <item>172:com.cltv.hybrid</item>
+        <item>KEYCODE_GUIDE:com.cltv.hybrid</item>
+        <item>front:172:guide:com.cltv.hybrid</item>
+        <item>front:KEYCODE_GUIDE:guide:com.cltv.hybrid</item>
         <item>297:com.google.android.youtube.tv</item>
         <item>KEYCODE_FEATURED_APP_1:com.google.android.youtube.tv</item>
-        <item>190:com.google.android.youtube.tv</item>
-        <item>KEYCODE_BUTTON_3:com.google.android.youtube.tv</item>
         <item>298:com.netflix.ninja</item>
         <item>KEYCODE_FEATURED_APP_2:com.netflix.ninja</item>
-        <item>191:com.netflix.ninja</item>
-        <item>KEYCODE_BUTTON_4:com.netflix.ninja</item>
         <item>299:com.amazon.amazonvideo.livingroom</item>
         <item>KEYCODE_FEATURED_APP_3:com.amazon.amazonvideo.livingroom</item>
-        <item>193:com.amazon.amazonvideo.livingroom</item>
-        <item>KEYCODE_BUTTON_6:com.amazon.amazonvideo.livingroom</item>
         <item>300:in.startv.hotstar</item>
         <item>KEYCODE_FEATURED_APP_4:in.startv.hotstar</item>
-        <item>194:in.startv.hotstar</item>
-        <item>KEYCODE_BUTTON_7:in.startv.hotstar</item>
-        <item>178:inputs</item>
-        <item>KEYCODE_TV_INPUT:inputs</item>
-        <item>170:inputs</item>
-        <item>KEYCODE_TV:inputs</item>
     </string-array>
 
     <!-- Package of the stock launcher, for TVs whose firmware turns it back on after it was disabled. XGIMI's
