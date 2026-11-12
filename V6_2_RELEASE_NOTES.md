@@ -75,11 +75,24 @@ A Google TV–style notification side panel add-on card designed specifically fo
 - **Icon-Only Pill Bar**: Compact round icon buttons for Inputs, Wi-Fi, and Settings.
 - **Connection Health Indicator**: Wi-Fi icon turns green when online, white when unauthenticated/offline (`wifi_status_color: true`).
 - **Smooth 0.5x Motion Profile**: System animation scale set permanently to 0.5x (`animation_scale: "0.5"`) with eliminated popup flash transitions.
-- **Smart Idle Screensaver**: Home screen smoothly transitions to the clock screensaver after 5 minutes of idle time (`home_idle_clock_minutes: 5`, `clock_wallpaper: true`, `clock_wallpaper_dim: 50`) without interrupting running apps.
+### Month Calendar & Clock Screensaver (`ClockActivity.java` & `ClockDream.java`)
+- **Dual Calendar & Clock Layout**: Sleek digital clock with seconds, full date, and an active **Month Calendar grid** with the current date highlighted in an accent badge.
+- **OLED Burn-in Protection**: Content gently drifts to randomized screen coordinates every 60 seconds.
+- **Low-Power Ambient Glow**: Deep radial glow palette (`#2B5CFF`, `#00A39A`, `#8A3FFC`, `#E0661B`, `#D6336C`) that cycles across 16 discrete 500ms steps, avoiding continuous GPU redraw churn.
+- **Smart Non-Intrusive Idle Timer**: Triggers after 5 minutes of Home inactivity (`home_idle_clock_minutes: 5`). Operates strictly from the launcher, ensuring it **never interrupts Live TV, HDMI inputs, or streaming playback**.
+- **Instant One-Key Wakeup**: Any remote keypress instantly dismisses the screensaver while consuming the event to prevent accidental app launches.
+- **Quick Settings Integration**: Launchable on-demand via Tile #1 (**Screensaver**) in Quick Settings.
+- **System Daydream Service**: Declared in manifest as `ClockDream` (`DreamService`), allowing Android TV to use it as the system-wide screensaver.
 
----
+### Add-On Screensavers (`addons/`)
+Modular screensaver apps that plug into CleanYourTV without bloating the core launcher:
+- `news-screensaver`: Ambient headline cards.
+- `photo-screensaver`: Local and curated photography carousel.
+- `digital-rain`: Retro green Matrix falling glyphs.
+- `tv-static`: Vintage CRT static generator.
+- `haunted` & `tatami`: Ambient aesthetic visualizers.
 
-## 5. Companion & Mirroring Subsystem
+### Dock Ergonomics & Fluid Glass Styling
 
 ### TV Companion App (`companion/`)
 - Ultra-lightweight phone companion app (**43,176 bytes / ~42 KB release APK**).
