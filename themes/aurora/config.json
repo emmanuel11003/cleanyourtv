@@ -9,7 +9,7 @@
         "com.sonyliv",
         "com.android.vending"
     ],
-    "dock_opacity": 50,
+    "dock_opacity": 30,
     "wifi_status_color": true,
     "settings_key_keycodes": [
         80,
@@ -17,9 +17,9 @@
     ],
     "input_key_keycodes": [],
     "cinematic_scrim": 0,
-    "wallpaper": true,
-    "clock_wallpaper": true,
-    "show_recents_pill": true,
+    "wallpaper": false,
+    "clock_wallpaper": false,
+    "show_recents_pill": false,
     "advanced_effects": true,
     "icon_only_inputs": true,
     "icon_only_buttons": true,

@@ -717,11 +717,11 @@ final class Config {
             }
         }
         // A theme can also switch the wallpaper off while the file is still there.
-        boolean wallpaperEnabled = json == null || bool(json, "wallpaper", true);
+        boolean wallpaperEnabled = json != null && bool(json, "wallpaper", false);
         if (!wallpaperEnabled) wallpaper = null;
         int rotationMinutes = json == null ? 0 : integer(json, "wallpaper_rotation_minutes", 0, 0, 1440);
         int wallpaperDim = json == null ? 0 : integer(json, "wallpaper_dim", 0, 0, 90);
-        int defaultDockOpacity = 50;
+        int defaultDockOpacity = 30;
         try {
             defaultDockOpacity = res.getInteger(R.integer.dock_opacity);
         } catch (Exception ignored) {}

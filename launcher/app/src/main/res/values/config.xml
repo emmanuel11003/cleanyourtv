@@ -372,7 +372,7 @@
          remote's Input button does is unchanged. Can also be set with "show_inputs_pill" in a theme. -->
     <bool name="show_inputs_pill">true</bool>
     <!-- The Recent Apps pill in the top bar. Can also be set with "show_recents_pill" in a theme. -->
-    <bool name="show_recents_pill">true</bool>
+    <bool name="show_recents_pill">false</bool>
     <!-- The Inputs list shows only HDMI ports and CEC devices that report connected. Empty ports, devices asleep in
          standby (some TVs, TCL among them, report an empty HDMI port as connected-standby, the same state a
          sleeping device has) and the AV jacks fold behind a "More inputs" row that expands the rest. An HDMI row
@@ -425,7 +425,7 @@
     <!-- Default background color (#RRGGBB) -->
     <string name="background_color" translatable="false">#070A14</string>
     <!-- Dock opacity in percent (30-100) -->
-    <integer name="dock_opacity">50</integer>
+    <integer name="dock_opacity">30</integer>
     <!-- System animation scale (0.5 for 0.5x, enforced permanently across TV reboots) -->
     <string name="animation_scale" translatable="false">0.5</string>
 
@@ -547,7 +547,7 @@
     <bool name="back_opens_clock">false</bool>
     <!-- The clock screensaver (Home idle clock and the system screensaver) over Home's wallpaper instead of black with
          a coloured glow. The clock still moves every minute. Can also be set with "clock_wallpaper" in a theme. -->
-    <bool name="clock_wallpaper">true</bool>
+    <bool name="clock_wallpaper">false</bool>
     <!-- How dark that wallpaper is behind the clock, 0 to 90 %. Can also be set with "clock_wallpaper_dim". -->
     <integer name="clock_wallpaper_dim">50</integer>
     <!-- The clock screensaver's slow coloured glow behind the clock. false leaves the clock and date alone on plain black
