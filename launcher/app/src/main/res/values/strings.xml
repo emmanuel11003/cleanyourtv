@@ -194,7 +194,10 @@
     <string name="tile_sleep_timer" translatable="false">Sleep timer</string>
     <string name="tile_notifications" translatable="false">Notifications</string>
     <string name="quick_settings_footer" translatable="false">Press Back to close</string>
-    <string name="sleep_timer_addon_help" translatable="false">Sleep timer requires the Sleep Timer add-on</string>
+    <string name="sleep_timer_left" translatable="false">Sleep in %1$d min</string>
+    <string name="sleep_timer_set" translatable="false">The TV will sleep in %1$d min</string>
+    <string name="sleep_timer_off" translatable="false">Sleep timer off</string>
+    <string name="sleep_timer_no_helper" translatable="false">The TV will sleep in %1$d min. Turn on the CleanYourTV accessibility helper so it can switch the TV off; until then the screensaver starts.</string>
     <string name="notifications_addon_help" translatable="false">Notifications require the Notification Center add-on</string>
 
     <!-- Remote Button Mapper -->

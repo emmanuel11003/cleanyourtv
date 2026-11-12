@@ -3,8 +3,8 @@
 # min_api: 26
 # common_typos_disable
 # {"id":"com.android.tools.r8.mapping","version":"2.2"}
-# pg_map_id: f86b18d
-# pg_map_hash: SHA-256 f86b18d8a7525d19cf9779658f5678b2d0dbbde8be3f78888aaa5fafa80393cb
+# pg_map_id: b8c3a6b
+# pg_map_hash: SHA-256 b8c3a6b8ac653d19f80c12980185b9e86ab721a4efe419f033cc7099c158397e
 android.app.AppComponentFactory -> android.app.AppComponentFactory:
 # {"id":"com.android.tools.r8.synthesized"}
     void <clinit>() -> <clinit>
@@ -21740,338 +21740,338 @@ com.gathin.tvhome.HomeKeyService -> com.gathin.tvhome.HomeKeyService:
     49:54:void <init>():81:81 -> <init>
     55:60:void <init>():82:82 -> <init>
     61:62:void <init>():83:83 -> <init>
-    63:74:void <init>():446:446 -> <init>
-    0:10:void armStandbyExit():178:178 -> a
-    11:18:void armStandbyExit():179:179 -> a
-    19:28:void armStandbyExit():186:186 -> a
-    29:38:void armStandbyExit():187:187 -> a
-    39:44:void armStandbyExit():188:188 -> a
+    63:74:void <init>():451:451 -> <init>
+    0:10:void armStandbyExit():183:183 -> a
+    11:18:void armStandbyExit():184:184 -> a
+    19:28:void armStandbyExit():191:191 -> a
+    29:38:void armStandbyExit():192:192 -> a
+    39:44:void armStandbyExit():193:193 -> a
     45:48:void com.gathin.tvhome.GuardKeep.stepOut(android.accessibilityservice.AccessibilityService):88:88 -> a
-    45:48:void leaveForStandby():202 -> a
-    45:48:void armStandbyExit():188 -> a
+    45:48:void leaveForStandby():207 -> a
+    45:48:void armStandbyExit():193 -> a
     49:53:void com.gathin.tvhome.GuardKeep.watchScreenOn(android.content.Context):93:93 -> a
     49:53:void com.gathin.tvhome.GuardKeep.stepOut(android.accessibilityservice.AccessibilityService):88 -> a
-    49:53:void leaveForStandby():202 -> a
-    49:53:void armStandbyExit():188 -> a
+    49:53:void leaveForStandby():207 -> a
+    49:53:void armStandbyExit():193 -> a
     54:59:void com.gathin.tvhome.GuardKeep.watchScreenOn(android.content.Context):94:94 -> a
     54:59:void com.gathin.tvhome.GuardKeep.stepOut(android.accessibilityservice.AccessibilityService):88 -> a
-    54:59:void leaveForStandby():202 -> a
-    54:59:void armStandbyExit():188 -> a
+    54:59:void leaveForStandby():207 -> a
+    54:59:void armStandbyExit():193 -> a
     60:61:void com.gathin.tvhome.GuardKeep.watchScreenOn(android.content.Context):106:106 -> a
     60:61:void com.gathin.tvhome.GuardKeep.stepOut(android.accessibilityservice.AccessibilityService):88 -> a
-    60:61:void leaveForStandby():202 -> a
-    60:61:void armStandbyExit():188 -> a
+    60:61:void leaveForStandby():207 -> a
+    60:61:void armStandbyExit():193 -> a
     62:71:void com.gathin.tvhome.GuardKeep.watchScreenOn(android.content.Context):107:107 -> a
     62:71:void com.gathin.tvhome.GuardKeep.stepOut(android.accessibilityservice.AccessibilityService):88 -> a
-    62:71:void leaveForStandby():202 -> a
-    62:71:void armStandbyExit():188 -> a
+    62:71:void leaveForStandby():207 -> a
+    62:71:void armStandbyExit():193 -> a
     72:75:void com.gathin.tvhome.GuardKeep.stepOut(android.accessibilityservice.AccessibilityService):89:89 -> a
-    72:75:void leaveForStandby():202 -> a
-    72:75:void armStandbyExit():188 -> a
-    0:9:java.lang.String inFront(java.util.Map,java.util.Map,int):263:263 -> b
-    10:21:java.lang.String inFront(java.util.Map,java.util.Map,int):264:264 -> b
-    22:30:java.lang.String inFront(java.util.Map,java.util.Map,int):265:265 -> b
+    72:75:void leaveForStandby():207 -> a
+    72:75:void armStandbyExit():193 -> a
+    0:9:java.lang.String inFront(java.util.Map,java.util.Map,int):268:268 -> b
+    10:21:java.lang.String inFront(java.util.Map,java.util.Map,int):269:269 -> b
+    22:30:java.lang.String inFront(java.util.Map,java.util.Map,int):270:270 -> b
     31:39:boolean com.gathin.tvhome.RemoteKeys.inFront(java.lang.String,java.lang.String):177:177 -> b
-    31:39:java.lang.String inFront(java.util.Map,java.util.Map,int):265 -> b
+    31:39:java.lang.String inFront(java.util.Map,java.util.Map,int):270 -> b
     40:47:boolean com.gathin.tvhome.RemoteKeys.inFront(java.lang.String,java.lang.String):178:178 -> b
-    40:47:java.lang.String inFront(java.util.Map,java.util.Map,int):265 -> b
+    40:47:java.lang.String inFront(java.util.Map,java.util.Map,int):270 -> b
     48:59:boolean com.gathin.tvhome.RemoteKeys.inFront(java.lang.String,java.lang.String):179:179 -> b
-    48:59:java.lang.String inFront(java.util.Map,java.util.Map,int):265 -> b
-    0:3:void loadConfig():207:207 -> c
-    4:9:void loadConfig():210:210 -> c
-    10:13:void loadConfig():211:211 -> c
+    48:59:java.lang.String inFront(java.util.Map,java.util.Map,int):270 -> b
+    0:3:void loadConfig():212:212 -> c
+    4:9:void loadConfig():215:215 -> c
+    10:13:void loadConfig():216:216 -> c
     14:19:android.content.SharedPreferences com.gathin.tvhome.ServiceRepair.prefs(android.content.Context):108:108 -> c
     14:19:void com.gathin.tvhome.ServiceRepair.connected(android.content.Context,java.lang.Class):30 -> c
-    14:19:void loadConfig():211 -> c
+    14:19:void loadConfig():216 -> c
     20:34:void com.gathin.tvhome.ServiceRepair.connected(android.content.Context,java.lang.Class):30:30 -> c
-    20:34:void loadConfig():211 -> c
-    35:38:void loadConfig():212:212 -> c
-    39:42:void loadConfig():213:213 -> c
-    43:46:void loadConfig():214:214 -> c
+    20:34:void loadConfig():216 -> c
+    35:38:void loadConfig():217:217 -> c
+    39:42:void loadConfig():218:218 -> c
+    43:46:void loadConfig():219:219 -> c
     47:57:java.util.Map com.gathin.tvhome.RemoteKeys.parseAppKeys(java.lang.Iterable):60:60 -> c
-    47:57:void loadConfig():215 -> c
-    58:59:void loadConfig():215:215 -> c
-    60:65:void loadConfig():216:216 -> c
+    47:57:void loadConfig():220 -> c
+    58:59:void loadConfig():220:220 -> c
+    60:65:void loadConfig():221:221 -> c
     66:70:void com.gathin.tvhome.RemoteKeys.applyKeyFilter(android.accessibilityservice.AccessibilityService,boolean):122:122 -> c
-    66:70:void loadConfig():217 -> c
+    66:70:void loadConfig():222 -> c
     71:77:void com.gathin.tvhome.RemoteKeys.applyKeyFilter(android.accessibilityservice.AccessibilityService,boolean):123:123 -> c
-    71:77:void loadConfig():217 -> c
+    71:77:void loadConfig():222 -> c
     78:83:void com.gathin.tvhome.RemoteKeys.applyKeyFilter(android.accessibilityservice.AccessibilityService,boolean):125:125 -> c
-    78:83:void loadConfig():217 -> c
+    78:83:void loadConfig():222 -> c
     84:86:void com.gathin.tvhome.RemoteKeys.applyKeyFilter(android.accessibilityservice.AccessibilityService,boolean):126:126 -> c
-    84:86:void loadConfig():217 -> c
-    87:90:void loadConfig():218:218 -> c
+    84:86:void loadConfig():222 -> c
+    87:90:void loadConfig():223:223 -> c
     91:95:java.util.Map com.gathin.tvhome.RemoteKeys.parseFrontAppKeys(java.lang.Iterable):103:103 -> c
-    91:95:void loadConfig():219 -> c
+    91:95:void loadConfig():224 -> c
     96:105:java.util.Map com.gathin.tvhome.RemoteKeys.parseFrontAppKeys(java.lang.Iterable,java.util.function.ToIntFunction):107:107 -> c
     96:105:java.util.Map com.gathin.tvhome.RemoteKeys.parseFrontAppKeys(java.lang.Iterable):103 -> c
-    96:105:void loadConfig():219 -> c
-    106:107:void loadConfig():219:219 -> c
+    96:105:void loadConfig():224 -> c
+    106:107:void loadConfig():224:224 -> c
     108:115:java.util.Map com.gathin.tvhome.RemoteKeys.parseFrontAppScancodes(java.lang.Iterable):111:111 -> c
-    108:115:void loadConfig():220 -> c
-    116:117:void loadConfig():220:220 -> c
-    118:137:void loadConfig():221:221 -> c
-    138:142:void loadConfig():222:222 -> c
-    143:146:void loadConfig():223:223 -> c
-    147:152:void loadConfig():224:224 -> c
-    153:169:void loadConfig():225:225 -> c
-    170:195:void loadConfig():226:226 -> c
-    196:203:void loadConfig():227:227 -> c
-    204:209:void loadConfig():232:232 -> c
-    210:223:void loadConfig():233:233 -> c
-    224:240:void loadConfig():234:234 -> c
-    241:242:void loadConfig():235:235 -> c
-    243:258:void loadConfig():236:236 -> c
-    259:275:void loadConfig():237:237 -> c
-    276:279:void loadConfig():239:239 -> c
-    280:282:void loadConfig():240:240 -> c
-    283:286:void loadConfig():241:241 -> c
-    287:289:void loadConfig():242:242 -> c
-    290:297:void armPowerOnHome():379:379 -> c
-    290:297:void loadConfig():238 -> c
-    298:299:void armPowerOnHome():380:380 -> c
-    298:299:void loadConfig():238 -> c
-    300:316:void armPowerOnHome():381:381 -> c
-    300:316:void loadConfig():238 -> c
-    317:321:void armPowerOnHome():383:383 -> c
-    317:321:void loadConfig():238 -> c
-    322:329:void armPowerOnHome():384:384 -> c
-    322:329:void loadConfig():238 -> c
-    330:339:void armPowerOnHome():391:391 -> c
-    330:339:void loadConfig():238 -> c
-    340:345:void loadConfig():245:245 -> c
-    346:361:void loadConfig():246:246 -> c
-    362:367:void loadConfig():247:247 -> c
-    368:370:void loadConfig():248:248 -> c
-    371:384:void loadConfig():250:250 -> c
-    385:395:void probeAtBoot():429:429 -> c
-    385:395:void loadConfig():250 -> c
-    396:401:void probeAtBoot():430:430 -> c
-    396:401:void loadConfig():250 -> c
-    402:419:void probeAtBoot():431:431 -> c
-    402:419:void loadConfig():250 -> c
-    420:430:void probeAtBoot():432:432 -> c
-    420:430:void loadConfig():250 -> c
-    431:439:void probeAtBoot():434:434 -> c
-    431:439:void loadConfig():250 -> c
-    440:443:void probeAtBoot():435:435 -> c
-    440:443:void loadConfig():250 -> c
-    444:446:void probeAtBoot():434:434 -> c
-    444:446:void loadConfig():250 -> c
-    447:449:void loadConfig():251:251 -> c
+    108:115:void loadConfig():225 -> c
+    116:117:void loadConfig():225:225 -> c
+    118:137:void loadConfig():226:226 -> c
+    138:142:void loadConfig():227:227 -> c
+    143:146:void loadConfig():228:228 -> c
+    147:152:void loadConfig():229:229 -> c
+    153:169:void loadConfig():230:230 -> c
+    170:195:void loadConfig():231:231 -> c
+    196:203:void loadConfig():232:232 -> c
+    204:209:void loadConfig():237:237 -> c
+    210:223:void loadConfig():238:238 -> c
+    224:240:void loadConfig():239:239 -> c
+    241:242:void loadConfig():240:240 -> c
+    243:258:void loadConfig():241:241 -> c
+    259:275:void loadConfig():242:242 -> c
+    276:279:void loadConfig():244:244 -> c
+    280:282:void loadConfig():245:245 -> c
+    283:286:void loadConfig():246:246 -> c
+    287:289:void loadConfig():247:247 -> c
+    290:297:void armPowerOnHome():384:384 -> c
+    290:297:void loadConfig():243 -> c
+    298:299:void armPowerOnHome():385:385 -> c
+    298:299:void loadConfig():243 -> c
+    300:316:void armPowerOnHome():386:386 -> c
+    300:316:void loadConfig():243 -> c
+    317:321:void armPowerOnHome():388:388 -> c
+    317:321:void loadConfig():243 -> c
+    322:329:void armPowerOnHome():389:389 -> c
+    322:329:void loadConfig():243 -> c
+    330:339:void armPowerOnHome():396:396 -> c
+    330:339:void loadConfig():243 -> c
+    340:345:void loadConfig():250:250 -> c
+    346:361:void loadConfig():251:251 -> c
+    362:367:void loadConfig():252:252 -> c
+    368:370:void loadConfig():253:253 -> c
+    371:384:void loadConfig():255:255 -> c
+    385:395:void probeAtBoot():434:434 -> c
+    385:395:void loadConfig():255 -> c
+    396:401:void probeAtBoot():435:435 -> c
+    396:401:void loadConfig():255 -> c
+    402:419:void probeAtBoot():436:436 -> c
+    402:419:void loadConfig():255 -> c
+    420:430:void probeAtBoot():437:437 -> c
+    420:430:void loadConfig():255 -> c
+    431:439:void probeAtBoot():439:439 -> c
+    431:439:void loadConfig():255 -> c
+    440:443:void probeAtBoot():440:440 -> c
+    440:443:void loadConfig():255 -> c
+    444:446:void probeAtBoot():439:439 -> c
+    444:446:void loadConfig():255 -> c
+    447:449:void loadConfig():256:256 -> c
     450:454:java.util.Map com.gathin.tvhome.RemoteKeys.parseHoldAppKeys(java.lang.Iterable):94:94 -> c
-    450:454:void loadConfig():252 -> c
+    450:454:void loadConfig():257 -> c
     455:464:java.util.Map com.gathin.tvhome.RemoteKeys.parseHoldAppKeys(java.lang.Iterable,java.util.function.ToIntFunction):98:98 -> c
     455:464:java.util.Map com.gathin.tvhome.RemoteKeys.parseHoldAppKeys(java.lang.Iterable):94 -> c
-    455:464:void loadConfig():252 -> c
-    465:466:void loadConfig():252:252 -> c
+    455:464:void loadConfig():257 -> c
+    465:466:void loadConfig():257:257 -> c
     467:474:java.util.Map com.gathin.tvhome.RemoteKeys.parseHoldAppScancodes(java.lang.Iterable):151:151 -> c
-    467:474:void loadConfig():253 -> c
-    475:476:void loadConfig():253:253 -> c
-    477:486:void loadConfig():255:255 -> c
-    487:493:void loadConfig():256:256 -> c
+    467:474:void loadConfig():258 -> c
+    475:476:void loadConfig():258:258 -> c
+    477:486:void loadConfig():260:260 -> c
+    487:493:void loadConfig():261:261 -> c
     494:498:void com.gathin.tvhome.GamepadPassthrough.start():27:27 -> c
-    494:498:void loadConfig():257 -> c
+    494:498:void loadConfig():262 -> c
     499:502:void com.gathin.tvhome.GamepadPassthrough.start():28:28 -> c
-    499:502:void loadConfig():257 -> c
-    0:18:boolean stockHomeStays():480:480 -> d
-    0:18:void openHome():465 -> d
-    19:27:boolean stockHomeStays():481:481 -> d
-    19:27:void openHome():465 -> d
-    28:33:boolean stockHomeStays():482:482 -> d
-    28:33:void openHome():465 -> d
-    34:39:boolean stockHomeStays():481:481 -> d
-    34:39:void openHome():465 -> d
-    40:51:boolean stockHomeStays():483:483 -> d
-    40:51:void openHome():465 -> d
-    52:59:void openHome():465:465 -> d
-    60:72:void openHome():466:466 -> d
-    73:78:void openHome():467:467 -> d
-    79:82:void openHome():468:468 -> d
-    83:86:void openHome():467:467 -> d
-    0:8:void onAccessibilityEvent(android.view.accessibility.AccessibilityEvent):338:338 -> onAccessibilityEvent
-    9:25:void onAccessibilityEvent(android.view.accessibility.AccessibilityEvent):340:340 -> onAccessibilityEvent
-    26:37:void onAccessibilityEvent(android.view.accessibility.AccessibilityEvent):341:341 -> onAccessibilityEvent
-    38:58:void onAccessibilityEvent(android.view.accessibility.AccessibilityEvent):343:343 -> onAccessibilityEvent
-    59:65:void onAccessibilityEvent(android.view.accessibility.AccessibilityEvent):344:344 -> onAccessibilityEvent
-    66:71:void onAccessibilityEvent(android.view.accessibility.AccessibilityEvent):345:345 -> onAccessibilityEvent
-    72:83:void onAccessibilityEvent(android.view.accessibility.AccessibilityEvent):350:350 -> onAccessibilityEvent
-    84:91:void onAccessibilityEvent(android.view.accessibility.AccessibilityEvent):351:351 -> onAccessibilityEvent
-    92:95:void onAccessibilityEvent(android.view.accessibility.AccessibilityEvent):352:352 -> onAccessibilityEvent
-    96:107:void onAccessibilityEvent(android.view.accessibility.AccessibilityEvent):353:353 -> onAccessibilityEvent
-    108:123:void onAccessibilityEvent(android.view.accessibility.AccessibilityEvent):354:354 -> onAccessibilityEvent
-    124:136:void onAccessibilityEvent(android.view.accessibility.AccessibilityEvent):356:356 -> onAccessibilityEvent
-    137:143:void onAccessibilityEvent(android.view.accessibility.AccessibilityEvent):357:357 -> onAccessibilityEvent
-    144:145:void onAccessibilityEvent(android.view.accessibility.AccessibilityEvent):358:358 -> onAccessibilityEvent
-    146:148:void onAccessibilityEvent(android.view.accessibility.AccessibilityEvent):359:359 -> onAccessibilityEvent
-    149:151:void onAccessibilityEvent(android.view.accessibility.AccessibilityEvent):360:360 -> onAccessibilityEvent
-    152:163:void onAccessibilityEvent(android.view.accessibility.AccessibilityEvent):365:365 -> onAccessibilityEvent
-    164:181:boolean powerOnRedirect(java.lang.String,java.lang.CharSequence,long,long):418:418 -> onAccessibilityEvent
-    164:181:void onAccessibilityEvent(android.view.accessibility.AccessibilityEvent):365 -> onAccessibilityEvent
-    182:185:void onAccessibilityEvent(android.view.accessibility.AccessibilityEvent):366:366 -> onAccessibilityEvent
-    186:189:void onAccessibilityEvent(android.view.accessibility.AccessibilityEvent):370:370 -> onAccessibilityEvent
-    190:213:void onAccessibilityEvent(android.view.accessibility.AccessibilityEvent):371:371 -> onAccessibilityEvent
-    0:6:void onDestroy():154:154 -> onDestroy
-    7:9:void onDestroy():155:155 -> onDestroy
+    499:502:void loadConfig():262 -> c
+    0:18:boolean stockHomeStays():485:485 -> d
+    0:18:void openHome():470 -> d
+    19:27:boolean stockHomeStays():486:486 -> d
+    19:27:void openHome():470 -> d
+    28:33:boolean stockHomeStays():487:487 -> d
+    28:33:void openHome():470 -> d
+    34:39:boolean stockHomeStays():486:486 -> d
+    34:39:void openHome():470 -> d
+    40:51:boolean stockHomeStays():488:488 -> d
+    40:51:void openHome():470 -> d
+    52:59:void openHome():470:470 -> d
+    60:72:void openHome():471:471 -> d
+    73:78:void openHome():472:472 -> d
+    79:82:void openHome():473:473 -> d
+    83:86:void openHome():472:472 -> d
+    0:8:void onAccessibilityEvent(android.view.accessibility.AccessibilityEvent):343:343 -> onAccessibilityEvent
+    9:25:void onAccessibilityEvent(android.view.accessibility.AccessibilityEvent):345:345 -> onAccessibilityEvent
+    26:37:void onAccessibilityEvent(android.view.accessibility.AccessibilityEvent):346:346 -> onAccessibilityEvent
+    38:58:void onAccessibilityEvent(android.view.accessibility.AccessibilityEvent):348:348 -> onAccessibilityEvent
+    59:65:void onAccessibilityEvent(android.view.accessibility.AccessibilityEvent):349:349 -> onAccessibilityEvent
+    66:71:void onAccessibilityEvent(android.view.accessibility.AccessibilityEvent):350:350 -> onAccessibilityEvent
+    72:83:void onAccessibilityEvent(android.view.accessibility.AccessibilityEvent):355:355 -> onAccessibilityEvent
+    84:91:void onAccessibilityEvent(android.view.accessibility.AccessibilityEvent):356:356 -> onAccessibilityEvent
+    92:95:void onAccessibilityEvent(android.view.accessibility.AccessibilityEvent):357:357 -> onAccessibilityEvent
+    96:107:void onAccessibilityEvent(android.view.accessibility.AccessibilityEvent):358:358 -> onAccessibilityEvent
+    108:123:void onAccessibilityEvent(android.view.accessibility.AccessibilityEvent):359:359 -> onAccessibilityEvent
+    124:136:void onAccessibilityEvent(android.view.accessibility.AccessibilityEvent):361:361 -> onAccessibilityEvent
+    137:143:void onAccessibilityEvent(android.view.accessibility.AccessibilityEvent):362:362 -> onAccessibilityEvent
+    144:145:void onAccessibilityEvent(android.view.accessibility.AccessibilityEvent):363:363 -> onAccessibilityEvent
+    146:148:void onAccessibilityEvent(android.view.accessibility.AccessibilityEvent):364:364 -> onAccessibilityEvent
+    149:151:void onAccessibilityEvent(android.view.accessibility.AccessibilityEvent):365:365 -> onAccessibilityEvent
+    152:163:void onAccessibilityEvent(android.view.accessibility.AccessibilityEvent):370:370 -> onAccessibilityEvent
+    164:181:boolean powerOnRedirect(java.lang.String,java.lang.CharSequence,long,long):423:423 -> onAccessibilityEvent
+    164:181:void onAccessibilityEvent(android.view.accessibility.AccessibilityEvent):370 -> onAccessibilityEvent
+    182:185:void onAccessibilityEvent(android.view.accessibility.AccessibilityEvent):371:371 -> onAccessibilityEvent
+    186:189:void onAccessibilityEvent(android.view.accessibility.AccessibilityEvent):375:375 -> onAccessibilityEvent
+    190:213:void onAccessibilityEvent(android.view.accessibility.AccessibilityEvent):376:376 -> onAccessibilityEvent
+    0:6:void onDestroy():159:159 -> onDestroy
+    7:9:void onDestroy():160:160 -> onDestroy
     10:14:void stopWaitingForUnlock():139:139 -> onDestroy
-    10:14:void onDestroy():156 -> onDestroy
+    10:14:void onDestroy():161 -> onDestroy
     15:17:void stopWaitingForUnlock():140:140 -> onDestroy
-    15:17:void onDestroy():156 -> onDestroy
+    15:17:void onDestroy():161 -> onDestroy
     18:19:void stopWaitingForUnlock():141:141 -> onDestroy
-    18:19:void onDestroy():156 -> onDestroy
-    20:23:void onDestroy():157:157 -> onDestroy
-    24:26:void onDestroy():159:159 -> onDestroy
-    27:28:void onDestroy():162:162 -> onDestroy
-    29:32:void onDestroy():164:164 -> onDestroy
-    33:35:void onDestroy():166:166 -> onDestroy
-    36:37:void onDestroy():169:169 -> onDestroy
-    38:41:void onDestroy():171:171 -> onDestroy
+    18:19:void onDestroy():161 -> onDestroy
+    20:23:void onDestroy():162:162 -> onDestroy
+    24:26:void onDestroy():164:164 -> onDestroy
+    27:28:void onDestroy():167:167 -> onDestroy
+    29:32:void onDestroy():169:169 -> onDestroy
+    33:35:void onDestroy():171:171 -> onDestroy
+    36:37:void onDestroy():174:174 -> onDestroy
+    38:41:void onDestroy():176:176 -> onDestroy
     42:46:void com.gathin.tvhome.GamepadPassthrough.stop():32:32 -> onDestroy
-    42:46:void onDestroy():171 -> onDestroy
-    47:50:void onDestroy():172:172 -> onDestroy
+    42:46:void onDestroy():176 -> onDestroy
+    47:50:void onDestroy():177:177 -> onDestroy
     51:61:void com.gathin.tvhome.VolumeKeys.stop():64:64 -> onDestroy
-    51:61:void onDestroy():172 -> onDestroy
+    51:61:void onDestroy():177 -> onDestroy
     62:63:void com.gathin.tvhome.VolumeKeys.stop():65:65 -> onDestroy
-    62:63:void onDestroy():172 -> onDestroy
-    64:67:void onDestroy():173:173 -> onDestroy
-    0:18:boolean onKeyEvent(android.view.KeyEvent):281:281 -> onKeyEvent
-    19:34:boolean onKeyEvent(android.view.KeyEvent):282:282 -> onKeyEvent
-    35:36:boolean onKeyEvent(android.view.KeyEvent):283:283 -> onKeyEvent
-    37:47:boolean onKeyEvent(android.view.KeyEvent):285:285 -> onKeyEvent
+    62:63:void onDestroy():177 -> onDestroy
+    64:67:void onDestroy():178:178 -> onDestroy
+    0:18:boolean onKeyEvent(android.view.KeyEvent):286:286 -> onKeyEvent
+    19:34:boolean onKeyEvent(android.view.KeyEvent):287:287 -> onKeyEvent
+    35:36:boolean onKeyEvent(android.view.KeyEvent):288:288 -> onKeyEvent
+    37:47:boolean onKeyEvent(android.view.KeyEvent):290:290 -> onKeyEvent
     48:51:boolean com.gathin.tvhome.ButtonMapper.handleKeyEvent(android.content.Context,android.view.KeyEvent):126:126 -> onKeyEvent
-    48:51:boolean onKeyEvent(android.view.KeyEvent):286 -> onKeyEvent
+    48:51:boolean onKeyEvent(android.view.KeyEvent):291 -> onKeyEvent
     52:66:boolean com.gathin.tvhome.ButtonMapper.handleKeyEvent(android.content.Context,android.view.KeyEvent):127:127 -> onKeyEvent
-    52:66:boolean onKeyEvent(android.view.KeyEvent):286 -> onKeyEvent
+    52:66:boolean onKeyEvent(android.view.KeyEvent):291 -> onKeyEvent
     67:72:boolean com.gathin.tvhome.ButtonMapper.handleKeyEvent(android.content.Context,android.view.KeyEvent):128:128 -> onKeyEvent
-    67:72:boolean onKeyEvent(android.view.KeyEvent):286 -> onKeyEvent
-    73:86:boolean onKeyEvent(android.view.KeyEvent):288:288 -> onKeyEvent
-    87:100:boolean onKeyEvent(android.view.KeyEvent):289:289 -> onKeyEvent
-    101:107:boolean onKeyEvent(android.view.KeyEvent):288:288 -> onKeyEvent
-    108:115:boolean onKeyEvent(android.view.KeyEvent):291:291 -> onKeyEvent
-    116:127:boolean onKeyEvent(android.view.KeyEvent):292:292 -> onKeyEvent
-    128:132:boolean tryNativeRecents():508:508 -> onKeyEvent
-    128:132:boolean onKeyEvent(android.view.KeyEvent):294 -> onKeyEvent
-    133:136:boolean tryNativeRecents():510:510 -> onKeyEvent
-    133:136:boolean onKeyEvent(android.view.KeyEvent):294 -> onKeyEvent
-    137:141:boolean tryNativeRecents():511:511 -> onKeyEvent
-    137:141:boolean onKeyEvent(android.view.KeyEvent):294 -> onKeyEvent
-    142:146:void openCustomRecents():535:535 -> onKeyEvent
-    142:146:boolean onKeyEvent(android.view.KeyEvent):295 -> onKeyEvent
-    147:150:void openCustomRecents():536:536 -> onKeyEvent
-    147:150:boolean onKeyEvent(android.view.KeyEvent):295 -> onKeyEvent
-    151:154:void openCustomRecents():538:538 -> onKeyEvent
-    151:154:boolean onKeyEvent(android.view.KeyEvent):295 -> onKeyEvent
-    155:164:boolean isSettingsKey(android.view.KeyEvent):269:269 -> onKeyEvent
-    155:164:boolean onKeyEvent(android.view.KeyEvent):301 -> onKeyEvent
-    165:172:boolean isSettingsKey(android.view.KeyEvent):270:270 -> onKeyEvent
-    165:172:boolean onKeyEvent(android.view.KeyEvent):301 -> onKeyEvent
-    173:180:boolean isSettingsKey(android.view.KeyEvent):271:271 -> onKeyEvent
-    173:180:boolean onKeyEvent(android.view.KeyEvent):301 -> onKeyEvent
-    181:190:boolean isSettingsKey(android.view.KeyEvent):272:272 -> onKeyEvent
-    181:190:boolean onKeyEvent(android.view.KeyEvent):301 -> onKeyEvent
-    191:208:boolean isSettingsKey(android.view.KeyEvent):273:273 -> onKeyEvent
-    191:208:boolean onKeyEvent(android.view.KeyEvent):301 -> onKeyEvent
-    209:226:boolean isSettingsKey(android.view.KeyEvent):274:274 -> onKeyEvent
-    209:226:boolean onKeyEvent(android.view.KeyEvent):301 -> onKeyEvent
-    227:240:boolean onKeyEvent(android.view.KeyEvent):313:313 -> onKeyEvent
-    241:254:boolean onKeyEvent(android.view.KeyEvent):314:314 -> onKeyEvent
-    255:261:boolean onKeyEvent(android.view.KeyEvent):313:313 -> onKeyEvent
-    262:271:boolean onKeyEvent(android.view.KeyEvent):316:316 -> onKeyEvent
-    272:287:boolean onKeyEvent(android.view.KeyEvent):317:317 -> onKeyEvent
-    288:301:boolean onKeyEvent(android.view.KeyEvent):320:320 -> onKeyEvent
-    302:313:void redirectHomeKey(android.view.KeyEvent):454:454 -> onKeyEvent
-    302:313:boolean onKeyEvent(android.view.KeyEvent):321 -> onKeyEvent
-    314:331:void redirectHomeKey(android.view.KeyEvent):455:455 -> onKeyEvent
-    314:331:boolean onKeyEvent(android.view.KeyEvent):321 -> onKeyEvent
-    332:344:void redirectHomeKey(android.view.KeyEvent):456:456 -> onKeyEvent
-    332:344:boolean onKeyEvent(android.view.KeyEvent):321 -> onKeyEvent
-    345:353:boolean onKeyEvent(android.view.KeyEvent):324:324 -> onKeyEvent
-    354:369:boolean onKeyEvent(android.view.KeyEvent):325:325 -> onKeyEvent
-    370:381:boolean onKeyEvent(android.view.KeyEvent):302:302 -> onKeyEvent
-    382:391:boolean onKeyEvent(android.view.KeyEvent):303:303 -> onKeyEvent
-    392:395:boolean onKeyEvent(android.view.KeyEvent):304:304 -> onKeyEvent
-    396:406:boolean onKeyEvent(android.view.KeyEvent):306:306 -> onKeyEvent
-    407:414:boolean onKeyEvent(android.view.KeyEvent):308:308 -> onKeyEvent
+    67:72:boolean onKeyEvent(android.view.KeyEvent):291 -> onKeyEvent
+    73:86:boolean onKeyEvent(android.view.KeyEvent):293:293 -> onKeyEvent
+    87:100:boolean onKeyEvent(android.view.KeyEvent):294:294 -> onKeyEvent
+    101:107:boolean onKeyEvent(android.view.KeyEvent):293:293 -> onKeyEvent
+    108:115:boolean onKeyEvent(android.view.KeyEvent):296:296 -> onKeyEvent
+    116:127:boolean onKeyEvent(android.view.KeyEvent):297:297 -> onKeyEvent
+    128:132:boolean tryNativeRecents():513:513 -> onKeyEvent
+    128:132:boolean onKeyEvent(android.view.KeyEvent):299 -> onKeyEvent
+    133:136:boolean tryNativeRecents():515:515 -> onKeyEvent
+    133:136:boolean onKeyEvent(android.view.KeyEvent):299 -> onKeyEvent
+    137:141:boolean tryNativeRecents():516:516 -> onKeyEvent
+    137:141:boolean onKeyEvent(android.view.KeyEvent):299 -> onKeyEvent
+    142:146:void openCustomRecents():540:540 -> onKeyEvent
+    142:146:boolean onKeyEvent(android.view.KeyEvent):300 -> onKeyEvent
+    147:150:void openCustomRecents():541:541 -> onKeyEvent
+    147:150:boolean onKeyEvent(android.view.KeyEvent):300 -> onKeyEvent
+    151:154:void openCustomRecents():543:543 -> onKeyEvent
+    151:154:boolean onKeyEvent(android.view.KeyEvent):300 -> onKeyEvent
+    155:164:boolean isSettingsKey(android.view.KeyEvent):274:274 -> onKeyEvent
+    155:164:boolean onKeyEvent(android.view.KeyEvent):306 -> onKeyEvent
+    165:172:boolean isSettingsKey(android.view.KeyEvent):275:275 -> onKeyEvent
+    165:172:boolean onKeyEvent(android.view.KeyEvent):306 -> onKeyEvent
+    173:180:boolean isSettingsKey(android.view.KeyEvent):276:276 -> onKeyEvent
+    173:180:boolean onKeyEvent(android.view.KeyEvent):306 -> onKeyEvent
+    181:190:boolean isSettingsKey(android.view.KeyEvent):277:277 -> onKeyEvent
+    181:190:boolean onKeyEvent(android.view.KeyEvent):306 -> onKeyEvent
+    191:208:boolean isSettingsKey(android.view.KeyEvent):278:278 -> onKeyEvent
+    191:208:boolean onKeyEvent(android.view.KeyEvent):306 -> onKeyEvent
+    209:226:boolean isSettingsKey(android.view.KeyEvent):279:279 -> onKeyEvent
+    209:226:boolean onKeyEvent(android.view.KeyEvent):306 -> onKeyEvent
+    227:240:boolean onKeyEvent(android.view.KeyEvent):318:318 -> onKeyEvent
+    241:254:boolean onKeyEvent(android.view.KeyEvent):319:319 -> onKeyEvent
+    255:261:boolean onKeyEvent(android.view.KeyEvent):318:318 -> onKeyEvent
+    262:271:boolean onKeyEvent(android.view.KeyEvent):321:321 -> onKeyEvent
+    272:287:boolean onKeyEvent(android.view.KeyEvent):322:322 -> onKeyEvent
+    288:301:boolean onKeyEvent(android.view.KeyEvent):325:325 -> onKeyEvent
+    302:313:void redirectHomeKey(android.view.KeyEvent):459:459 -> onKeyEvent
+    302:313:boolean onKeyEvent(android.view.KeyEvent):326 -> onKeyEvent
+    314:331:void redirectHomeKey(android.view.KeyEvent):460:460 -> onKeyEvent
+    314:331:boolean onKeyEvent(android.view.KeyEvent):326 -> onKeyEvent
+    332:344:void redirectHomeKey(android.view.KeyEvent):461:461 -> onKeyEvent
+    332:344:boolean onKeyEvent(android.view.KeyEvent):326 -> onKeyEvent
+    345:353:boolean onKeyEvent(android.view.KeyEvent):329:329 -> onKeyEvent
+    354:369:boolean onKeyEvent(android.view.KeyEvent):330:330 -> onKeyEvent
+    370:381:boolean onKeyEvent(android.view.KeyEvent):307:307 -> onKeyEvent
+    382:391:boolean onKeyEvent(android.view.KeyEvent):308:308 -> onKeyEvent
+    392:395:boolean onKeyEvent(android.view.KeyEvent):309:309 -> onKeyEvent
+    396:406:boolean onKeyEvent(android.view.KeyEvent):311:311 -> onKeyEvent
+    407:414:boolean onKeyEvent(android.view.KeyEvent):313:313 -> onKeyEvent
     415:426:boolean com.gathin.tvhome.ButtonMapper.handleKeyEvent(android.content.Context,android.view.KeyEvent):131:131 -> onKeyEvent
-    415:426:boolean onKeyEvent(android.view.KeyEvent):286 -> onKeyEvent
+    415:426:boolean onKeyEvent(android.view.KeyEvent):291 -> onKeyEvent
     427:434:void com.gathin.tvhome.ButtonMapper.executeTarget(android.content.Context,java.lang.String):139:139 -> onKeyEvent
     427:434:boolean com.gathin.tvhome.ButtonMapper.handleKeyEvent(android.content.Context,android.view.KeyEvent):132 -> onKeyEvent
-    427:434:boolean onKeyEvent(android.view.KeyEvent):286 -> onKeyEvent
+    427:434:boolean onKeyEvent(android.view.KeyEvent):291 -> onKeyEvent
     435:528:void com.gathin.tvhome.ButtonMapper.executeTarget(android.content.Context,java.lang.String):140:140 -> onKeyEvent
     435:528:boolean com.gathin.tvhome.ButtonMapper.handleKeyEvent(android.content.Context,android.view.KeyEvent):132 -> onKeyEvent
-    435:528:boolean onKeyEvent(android.view.KeyEvent):286 -> onKeyEvent
+    435:528:boolean onKeyEvent(android.view.KeyEvent):291 -> onKeyEvent
     529:532:void com.gathin.tvhome.ButtonMapper.executeTarget(android.content.Context,java.lang.String):170:170 -> onKeyEvent
     529:532:boolean com.gathin.tvhome.ButtonMapper.handleKeyEvent(android.content.Context,android.view.KeyEvent):132 -> onKeyEvent
-    529:532:boolean onKeyEvent(android.view.KeyEvent):286 -> onKeyEvent
+    529:532:boolean onKeyEvent(android.view.KeyEvent):291 -> onKeyEvent
     533:536:void com.gathin.tvhome.ButtonMapper.executeTarget(android.content.Context,java.lang.String):171:171 -> onKeyEvent
     533:536:boolean com.gathin.tvhome.ButtonMapper.handleKeyEvent(android.content.Context,android.view.KeyEvent):132 -> onKeyEvent
-    533:536:boolean onKeyEvent(android.view.KeyEvent):286 -> onKeyEvent
+    533:536:boolean onKeyEvent(android.view.KeyEvent):291 -> onKeyEvent
     537:540:void com.gathin.tvhome.ButtonMapper.executeTarget(android.content.Context,java.lang.String):170:170 -> onKeyEvent
     537:540:boolean com.gathin.tvhome.ButtonMapper.handleKeyEvent(android.content.Context,android.view.KeyEvent):132 -> onKeyEvent
-    537:540:boolean onKeyEvent(android.view.KeyEvent):286 -> onKeyEvent
+    537:540:boolean onKeyEvent(android.view.KeyEvent):291 -> onKeyEvent
     541:545:void com.gathin.tvhome.ButtonMapper.executeTarget(android.content.Context,java.lang.String):142:142 -> onKeyEvent
     541:545:boolean com.gathin.tvhome.ButtonMapper.handleKeyEvent(android.content.Context,android.view.KeyEvent):132 -> onKeyEvent
-    541:545:boolean onKeyEvent(android.view.KeyEvent):286 -> onKeyEvent
+    541:545:boolean onKeyEvent(android.view.KeyEvent):291 -> onKeyEvent
     546:549:void com.gathin.tvhome.ButtonMapper.executeTarget(android.content.Context,java.lang.String):143:143 -> onKeyEvent
     546:549:boolean com.gathin.tvhome.ButtonMapper.handleKeyEvent(android.content.Context,android.view.KeyEvent):132 -> onKeyEvent
-    546:549:boolean onKeyEvent(android.view.KeyEvent):286 -> onKeyEvent
+    546:549:boolean onKeyEvent(android.view.KeyEvent):291 -> onKeyEvent
     550:553:void com.gathin.tvhome.ButtonMapper.executeTarget(android.content.Context,java.lang.String):142:142 -> onKeyEvent
     550:553:boolean com.gathin.tvhome.ButtonMapper.handleKeyEvent(android.content.Context,android.view.KeyEvent):132 -> onKeyEvent
-    550:553:boolean onKeyEvent(android.view.KeyEvent):286 -> onKeyEvent
+    550:553:boolean onKeyEvent(android.view.KeyEvent):291 -> onKeyEvent
     554:559:void com.gathin.tvhome.ButtonMapper.executeTarget(android.content.Context,java.lang.String):158:158 -> onKeyEvent
     554:559:boolean com.gathin.tvhome.ButtonMapper.handleKeyEvent(android.content.Context,android.view.KeyEvent):132 -> onKeyEvent
-    554:559:boolean onKeyEvent(android.view.KeyEvent):286 -> onKeyEvent
+    554:559:boolean onKeyEvent(android.view.KeyEvent):291 -> onKeyEvent
     560:566:void com.gathin.tvhome.ButtonMapper.executeTarget(android.content.Context,java.lang.String):152:152 -> onKeyEvent
     560:566:boolean com.gathin.tvhome.ButtonMapper.handleKeyEvent(android.content.Context,android.view.KeyEvent):132 -> onKeyEvent
-    560:566:boolean onKeyEvent(android.view.KeyEvent):286 -> onKeyEvent
+    560:566:boolean onKeyEvent(android.view.KeyEvent):291 -> onKeyEvent
     567:570:void com.gathin.tvhome.ButtonMapper.executeTarget(android.content.Context,java.lang.String):153:153 -> onKeyEvent
     567:570:boolean com.gathin.tvhome.ButtonMapper.handleKeyEvent(android.content.Context,android.view.KeyEvent):132 -> onKeyEvent
-    567:570:boolean onKeyEvent(android.view.KeyEvent):286 -> onKeyEvent
+    567:570:boolean onKeyEvent(android.view.KeyEvent):291 -> onKeyEvent
     571:574:void com.gathin.tvhome.ButtonMapper.executeTarget(android.content.Context,java.lang.String):154:154 -> onKeyEvent
     571:574:boolean com.gathin.tvhome.ButtonMapper.handleKeyEvent(android.content.Context,android.view.KeyEvent):132 -> onKeyEvent
-    571:574:boolean onKeyEvent(android.view.KeyEvent):286 -> onKeyEvent
+    571:574:boolean onKeyEvent(android.view.KeyEvent):291 -> onKeyEvent
     575:578:void com.gathin.tvhome.ButtonMapper.executeTarget(android.content.Context,java.lang.String):152:152 -> onKeyEvent
     575:578:boolean com.gathin.tvhome.ButtonMapper.handleKeyEvent(android.content.Context,android.view.KeyEvent):132 -> onKeyEvent
-    575:578:boolean onKeyEvent(android.view.KeyEvent):286 -> onKeyEvent
-    579:585:boolean isServiceBound():495:495 -> onKeyEvent
+    575:578:boolean onKeyEvent(android.view.KeyEvent):291 -> onKeyEvent
+    579:585:boolean isServiceBound():500:500 -> onKeyEvent
     579:585:void com.gathin.tvhome.ButtonMapper.executeTarget(android.content.Context,java.lang.String):176 -> onKeyEvent
     579:585:boolean com.gathin.tvhome.ButtonMapper.handleKeyEvent(android.content.Context,android.view.KeyEvent):132 -> onKeyEvent
-    579:585:boolean onKeyEvent(android.view.KeyEvent):286 -> onKeyEvent
-    586:589:boolean tryNativeRecents():510:510 -> onKeyEvent
+    579:585:boolean onKeyEvent(android.view.KeyEvent):291 -> onKeyEvent
+    586:589:boolean tryNativeRecents():515:515 -> onKeyEvent
     586:589:void com.gathin.tvhome.ButtonMapper.executeTarget(android.content.Context,java.lang.String):176 -> onKeyEvent
     586:589:boolean com.gathin.tvhome.ButtonMapper.handleKeyEvent(android.content.Context,android.view.KeyEvent):132 -> onKeyEvent
-    586:589:boolean onKeyEvent(android.view.KeyEvent):286 -> onKeyEvent
-    590:594:boolean tryNativeRecents():511:511 -> onKeyEvent
+    586:589:boolean onKeyEvent(android.view.KeyEvent):291 -> onKeyEvent
+    590:594:boolean tryNativeRecents():516:516 -> onKeyEvent
     590:594:void com.gathin.tvhome.ButtonMapper.executeTarget(android.content.Context,java.lang.String):176 -> onKeyEvent
     590:594:boolean com.gathin.tvhome.ButtonMapper.handleKeyEvent(android.content.Context,android.view.KeyEvent):132 -> onKeyEvent
-    590:594:boolean onKeyEvent(android.view.KeyEvent):286 -> onKeyEvent
+    590:594:boolean onKeyEvent(android.view.KeyEvent):291 -> onKeyEvent
     595:599:void com.gathin.tvhome.ButtonMapper.executeTarget(android.content.Context,java.lang.String):177:177 -> onKeyEvent
     595:599:boolean com.gathin.tvhome.ButtonMapper.handleKeyEvent(android.content.Context,android.view.KeyEvent):132 -> onKeyEvent
-    595:599:boolean onKeyEvent(android.view.KeyEvent):286 -> onKeyEvent
+    595:599:boolean onKeyEvent(android.view.KeyEvent):291 -> onKeyEvent
     600:603:void com.gathin.tvhome.ButtonMapper.executeTarget(android.content.Context,java.lang.String):178:178 -> onKeyEvent
     600:603:boolean com.gathin.tvhome.ButtonMapper.handleKeyEvent(android.content.Context,android.view.KeyEvent):132 -> onKeyEvent
-    600:603:boolean onKeyEvent(android.view.KeyEvent):286 -> onKeyEvent
+    600:603:boolean onKeyEvent(android.view.KeyEvent):291 -> onKeyEvent
     604:607:void com.gathin.tvhome.ButtonMapper.executeTarget(android.content.Context,java.lang.String):177:177 -> onKeyEvent
     604:607:boolean com.gathin.tvhome.ButtonMapper.handleKeyEvent(android.content.Context,android.view.KeyEvent):132 -> onKeyEvent
-    604:607:boolean onKeyEvent(android.view.KeyEvent):286 -> onKeyEvent
+    604:607:boolean onKeyEvent(android.view.KeyEvent):291 -> onKeyEvent
     608:613:void com.gathin.tvhome.ButtonMapper.executeTarget(android.content.Context,java.lang.String):146:146 -> onKeyEvent
     608:613:boolean com.gathin.tvhome.ButtonMapper.handleKeyEvent(android.content.Context,android.view.KeyEvent):132 -> onKeyEvent
-    608:613:boolean onKeyEvent(android.view.KeyEvent):286 -> onKeyEvent
+    608:613:boolean onKeyEvent(android.view.KeyEvent):291 -> onKeyEvent
     614:620:void com.gathin.tvhome.ButtonMapper.executeTarget(android.content.Context,java.lang.String):164:164 -> onKeyEvent
     614:620:boolean com.gathin.tvhome.ButtonMapper.handleKeyEvent(android.content.Context,android.view.KeyEvent):132 -> onKeyEvent
-    614:620:boolean onKeyEvent(android.view.KeyEvent):286 -> onKeyEvent
+    614:620:boolean onKeyEvent(android.view.KeyEvent):291 -> onKeyEvent
     621:624:void com.gathin.tvhome.ButtonMapper.executeTarget(android.content.Context,java.lang.String):165:165 -> onKeyEvent
     621:624:boolean com.gathin.tvhome.ButtonMapper.handleKeyEvent(android.content.Context,android.view.KeyEvent):132 -> onKeyEvent
-    621:624:boolean onKeyEvent(android.view.KeyEvent):286 -> onKeyEvent
+    621:624:boolean onKeyEvent(android.view.KeyEvent):291 -> onKeyEvent
     625:628:void com.gathin.tvhome.ButtonMapper.executeTarget(android.content.Context,java.lang.String):166:166 -> onKeyEvent
     625:628:boolean com.gathin.tvhome.ButtonMapper.handleKeyEvent(android.content.Context,android.view.KeyEvent):132 -> onKeyEvent
-    625:628:boolean onKeyEvent(android.view.KeyEvent):286 -> onKeyEvent
+    625:628:boolean onKeyEvent(android.view.KeyEvent):291 -> onKeyEvent
     629:632:void com.gathin.tvhome.ButtonMapper.executeTarget(android.content.Context,java.lang.String):164:164 -> onKeyEvent
     629:632:boolean com.gathin.tvhome.ButtonMapper.handleKeyEvent(android.content.Context,android.view.KeyEvent):132 -> onKeyEvent
-    629:632:boolean onKeyEvent(android.view.KeyEvent):286 -> onKeyEvent
+    629:632:boolean onKeyEvent(android.view.KeyEvent):291 -> onKeyEvent
     633:637:void com.gathin.tvhome.ButtonMapper.executeTarget(android.content.Context,java.lang.String):183:183 -> onKeyEvent
     633:637:boolean com.gathin.tvhome.ButtonMapper.handleKeyEvent(android.content.Context,android.view.KeyEvent):132 -> onKeyEvent
-    633:637:boolean onKeyEvent(android.view.KeyEvent):286 -> onKeyEvent
+    633:637:boolean onKeyEvent(android.view.KeyEvent):291 -> onKeyEvent
     0:2:void onServiceConnected():109:109 -> onServiceConnected
     3:4:void onServiceConnected():110:110 -> onServiceConnected
     5:10:void onServiceConnected():113:113 -> onServiceConnected
@@ -22089,8 +22089,8 @@ com.gathin.tvhome.HomeKeyService -> com.gathin.tvhome.HomeKeyService:
     75:76:void stopWaitingForUnlock():141:141 -> onServiceConnected
     75:76:void onServiceConnected():133 -> onServiceConnected
     77:80:void onServiceConnected():134:134 -> onServiceConnected
-    0:2:boolean onUnbind(android.content.Intent):332:332 -> onUnbind
-    3:7:boolean onUnbind(android.content.Intent):333:333 -> onUnbind
+    0:2:boolean onUnbind(android.content.Intent):337:337 -> onUnbind
+    3:7:boolean onUnbind(android.content.Intent):338:338 -> onUnbind
 com.gathin.tvhome.HomeKeyService$$ExternalSyntheticLambda0 -> v1:
 # {"id":"sourceFile","fileName":"R8$$SyntheticClass"}
 # {"id":"com.android.tools.r8.synthesized"}
@@ -22100,7 +22100,7 @@ com.gathin.tvhome.HomeKeyService$$ExternalSyntheticLambda0 -> v1:
       # {"id":"com.android.tools.r8.synthesized"}
     0:7:void HomeKeyService$$ExternalSyntheticLambda0.<init>(com.gathin.tvhome.HomeKeyService,int):0:0 -> <init>
       # {"id":"com.android.tools.r8.synthesized"}
-    18:31:void com.gathin.tvhome.HomeKeyService.homeAtPowerOn():399:399 -> run
+    18:31:void com.gathin.tvhome.HomeKeyService.homeAtPowerOn():404:404 -> run
 com.gathin.tvhome.HomeKeyService$1 -> w1:
 # {"id":"sourceFile","fileName":"HomeKeyService.java"}
     int HomeKeyService$1.$r8$classId -> a
@@ -22108,33 +22108,33 @@ com.gathin.tvhome.HomeKeyService$1 -> w1:
     com.gathin.tvhome.HomeKeyService this$0 -> b
     0:7:void HomeKeyService$1.<init>(com.gathin.tvhome.HomeKeyService,int):0:0 -> <init>
       # {"id":"com.android.tools.r8.synthesized"}
-    8:17:void com.gathin.tvhome.HomeKeyService$3.onReceive(android.content.Context,android.content.Intent):387:387 -> onReceive
-    18:34:void com.gathin.tvhome.HomeKeyService$3.onReceive(android.content.Context,android.content.Intent):388:388 -> onReceive
-    35:47:void com.gathin.tvhome.HomeKeyService$2.onReceive(android.content.Context,android.content.Intent):182:182 -> onReceive
-    48:49:void com.gathin.tvhome.HomeKeyService$2.onReceive(android.content.Context,android.content.Intent):183:183 -> onReceive
+    8:17:void com.gathin.tvhome.HomeKeyService$3.onReceive(android.content.Context,android.content.Intent):392:392 -> onReceive
+    18:34:void com.gathin.tvhome.HomeKeyService$3.onReceive(android.content.Context,android.content.Intent):393:393 -> onReceive
+    35:47:void com.gathin.tvhome.HomeKeyService$2.onReceive(android.content.Context,android.content.Intent):187:187 -> onReceive
+    48:49:void com.gathin.tvhome.HomeKeyService$2.onReceive(android.content.Context,android.content.Intent):188:188 -> onReceive
     50:53:void com.gathin.tvhome.GuardKeep.stepOut(android.accessibilityservice.AccessibilityService):88:88 -> onReceive
-    50:53:void com.gathin.tvhome.HomeKeyService.leaveForStandby():202 -> onReceive
-    50:53:void com.gathin.tvhome.HomeKeyService$2.onReceive(android.content.Context,android.content.Intent):183 -> onReceive
+    50:53:void com.gathin.tvhome.HomeKeyService.leaveForStandby():207 -> onReceive
+    50:53:void com.gathin.tvhome.HomeKeyService$2.onReceive(android.content.Context,android.content.Intent):188 -> onReceive
       # {"id":"com.android.tools.r8.rewriteFrame","conditions":["throws(Ljava/lang/NullPointerException;)"],"actions":["removeInnerFrames(2)"]}
     54:58:void com.gathin.tvhome.GuardKeep.watchScreenOn(android.content.Context):93:93 -> onReceive
     54:58:void com.gathin.tvhome.GuardKeep.stepOut(android.accessibilityservice.AccessibilityService):88 -> onReceive
-    54:58:void com.gathin.tvhome.HomeKeyService.leaveForStandby():202 -> onReceive
-    54:58:void com.gathin.tvhome.HomeKeyService$2.onReceive(android.content.Context,android.content.Intent):183 -> onReceive
+    54:58:void com.gathin.tvhome.HomeKeyService.leaveForStandby():207 -> onReceive
+    54:58:void com.gathin.tvhome.HomeKeyService$2.onReceive(android.content.Context,android.content.Intent):188 -> onReceive
     59:63:void com.gathin.tvhome.GuardKeep.watchScreenOn(android.content.Context):94:94 -> onReceive
     59:63:void com.gathin.tvhome.GuardKeep.stepOut(android.accessibilityservice.AccessibilityService):88 -> onReceive
-    59:63:void com.gathin.tvhome.HomeKeyService.leaveForStandby():202 -> onReceive
-    59:63:void com.gathin.tvhome.HomeKeyService$2.onReceive(android.content.Context,android.content.Intent):183 -> onReceive
+    59:63:void com.gathin.tvhome.HomeKeyService.leaveForStandby():207 -> onReceive
+    59:63:void com.gathin.tvhome.HomeKeyService$2.onReceive(android.content.Context,android.content.Intent):188 -> onReceive
     64:65:void com.gathin.tvhome.GuardKeep.watchScreenOn(android.content.Context):106:106 -> onReceive
     64:65:void com.gathin.tvhome.GuardKeep.stepOut(android.accessibilityservice.AccessibilityService):88 -> onReceive
-    64:65:void com.gathin.tvhome.HomeKeyService.leaveForStandby():202 -> onReceive
-    64:65:void com.gathin.tvhome.HomeKeyService$2.onReceive(android.content.Context,android.content.Intent):183 -> onReceive
+    64:65:void com.gathin.tvhome.HomeKeyService.leaveForStandby():207 -> onReceive
+    64:65:void com.gathin.tvhome.HomeKeyService$2.onReceive(android.content.Context,android.content.Intent):188 -> onReceive
     66:75:void com.gathin.tvhome.GuardKeep.watchScreenOn(android.content.Context):107:107 -> onReceive
     66:75:void com.gathin.tvhome.GuardKeep.stepOut(android.accessibilityservice.AccessibilityService):88 -> onReceive
-    66:75:void com.gathin.tvhome.HomeKeyService.leaveForStandby():202 -> onReceive
-    66:75:void com.gathin.tvhome.HomeKeyService$2.onReceive(android.content.Context,android.content.Intent):183 -> onReceive
+    66:75:void com.gathin.tvhome.HomeKeyService.leaveForStandby():207 -> onReceive
+    66:75:void com.gathin.tvhome.HomeKeyService$2.onReceive(android.content.Context,android.content.Intent):188 -> onReceive
     76:79:void com.gathin.tvhome.GuardKeep.stepOut(android.accessibilityservice.AccessibilityService):89:89 -> onReceive
-    76:79:void com.gathin.tvhome.HomeKeyService.leaveForStandby():202 -> onReceive
-    76:79:void com.gathin.tvhome.HomeKeyService$2.onReceive(android.content.Context,android.content.Intent):183 -> onReceive
+    76:79:void com.gathin.tvhome.HomeKeyService.leaveForStandby():207 -> onReceive
+    76:79:void com.gathin.tvhome.HomeKeyService$2.onReceive(android.content.Context,android.content.Intent):188 -> onReceive
     80:81:void onReceive(android.content.Context,android.content.Intent):126:126 -> onReceive
     82:86:void com.gathin.tvhome.HomeKeyService.stopWaitingForUnlock():139:139 -> onReceive
     82:86:void onReceive(android.content.Context,android.content.Intent):126 -> onReceive
@@ -22169,74 +22169,77 @@ com.gathin.tvhome.InputKeyService -> com.gathin.tvhome.InputKeyService:
     boolean consumeVolumeKeys -> f
     com.gathin.tvhome.GamepadPassthrough gamepads -> g
       # {"id":"com.android.tools.r8.residualsignature","signature":"Lm1;"}
+    com.gathin.tvhome.InputKeyService running -> h
     0:3:void <init>():19:19 -> <init>
     4:7:void <init>():23:23 -> <init>
     8:13:void <init>():24:24 -> <init>
     14:19:void <init>():25:25 -> <init>
     20:25:void <init>():26:26 -> <init>
     26:32:void <init>():27:27 -> <init>
-    0:2:void onDestroy():90:90 -> onDestroy
-    3:6:void onDestroy():91:91 -> onDestroy
-    7:11:void com.gathin.tvhome.GamepadPassthrough.stop():32:32 -> onDestroy
-    7:11:void onDestroy():91 -> onDestroy
-    12:15:void onDestroy():92:92 -> onDestroy
-    16:27:void com.gathin.tvhome.VolumeKeys.stop():64:64 -> onDestroy
-    16:27:void onDestroy():92 -> onDestroy
-    28:29:void com.gathin.tvhome.VolumeKeys.stop():65:65 -> onDestroy
-    28:29:void onDestroy():92 -> onDestroy
-    30:33:void onDestroy():93:93 -> onDestroy
-    0:11:boolean onKeyEvent(android.view.KeyEvent):65:65 -> onKeyEvent
-    12:29:boolean onKeyEvent(android.view.KeyEvent):67:67 -> onKeyEvent
-    30:43:boolean onKeyEvent(android.view.KeyEvent):68:68 -> onKeyEvent
-    44:50:boolean onKeyEvent(android.view.KeyEvent):67:67 -> onKeyEvent
-    51:68:boolean onKeyEvent(android.view.KeyEvent):69:69 -> onKeyEvent
-    69:82:boolean onKeyEvent(android.view.KeyEvent):70:70 -> onKeyEvent
-    83:89:boolean onKeyEvent(android.view.KeyEvent):69:69 -> onKeyEvent
-    90:102:boolean onKeyEvent(android.view.KeyEvent):71:71 -> onKeyEvent
-    103:118:boolean isInputKey(int):59:59 -> onKeyEvent
-    103:118:boolean onKeyEvent(android.view.KeyEvent):71 -> onKeyEvent
-    119:130:boolean onKeyEvent(android.view.KeyEvent):72:72 -> onKeyEvent
-    131:147:boolean onKeyEvent(android.view.KeyEvent):74:74 -> onKeyEvent
-    0:2:void onServiceConnected():37:37 -> onServiceConnected
-    3:6:void onServiceConnected():39:39 -> onServiceConnected
-    7:10:void onServiceConnected():41:41 -> onServiceConnected
-    11:14:void onServiceConnected():42:42 -> onServiceConnected
-    15:21:android.content.SharedPreferences com.gathin.tvhome.ServiceRepair.prefs(android.content.Context):108:108 -> onServiceConnected
-    15:21:void com.gathin.tvhome.ServiceRepair.connected(android.content.Context,java.lang.Class):30 -> onServiceConnected
-    15:21:void onServiceConnected():42 -> onServiceConnected
-    22:37:void com.gathin.tvhome.ServiceRepair.connected(android.content.Context,java.lang.Class):30:30 -> onServiceConnected
-    22:37:void onServiceConnected():42 -> onServiceConnected
-    38:41:void onServiceConnected():43:43 -> onServiceConnected
-    42:45:void onServiceConnected():44:44 -> onServiceConnected
-    46:56:java.util.Map com.gathin.tvhome.RemoteKeys.parseAppKeys(java.lang.Iterable):60:60 -> onServiceConnected
-    46:56:void onServiceConnected():45 -> onServiceConnected
-    57:58:void onServiceConnected():45:45 -> onServiceConnected
-    59:64:void onServiceConnected():46:46 -> onServiceConnected
-    65:69:void com.gathin.tvhome.RemoteKeys.applyKeyFilter(android.accessibilityservice.AccessibilityService,boolean):122:122 -> onServiceConnected
-    65:69:void onServiceConnected():47 -> onServiceConnected
-    70:76:void com.gathin.tvhome.RemoteKeys.applyKeyFilter(android.accessibilityservice.AccessibilityService,boolean):123:123 -> onServiceConnected
-    70:76:void onServiceConnected():47 -> onServiceConnected
-    77:82:void com.gathin.tvhome.RemoteKeys.applyKeyFilter(android.accessibilityservice.AccessibilityService,boolean):125:125 -> onServiceConnected
-    77:82:void onServiceConnected():47 -> onServiceConnected
-    83:85:void com.gathin.tvhome.RemoteKeys.applyKeyFilter(android.accessibilityservice.AccessibilityService,boolean):126:126 -> onServiceConnected
-    83:85:void onServiceConnected():47 -> onServiceConnected
-    86:90:java.util.Map com.gathin.tvhome.RemoteKeys.parseHoldAppKeys(java.lang.Iterable):94:94 -> onServiceConnected
-    86:90:void onServiceConnected():48 -> onServiceConnected
-    91:100:java.util.Map com.gathin.tvhome.RemoteKeys.parseHoldAppKeys(java.lang.Iterable,java.util.function.ToIntFunction):98:98 -> onServiceConnected
-    91:100:java.util.Map com.gathin.tvhome.RemoteKeys.parseHoldAppKeys(java.lang.Iterable):94 -> onServiceConnected
-    91:100:void onServiceConnected():48 -> onServiceConnected
-    101:102:void onServiceConnected():48:48 -> onServiceConnected
-    103:110:java.util.Map com.gathin.tvhome.RemoteKeys.parseHoldAppScancodes(java.lang.Iterable):151:151 -> onServiceConnected
-    103:110:void onServiceConnected():49 -> onServiceConnected
-    111:112:void onServiceConnected():49:49 -> onServiceConnected
-    113:122:void onServiceConnected():51:51 -> onServiceConnected
-    123:129:void onServiceConnected():52:52 -> onServiceConnected
-    130:135:void com.gathin.tvhome.GamepadPassthrough.start():27:27 -> onServiceConnected
-    130:135:void onServiceConnected():53 -> onServiceConnected
-    136:139:void com.gathin.tvhome.GamepadPassthrough.start():28:28 -> onServiceConnected
-    136:139:void onServiceConnected():53 -> onServiceConnected
-    0:2:boolean onUnbind(android.content.Intent):84:84 -> onUnbind
-    3:7:boolean onUnbind(android.content.Intent):85:85 -> onUnbind
+    0:6:void onDestroy():97:97 -> onDestroy
+    7:9:void onDestroy():98:98 -> onDestroy
+    10:13:void onDestroy():99:99 -> onDestroy
+    14:18:void com.gathin.tvhome.GamepadPassthrough.stop():32:32 -> onDestroy
+    14:18:void onDestroy():99 -> onDestroy
+    19:22:void onDestroy():100:100 -> onDestroy
+    23:33:void com.gathin.tvhome.VolumeKeys.stop():64:64 -> onDestroy
+    23:33:void onDestroy():100 -> onDestroy
+    34:35:void com.gathin.tvhome.VolumeKeys.stop():65:65 -> onDestroy
+    34:35:void onDestroy():100 -> onDestroy
+    36:39:void onDestroy():101:101 -> onDestroy
+    0:11:boolean onKeyEvent(android.view.KeyEvent):72:72 -> onKeyEvent
+    12:29:boolean onKeyEvent(android.view.KeyEvent):74:74 -> onKeyEvent
+    30:43:boolean onKeyEvent(android.view.KeyEvent):75:75 -> onKeyEvent
+    44:50:boolean onKeyEvent(android.view.KeyEvent):74:74 -> onKeyEvent
+    51:68:boolean onKeyEvent(android.view.KeyEvent):76:76 -> onKeyEvent
+    69:82:boolean onKeyEvent(android.view.KeyEvent):77:77 -> onKeyEvent
+    83:89:boolean onKeyEvent(android.view.KeyEvent):76:76 -> onKeyEvent
+    90:102:boolean onKeyEvent(android.view.KeyEvent):78:78 -> onKeyEvent
+    103:118:boolean isInputKey(int):66:66 -> onKeyEvent
+    103:118:boolean onKeyEvent(android.view.KeyEvent):78 -> onKeyEvent
+    119:130:boolean onKeyEvent(android.view.KeyEvent):79:79 -> onKeyEvent
+    131:147:boolean onKeyEvent(android.view.KeyEvent):81:81 -> onKeyEvent
+    0:2:void onServiceConnected():43:43 -> onServiceConnected
+    3:4:void onServiceConnected():44:44 -> onServiceConnected
+    5:8:void onServiceConnected():46:46 -> onServiceConnected
+    9:12:void onServiceConnected():48:48 -> onServiceConnected
+    13:16:void onServiceConnected():49:49 -> onServiceConnected
+    17:23:android.content.SharedPreferences com.gathin.tvhome.ServiceRepair.prefs(android.content.Context):108:108 -> onServiceConnected
+    17:23:void com.gathin.tvhome.ServiceRepair.connected(android.content.Context,java.lang.Class):30 -> onServiceConnected
+    17:23:void onServiceConnected():49 -> onServiceConnected
+    24:39:void com.gathin.tvhome.ServiceRepair.connected(android.content.Context,java.lang.Class):30:30 -> onServiceConnected
+    24:39:void onServiceConnected():49 -> onServiceConnected
+    40:43:void onServiceConnected():50:50 -> onServiceConnected
+    44:47:void onServiceConnected():51:51 -> onServiceConnected
+    48:58:java.util.Map com.gathin.tvhome.RemoteKeys.parseAppKeys(java.lang.Iterable):60:60 -> onServiceConnected
+    48:58:void onServiceConnected():52 -> onServiceConnected
+    59:60:void onServiceConnected():52:52 -> onServiceConnected
+    61:66:void onServiceConnected():53:53 -> onServiceConnected
+    67:71:void com.gathin.tvhome.RemoteKeys.applyKeyFilter(android.accessibilityservice.AccessibilityService,boolean):122:122 -> onServiceConnected
+    67:71:void onServiceConnected():54 -> onServiceConnected
+    72:78:void com.gathin.tvhome.RemoteKeys.applyKeyFilter(android.accessibilityservice.AccessibilityService,boolean):123:123 -> onServiceConnected
+    72:78:void onServiceConnected():54 -> onServiceConnected
+    79:84:void com.gathin.tvhome.RemoteKeys.applyKeyFilter(android.accessibilityservice.AccessibilityService,boolean):125:125 -> onServiceConnected
+    79:84:void onServiceConnected():54 -> onServiceConnected
+    85:87:void com.gathin.tvhome.RemoteKeys.applyKeyFilter(android.accessibilityservice.AccessibilityService,boolean):126:126 -> onServiceConnected
+    85:87:void onServiceConnected():54 -> onServiceConnected
+    88:92:java.util.Map com.gathin.tvhome.RemoteKeys.parseHoldAppKeys(java.lang.Iterable):94:94 -> onServiceConnected
+    88:92:void onServiceConnected():55 -> onServiceConnected
+    93:102:java.util.Map com.gathin.tvhome.RemoteKeys.parseHoldAppKeys(java.lang.Iterable,java.util.function.ToIntFunction):98:98 -> onServiceConnected
+    93:102:java.util.Map com.gathin.tvhome.RemoteKeys.parseHoldAppKeys(java.lang.Iterable):94 -> onServiceConnected
+    93:102:void onServiceConnected():55 -> onServiceConnected
+    103:104:void onServiceConnected():55:55 -> onServiceConnected
+    105:112:java.util.Map com.gathin.tvhome.RemoteKeys.parseHoldAppScancodes(java.lang.Iterable):151:151 -> onServiceConnected
+    105:112:void onServiceConnected():56 -> onServiceConnected
+    113:114:void onServiceConnected():56:56 -> onServiceConnected
+    115:124:void onServiceConnected():58:58 -> onServiceConnected
+    125:131:void onServiceConnected():59:59 -> onServiceConnected
+    132:137:void com.gathin.tvhome.GamepadPassthrough.start():27:27 -> onServiceConnected
+    132:137:void onServiceConnected():60 -> onServiceConnected
+    138:141:void com.gathin.tvhome.GamepadPassthrough.start():28:28 -> onServiceConnected
+    138:141:void onServiceConnected():60 -> onServiceConnected
+    0:2:boolean onUnbind(android.content.Intent):91:91 -> onUnbind
+    3:7:boolean onUnbind(android.content.Intent):92:92 -> onUnbind
 com.gathin.tvhome.InputsRequestActivity -> com.gathin.tvhome.InputsRequestActivity:
 # {"id":"sourceFile","fileName":"InputsRequestActivity.java"}
     0:3:void <init>():13:13 -> <init>
@@ -26680,7 +26683,7 @@ com.gathin.tvhome.MainActivity$$ExternalSyntheticLambda14 -> V1:
     120:132:void com.gathin.tvhome.MainActivity.showSettingsMenu():3810:3810 -> onLongClick
     120:132:boolean com.gathin.tvhome.MainActivity.lambda$onCreate$13(android.view.View):924 -> onLongClick
     120:132:boolean MainActivity$$ExternalSyntheticLambda14.onLongClick(android.view.View):0 -> onLongClick
-    133:136:boolean com.gathin.tvhome.HomeKeyService.canOpenPowerMenu():408:408 -> onLongClick
+    133:136:boolean com.gathin.tvhome.HomeKeyService.canOpenPowerMenu():413:413 -> onLongClick
     133:136:void com.gathin.tvhome.MainActivity.showSettingsMenu():3812 -> onLongClick
     133:136:boolean com.gathin.tvhome.MainActivity.lambda$onCreate$13(android.view.View):924 -> onLongClick
     133:136:boolean MainActivity$$ExternalSyntheticLambda14.onLongClick(android.view.View):0 -> onLongClick
@@ -27641,8 +27644,8 @@ com.gathin.tvhome.MainActivity$$ExternalSyntheticLambda5 -> g2:
 com.gathin.tvhome.MainActivity$$ExternalSyntheticLambda60 -> h2:
 # {"id":"sourceFile","fileName":"R8$$SyntheticClass"}
 # {"id":"com.android.tools.r8.synthesized"}
-    0:4:void com.gathin.tvhome.HomeKeyService.openPowerMenu():413:413 -> run
-    5:8:void com.gathin.tvhome.HomeKeyService.openPowerMenu():414:414 -> run
+    0:4:void com.gathin.tvhome.HomeKeyService.openPowerMenu():418:418 -> run
+    5:8:void com.gathin.tvhome.HomeKeyService.openPowerMenu():419:419 -> run
 com.gathin.tvhome.MainActivity$$ExternalSyntheticLambda69 -> i2:
 # {"id":"sourceFile","fileName":"R8$$SyntheticClass"}
 # {"id":"com.android.tools.r8.synthesized"}
@@ -28804,21 +28807,25 @@ com.gathin.tvhome.ProbeActivity -> com.gathin.tvhome.ProbeActivity:
     3:21:void onCreate(android.os.Bundle):15:15 -> onCreate
 com.gathin.tvhome.QuickSettingsActivity -> com.gathin.tvhome.QuickSettingsActivity:
 # {"id":"sourceFile","fileName":"QuickSettingsActivity.java"}
-    int $r8$clinit -> a
+    android.widget.Toast sleepToast -> a
+    int $r8$clinit -> b
       # {"id":"com.android.tools.r8.synthesized"}
     0:3:void <init>():24:24 -> <init>
-    6:8:boolean safeStart(android.content.Intent):224:224 -> a
-    9:11:boolean safeStart(android.content.Intent):226:226 -> a
-    12:17:boolean safeStart(android.content.Intent):227:227 -> a
+    6:8:boolean safeStart(android.content.Intent):227:227 -> a
+    9:11:boolean safeStart(android.content.Intent):229:229 -> a
+    12:17:boolean safeStart(android.content.Intent):230:230 -> a
     0:7:void attachBaseContext(android.content.Context):28:28 -> attachBaseContext
-    0:23:boolean dispatchKeyEvent(android.view.KeyEvent):236:236 -> dispatchKeyEvent
-    24:30:boolean dispatchKeyEvent(android.view.KeyEvent):239:239 -> dispatchKeyEvent
-    31:35:boolean dispatchKeyEvent(android.view.KeyEvent):245:245 -> dispatchKeyEvent
-    36:48:boolean dispatchKeyEvent(android.view.KeyEvent):240:240 -> dispatchKeyEvent
-    49:52:boolean dispatchKeyEvent(android.view.KeyEvent):241:241 -> dispatchKeyEvent
-    0:5:void onBackPressed():250:250 -> onBackPressed
-    6:13:void onBackPressed():251:251 -> onBackPressed
-    14:17:void onBackPressed():253:253 -> onBackPressed
+    3:11:void showSleepTimer():188:188 -> b
+    12:20:void showSleepTimer():190:190 -> b
+    21:44:void showSleepTimer():191:191 -> b
+    0:23:boolean dispatchKeyEvent(android.view.KeyEvent):239:239 -> dispatchKeyEvent
+    24:30:boolean dispatchKeyEvent(android.view.KeyEvent):242:242 -> dispatchKeyEvent
+    31:35:boolean dispatchKeyEvent(android.view.KeyEvent):248:248 -> dispatchKeyEvent
+    36:48:boolean dispatchKeyEvent(android.view.KeyEvent):243:243 -> dispatchKeyEvent
+    49:52:boolean dispatchKeyEvent(android.view.KeyEvent):244:244 -> dispatchKeyEvent
+    0:5:void onBackPressed():253:253 -> onBackPressed
+    6:13:void onBackPressed():254:254 -> onBackPressed
+    14:17:void onBackPressed():256:256 -> onBackPressed
     0:8:void onCreate(android.os.Bundle):37:37 -> onCreate
     9:14:void onCreate(android.os.Bundle):38:38 -> onCreate
     15:20:void onCreate(android.os.Bundle):39:39 -> onCreate
@@ -28837,34 +28844,36 @@ com.gathin.tvhome.QuickSettingsActivity -> com.gathin.tvhome.QuickSettingsActivi
     154:169:void onCreate(android.os.Bundle):73:73 -> onCreate
     170:186:void onCreate(android.os.Bundle):76:76 -> onCreate
     187:203:void onCreate(android.os.Bundle):79:79 -> onCreate
-    204:220:void onCreate(android.os.Bundle):82:82 -> onCreate
-    221:236:void onCreate(android.os.Bundle):85:85 -> onCreate
-    237:242:void onCreate(android.os.Bundle):88:88 -> onCreate
-    243:251:void onCreate(android.os.Bundle):90:90 -> onCreate
-    252:257:void onCreate(android.os.Bundle):94:94 -> onCreate
-    258:261:void onCreate(android.os.Bundle):95:95 -> onCreate
-    0:2:void onNewIntent(android.content.Intent):259:259 -> onNewIntent
-    3:8:void onNewIntent(android.content.Intent):260:260 -> onNewIntent
-    9:12:void onNewIntent(android.content.Intent):261:261 -> onNewIntent
-    0:5:void onPause():281:281 -> onPause
-    6:9:void onPause():282:282 -> onPause
-    10:13:void onPause():283:283 -> onPause
-    14:16:void onPause():284:284 -> onPause
+    204:215:void onCreate(android.os.Bundle):82:82 -> onCreate
+    216:221:void onCreate(android.os.Bundle):83:83 -> onCreate
+    222:237:void onCreate(android.os.Bundle):86:86 -> onCreate
+    238:243:void onCreate(android.os.Bundle):89:89 -> onCreate
+    244:252:void onCreate(android.os.Bundle):91:91 -> onCreate
+    253:258:void onCreate(android.os.Bundle):95:95 -> onCreate
+    259:262:void onCreate(android.os.Bundle):96:96 -> onCreate
+    0:2:void onNewIntent(android.content.Intent):262:262 -> onNewIntent
+    3:8:void onNewIntent(android.content.Intent):263:263 -> onNewIntent
+    9:12:void onNewIntent(android.content.Intent):264:264 -> onNewIntent
+    0:5:void onPause():285:285 -> onPause
+    6:9:void onPause():286:286 -> onPause
+    10:13:void onPause():287:287 -> onPause
+    14:16:void onPause():288:288 -> onPause
     17:18:void com.gathin.tvhome.LiveClockView.stopTicking():258:258 -> onPause
-    17:18:void onPause():284 -> onPause
+    17:18:void onPause():288 -> onPause
       # {"id":"com.android.tools.r8.rewriteFrame","conditions":["throws(Ljava/lang/NullPointerException;)"],"actions":["removeInnerFrames(1)"]}
     19:25:void com.gathin.tvhome.LiveClockView.stopTicking():259:259 -> onPause
-    19:25:void onPause():284 -> onPause
-    26:31:void onPause():286:286 -> onPause
-    32:39:void onPause():287:287 -> onPause
-    40:43:void onPause():289:289 -> onPause
-    0:5:void onResume():267:267 -> onResume
-    6:9:void onResume():268:268 -> onResume
-    10:13:void onResume():269:269 -> onResume
-    14:18:void onResume():270:270 -> onResume
-    19:24:void onResume():271:271 -> onResume
-    25:33:void onResume():273:273 -> onResume
-    34:50:void onResume():275:275 -> onResume
+    19:25:void onPause():288 -> onPause
+    26:31:void onPause():290:290 -> onPause
+    32:39:void onPause():291:291 -> onPause
+    40:43:void onPause():293:293 -> onPause
+    0:5:void onResume():270:270 -> onResume
+    6:9:void onResume():271:271 -> onResume
+    10:13:void onResume():272:272 -> onResume
+    14:18:void onResume():273:273 -> onResume
+    19:24:void onResume():274:274 -> onResume
+    25:33:void onResume():276:276 -> onResume
+    34:49:void onResume():278:278 -> onResume
+    50:53:void onResume():280:280 -> onResume
 com.gathin.tvhome.QuickSettingsActivity$$ExternalSyntheticLambda0 -> W2:
 # {"id":"sourceFile","fileName":"R8$$SyntheticClass"}
 # {"id":"com.android.tools.r8.synthesized"}
@@ -28874,186 +28883,245 @@ com.gathin.tvhome.QuickSettingsActivity$$ExternalSyntheticLambda0 -> W2:
       # {"id":"com.android.tools.r8.synthesized"}
     0:7:void QuickSettingsActivity$$ExternalSyntheticLambda0.<init>(com.gathin.tvhome.QuickSettingsActivity,int):0:0 -> <init>
       # {"id":"com.android.tools.r8.synthesized"}
-    21:34:void com.gathin.tvhome.QuickSettingsActivity.openSleepTimer():170:170 -> onClick
-    21:34:void com.gathin.tvhome.QuickSettingsActivity.lambda$onCreate$8(android.view.View):82 -> onClick
-    21:34:void QuickSettingsActivity$$ExternalSyntheticLambda0.onClick(android.view.View):0 -> onClick
+    18:26:void com.gathin.tvhome.QuickSettingsActivity.openBluetooth():151:151 -> onClick
+    18:26:void com.gathin.tvhome.QuickSettingsActivity.lambda$onCreate$7(android.view.View):79 -> onClick
+    18:26:void QuickSettingsActivity$$ExternalSyntheticLambda0.onClick(android.view.View):0 -> onClick
       # {"id":"com.android.tools.r8.synthesized"}
-    35:38:void com.gathin.tvhome.QuickSettingsActivity.openSleepTimer():171:171 -> onClick
-    35:38:void com.gathin.tvhome.QuickSettingsActivity.lambda$onCreate$8(android.view.View):82 -> onClick
+    27:34:void com.gathin.tvhome.QuickSettingsActivity.openBluetooth():152:152 -> onClick
+    27:34:void com.gathin.tvhome.QuickSettingsActivity.lambda$onCreate$7(android.view.View):79 -> onClick
+    27:34:void QuickSettingsActivity$$ExternalSyntheticLambda0.onClick(android.view.View):0 -> onClick
+    35:38:void com.gathin.tvhome.QuickSettingsActivity.openBluetooth():153:153 -> onClick
+    35:38:void com.gathin.tvhome.QuickSettingsActivity.lambda$onCreate$7(android.view.View):79 -> onClick
     35:38:void QuickSettingsActivity$$ExternalSyntheticLambda0.onClick(android.view.View):0 -> onClick
-    39:42:void com.gathin.tvhome.QuickSettingsActivity.openSleepTimer():173:173 -> onClick
-    39:42:void com.gathin.tvhome.QuickSettingsActivity.lambda$onCreate$8(android.view.View):82 -> onClick
-    39:42:void QuickSettingsActivity$$ExternalSyntheticLambda0.onClick(android.view.View):0 -> onClick
-    43:48:void com.gathin.tvhome.QuickSettingsActivity.openSleepTimer():174:174 -> onClick
-    43:48:void com.gathin.tvhome.QuickSettingsActivity.lambda$onCreate$8(android.view.View):82 -> onClick
-    43:48:void QuickSettingsActivity$$ExternalSyntheticLambda0.onClick(android.view.View):0 -> onClick
-    49:52:void com.gathin.tvhome.QuickSettingsActivity.openSleepTimer():175:175 -> onClick
-    49:52:void com.gathin.tvhome.QuickSettingsActivity.lambda$onCreate$8(android.view.View):82 -> onClick
-    49:52:void QuickSettingsActivity$$ExternalSyntheticLambda0.onClick(android.view.View):0 -> onClick
-    53:64:void com.gathin.tvhome.QuickSettingsActivity.openSleepTimer():179:179 -> onClick
-    53:64:void com.gathin.tvhome.QuickSettingsActivity.lambda$onCreate$8(android.view.View):82 -> onClick
-    53:64:void QuickSettingsActivity$$ExternalSyntheticLambda0.onClick(android.view.View):0 -> onClick
-    65:68:void com.gathin.tvhome.QuickSettingsActivity.openSleepTimer():180:180 -> onClick
-    65:68:void com.gathin.tvhome.QuickSettingsActivity.lambda$onCreate$8(android.view.View):82 -> onClick
-    65:68:void QuickSettingsActivity$$ExternalSyntheticLambda0.onClick(android.view.View):0 -> onClick
-    69:72:void com.gathin.tvhome.QuickSettingsActivity.openSleepTimer():182:182 -> onClick
-    69:72:void com.gathin.tvhome.QuickSettingsActivity.lambda$onCreate$8(android.view.View):82 -> onClick
-    69:72:void QuickSettingsActivity$$ExternalSyntheticLambda0.onClick(android.view.View):0 -> onClick
-    73:78:void com.gathin.tvhome.QuickSettingsActivity.openSleepTimer():183:183 -> onClick
-    73:78:void com.gathin.tvhome.QuickSettingsActivity.lambda$onCreate$8(android.view.View):82 -> onClick
-    73:78:void QuickSettingsActivity$$ExternalSyntheticLambda0.onClick(android.view.View):0 -> onClick
-    79:85:void com.gathin.tvhome.QuickSettingsActivity.openSleepTimer():184:184 -> onClick
-    79:85:void com.gathin.tvhome.QuickSettingsActivity.lambda$onCreate$8(android.view.View):82 -> onClick
-    79:85:void QuickSettingsActivity$$ExternalSyntheticLambda0.onClick(android.view.View):0 -> onClick
-    86:93:void com.gathin.tvhome.QuickSettingsActivity.openSleepTimer():188:188 -> onClick
-    86:93:void com.gathin.tvhome.QuickSettingsActivity.lambda$onCreate$8(android.view.View):82 -> onClick
-    86:93:void QuickSettingsActivity$$ExternalSyntheticLambda0.onClick(android.view.View):0 -> onClick
-    94:98:void QuickSettingsActivity$$ExternalSyntheticLambda0.onClick(android.view.View):0:0 -> onClick
-    99:107:void com.gathin.tvhome.QuickSettingsActivity.openBluetooth():150:150 -> onClick
-    99:107:void com.gathin.tvhome.QuickSettingsActivity.lambda$onCreate$7(android.view.View):79 -> onClick
-    99:107:void QuickSettingsActivity$$ExternalSyntheticLambda0.onClick(android.view.View):0 -> onClick
-    108:115:void com.gathin.tvhome.QuickSettingsActivity.openBluetooth():151:151 -> onClick
-    108:115:void com.gathin.tvhome.QuickSettingsActivity.lambda$onCreate$7(android.view.View):79 -> onClick
-    108:115:void QuickSettingsActivity$$ExternalSyntheticLambda0.onClick(android.view.View):0 -> onClick
-    116:119:void com.gathin.tvhome.QuickSettingsActivity.openBluetooth():152:152 -> onClick
-    116:119:void com.gathin.tvhome.QuickSettingsActivity.lambda$onCreate$7(android.view.View):79 -> onClick
-    116:119:void QuickSettingsActivity$$ExternalSyntheticLambda0.onClick(android.view.View):0 -> onClick
-    120:126:void com.gathin.tvhome.QuickSettingsActivity.openBluetooth():153:153 -> onClick
-    120:126:void com.gathin.tvhome.QuickSettingsActivity.lambda$onCreate$7(android.view.View):79 -> onClick
-    120:126:void QuickSettingsActivity$$ExternalSyntheticLambda0.onClick(android.view.View):0 -> onClick
-    127:135:void com.gathin.tvhome.QuickSettingsActivity.openBluetooth():156:156 -> onClick
-    127:135:void com.gathin.tvhome.QuickSettingsActivity.lambda$onCreate$7(android.view.View):79 -> onClick
-    127:135:void QuickSettingsActivity$$ExternalSyntheticLambda0.onClick(android.view.View):0 -> onClick
-    136:139:void com.gathin.tvhome.QuickSettingsActivity.openBluetooth():157:157 -> onClick
-    136:139:void com.gathin.tvhome.QuickSettingsActivity.lambda$onCreate$7(android.view.View):79 -> onClick
-    136:139:void QuickSettingsActivity$$ExternalSyntheticLambda0.onClick(android.view.View):0 -> onClick
-    140:146:void com.gathin.tvhome.QuickSettingsActivity.openBluetooth():158:158 -> onClick
-    140:146:void com.gathin.tvhome.QuickSettingsActivity.lambda$onCreate$7(android.view.View):79 -> onClick
-    140:146:void QuickSettingsActivity$$ExternalSyntheticLambda0.onClick(android.view.View):0 -> onClick
-    147:153:void com.gathin.tvhome.QuickSettingsActivity.openBluetooth():161:161 -> onClick
-    147:153:void com.gathin.tvhome.QuickSettingsActivity.lambda$onCreate$7(android.view.View):79 -> onClick
-    147:153:void QuickSettingsActivity$$ExternalSyntheticLambda0.onClick(android.view.View):0 -> onClick
-    154:160:void com.gathin.tvhome.QuickSettingsActivity.openBluetooth():162:162 -> onClick
-    154:160:void com.gathin.tvhome.QuickSettingsActivity.lambda$onCreate$7(android.view.View):79 -> onClick
-    154:160:void QuickSettingsActivity$$ExternalSyntheticLambda0.onClick(android.view.View):0 -> onClick
-    161:169:void com.gathin.tvhome.QuickSettingsActivity.openBluetooth():165:165 -> onClick
-    161:169:void com.gathin.tvhome.QuickSettingsActivity.lambda$onCreate$7(android.view.View):79 -> onClick
-    161:169:void QuickSettingsActivity$$ExternalSyntheticLambda0.onClick(android.view.View):0 -> onClick
-    170:174:void QuickSettingsActivity$$ExternalSyntheticLambda0.onClick(android.view.View):0:0 -> onClick
-    175:181:void com.gathin.tvhome.QuickSettingsActivity.openWifi():141:141 -> onClick
-    175:181:void com.gathin.tvhome.QuickSettingsActivity.lambda$onCreate$6(android.view.View):76 -> onClick
-    175:181:void QuickSettingsActivity$$ExternalSyntheticLambda0.onClick(android.view.View):0 -> onClick
-    182:188:void com.gathin.tvhome.QuickSettingsActivity.openWifi():142:142 -> onClick
-    182:188:void com.gathin.tvhome.QuickSettingsActivity.lambda$onCreate$6(android.view.View):76 -> onClick
-    182:188:void QuickSettingsActivity$$ExternalSyntheticLambda0.onClick(android.view.View):0 -> onClick
-    189:199:void com.gathin.tvhome.QuickSettingsActivity.openWifi():144:144 -> onClick
-    189:199:void com.gathin.tvhome.QuickSettingsActivity.lambda$onCreate$6(android.view.View):76 -> onClick
-    189:199:void QuickSettingsActivity$$ExternalSyntheticLambda0.onClick(android.view.View):0 -> onClick
-    200:204:void QuickSettingsActivity$$ExternalSyntheticLambda0.onClick(android.view.View):0:0 -> onClick
-    205:211:void com.gathin.tvhome.QuickSettingsActivity.openSound():130:130 -> onClick
-    205:211:void com.gathin.tvhome.QuickSettingsActivity.lambda$onCreate$5(android.view.View):73 -> onClick
-    205:211:void QuickSettingsActivity$$ExternalSyntheticLambda0.onClick(android.view.View):0 -> onClick
-    212:218:void com.gathin.tvhome.QuickSettingsActivity.openSound():131:131 -> onClick
-    212:218:void com.gathin.tvhome.QuickSettingsActivity.lambda$onCreate$5(android.view.View):73 -> onClick
-    212:218:void QuickSettingsActivity$$ExternalSyntheticLambda0.onClick(android.view.View):0 -> onClick
-    219:225:void com.gathin.tvhome.QuickSettingsActivity.openSound():133:133 -> onClick
-    219:225:void com.gathin.tvhome.QuickSettingsActivity.lambda$onCreate$5(android.view.View):73 -> onClick
-    219:225:void QuickSettingsActivity$$ExternalSyntheticLambda0.onClick(android.view.View):0 -> onClick
-    226:232:void com.gathin.tvhome.QuickSettingsActivity.openSound():134:134 -> onClick
-    226:232:void com.gathin.tvhome.QuickSettingsActivity.lambda$onCreate$5(android.view.View):73 -> onClick
-    226:232:void QuickSettingsActivity$$ExternalSyntheticLambda0.onClick(android.view.View):0 -> onClick
-    233:241:void com.gathin.tvhome.QuickSettingsActivity.openSound():136:136 -> onClick
-    233:241:void com.gathin.tvhome.QuickSettingsActivity.lambda$onCreate$5(android.view.View):73 -> onClick
-    233:241:void QuickSettingsActivity$$ExternalSyntheticLambda0.onClick(android.view.View):0 -> onClick
-    242:246:void QuickSettingsActivity$$ExternalSyntheticLambda0.onClick(android.view.View):0:0 -> onClick
-    247:253:void com.gathin.tvhome.QuickSettingsActivity.openDisplay():123:123 -> onClick
-    247:253:void com.gathin.tvhome.QuickSettingsActivity.lambda$onCreate$4(android.view.View):70 -> onClick
-    247:253:void QuickSettingsActivity$$ExternalSyntheticLambda0.onClick(android.view.View):0 -> onClick
-    254:260:void com.gathin.tvhome.QuickSettingsActivity.openDisplay():124:124 -> onClick
-    254:260:void com.gathin.tvhome.QuickSettingsActivity.lambda$onCreate$4(android.view.View):70 -> onClick
-    254:260:void QuickSettingsActivity$$ExternalSyntheticLambda0.onClick(android.view.View):0 -> onClick
-    261:269:void com.gathin.tvhome.QuickSettingsActivity.openDisplay():125:125 -> onClick
-    261:269:void com.gathin.tvhome.QuickSettingsActivity.lambda$onCreate$4(android.view.View):70 -> onClick
-    261:269:void QuickSettingsActivity$$ExternalSyntheticLambda0.onClick(android.view.View):0 -> onClick
-    270:274:void QuickSettingsActivity$$ExternalSyntheticLambda0.onClick(android.view.View):0:0 -> onClick
-    275:281:void com.gathin.tvhome.QuickSettingsActivity.openInputs():107:107 -> onClick
-    275:281:void com.gathin.tvhome.QuickSettingsActivity.lambda$onCreate$3(android.view.View):67 -> onClick
-    275:281:void QuickSettingsActivity$$ExternalSyntheticLambda0.onClick(android.view.View):0 -> onClick
-    282:288:void com.gathin.tvhome.QuickSettingsActivity.openInputs():108:108 -> onClick
-    282:288:void com.gathin.tvhome.QuickSettingsActivity.lambda$onCreate$3(android.view.View):67 -> onClick
-    282:288:void QuickSettingsActivity$$ExternalSyntheticLambda0.onClick(android.view.View):0 -> onClick
-    289:293:void com.gathin.tvhome.QuickSettingsActivity.openInputs():111:111 -> onClick
-    289:293:void com.gathin.tvhome.QuickSettingsActivity.lambda$onCreate$3(android.view.View):67 -> onClick
-    289:293:void QuickSettingsActivity$$ExternalSyntheticLambda0.onClick(android.view.View):0 -> onClick
-    294:297:void com.gathin.tvhome.QuickSettingsActivity.openInputs():112:112 -> onClick
-    294:297:void com.gathin.tvhome.QuickSettingsActivity.lambda$onCreate$3(android.view.View):67 -> onClick
-    294:297:void QuickSettingsActivity$$ExternalSyntheticLambda0.onClick(android.view.View):0 -> onClick
-    298:301:void com.gathin.tvhome.QuickSettingsActivity.openInputs():113:113 -> onClick
-    298:301:void com.gathin.tvhome.QuickSettingsActivity.lambda$onCreate$3(android.view.View):67 -> onClick
-    298:301:void QuickSettingsActivity$$ExternalSyntheticLambda0.onClick(android.view.View):0 -> onClick
-    302:304:void com.gathin.tvhome.QuickSettingsActivity.openInputs():115:115 -> onClick
-    302:304:void com.gathin.tvhome.QuickSettingsActivity.lambda$onCreate$3(android.view.View):67 -> onClick
-    302:304:void QuickSettingsActivity$$ExternalSyntheticLambda0.onClick(android.view.View):0 -> onClick
-    305:308:void com.gathin.tvhome.QuickSettingsActivity.openInputs():116:116 -> onClick
-    305:308:void com.gathin.tvhome.QuickSettingsActivity.lambda$onCreate$3(android.view.View):67 -> onClick
-    305:308:void QuickSettingsActivity$$ExternalSyntheticLambda0.onClick(android.view.View):0 -> onClick
-    309:313:void QuickSettingsActivity$$ExternalSyntheticLambda0.onClick(android.view.View):0:0 -> onClick
-    314:320:void com.gathin.tvhome.QuickSettingsActivity.openScreensaver():100:100 -> onClick
-    314:320:void com.gathin.tvhome.QuickSettingsActivity.lambda$onCreate$2(android.view.View):64 -> onClick
-    314:320:void QuickSettingsActivity$$ExternalSyntheticLambda0.onClick(android.view.View):0 -> onClick
-    321:328:void com.gathin.tvhome.QuickSettingsActivity.openScreensaver():101:101 -> onClick
-    321:328:void com.gathin.tvhome.QuickSettingsActivity.lambda$onCreate$2(android.view.View):64 -> onClick
-    321:328:void QuickSettingsActivity$$ExternalSyntheticLambda0.onClick(android.view.View):0 -> onClick
-    329:332:void com.gathin.tvhome.QuickSettingsActivity.openScreensaver():102:102 -> onClick
-    329:332:void com.gathin.tvhome.QuickSettingsActivity.lambda$onCreate$2(android.view.View):64 -> onClick
-    329:332:void QuickSettingsActivity$$ExternalSyntheticLambda0.onClick(android.view.View):0 -> onClick
-    333:337:void QuickSettingsActivity$$ExternalSyntheticLambda0.onClick(android.view.View):0:0 -> onClick
-    338:346:void com.gathin.tvhome.QuickSettingsActivity.lambda$onCreate$1(android.view.View):59:59 -> onClick
-    338:346:void QuickSettingsActivity$$ExternalSyntheticLambda0.onClick(android.view.View):0 -> onClick
-    347:351:void QuickSettingsActivity$$ExternalSyntheticLambda0.onClick(android.view.View):0:0 -> onClick
-    352:365:void com.gathin.tvhome.QuickSettingsActivity.openNotifications():193:193 -> onClick
-    352:365:void com.gathin.tvhome.QuickSettingsActivity.lambda$onCreate$10(android.view.View):90 -> onClick
-    352:365:void QuickSettingsActivity$$ExternalSyntheticLambda0.onClick(android.view.View):0 -> onClick
-    366:369:void com.gathin.tvhome.QuickSettingsActivity.openNotifications():194:194 -> onClick
-    366:369:void com.gathin.tvhome.QuickSettingsActivity.lambda$onCreate$10(android.view.View):90 -> onClick
-    366:369:void QuickSettingsActivity$$ExternalSyntheticLambda0.onClick(android.view.View):0 -> onClick
-    370:373:void com.gathin.tvhome.QuickSettingsActivity.openNotifications():196:196 -> onClick
-    370:373:void com.gathin.tvhome.QuickSettingsActivity.lambda$onCreate$10(android.view.View):90 -> onClick
-    370:373:void QuickSettingsActivity$$ExternalSyntheticLambda0.onClick(android.view.View):0 -> onClick
-    374:380:void com.gathin.tvhome.QuickSettingsActivity.openNotifications():197:197 -> onClick
-    374:380:void com.gathin.tvhome.QuickSettingsActivity.lambda$onCreate$10(android.view.View):90 -> onClick
-    374:380:void QuickSettingsActivity$$ExternalSyntheticLambda0.onClick(android.view.View):0 -> onClick
-    381:387:void com.gathin.tvhome.QuickSettingsActivity.openNotifications():201:201 -> onClick
-    381:387:void com.gathin.tvhome.QuickSettingsActivity.lambda$onCreate$10(android.view.View):90 -> onClick
-    381:387:void QuickSettingsActivity$$ExternalSyntheticLambda0.onClick(android.view.View):0 -> onClick
-    388:391:void com.gathin.tvhome.QuickSettingsActivity.openNotifications():202:202 -> onClick
-    388:391:void com.gathin.tvhome.QuickSettingsActivity.lambda$onCreate$10(android.view.View):90 -> onClick
-    388:391:void QuickSettingsActivity$$ExternalSyntheticLambda0.onClick(android.view.View):0 -> onClick
-    392:401:void com.gathin.tvhome.QuickSettingsActivity.openNotifications():203:203 -> onClick
-    392:401:void com.gathin.tvhome.QuickSettingsActivity.lambda$onCreate$10(android.view.View):90 -> onClick
-    392:401:void QuickSettingsActivity$$ExternalSyntheticLambda0.onClick(android.view.View):0 -> onClick
-    402:409:void com.gathin.tvhome.QuickSettingsActivity.openNotifications():207:207 -> onClick
-    402:409:void com.gathin.tvhome.QuickSettingsActivity.lambda$onCreate$10(android.view.View):90 -> onClick
-    402:409:void QuickSettingsActivity$$ExternalSyntheticLambda0.onClick(android.view.View):0 -> onClick
-    410:414:void QuickSettingsActivity$$ExternalSyntheticLambda0.onClick(android.view.View):0:0 -> onClick
-    415:421:void com.gathin.tvhome.QuickSettingsActivity.openRearrange():212:212 -> onClick
-    415:421:void com.gathin.tvhome.QuickSettingsActivity.lambda$onCreate$9(android.view.View):85 -> onClick
-    415:421:void QuickSettingsActivity$$ExternalSyntheticLambda0.onClick(android.view.View):0 -> onClick
-    422:425:void com.gathin.tvhome.QuickSettingsActivity.openRearrange():213:213 -> onClick
-    422:425:void com.gathin.tvhome.QuickSettingsActivity.lambda$onCreate$9(android.view.View):85 -> onClick
-    422:425:void QuickSettingsActivity$$ExternalSyntheticLambda0.onClick(android.view.View):0 -> onClick
-    426:429:void com.gathin.tvhome.QuickSettingsActivity.openRearrange():214:214 -> onClick
-    426:429:void com.gathin.tvhome.QuickSettingsActivity.lambda$onCreate$9(android.view.View):85 -> onClick
-    426:429:void QuickSettingsActivity$$ExternalSyntheticLambda0.onClick(android.view.View):0 -> onClick
-    430:432:void com.gathin.tvhome.QuickSettingsActivity.openRearrange():216:216 -> onClick
-    430:432:void com.gathin.tvhome.QuickSettingsActivity.lambda$onCreate$9(android.view.View):85 -> onClick
-    430:432:void QuickSettingsActivity$$ExternalSyntheticLambda0.onClick(android.view.View):0 -> onClick
-    433:436:void com.gathin.tvhome.QuickSettingsActivity.openRearrange():217:217 -> onClick
-    433:436:void com.gathin.tvhome.QuickSettingsActivity.lambda$onCreate$9(android.view.View):85 -> onClick
-    433:436:void QuickSettingsActivity$$ExternalSyntheticLambda0.onClick(android.view.View):0 -> onClick
-    437:438:void QuickSettingsActivity$$ExternalSyntheticLambda0.onClick(android.view.View):0:0 -> onClick
-    439:443:void com.gathin.tvhome.QuickSettingsActivity.lambda$onCreate$0(android.view.View):44:44 -> onClick
-    439:443:void QuickSettingsActivity$$ExternalSyntheticLambda0.onClick(android.view.View):0 -> onClick
+    39:45:void com.gathin.tvhome.QuickSettingsActivity.openBluetooth():154:154 -> onClick
+    39:45:void com.gathin.tvhome.QuickSettingsActivity.lambda$onCreate$7(android.view.View):79 -> onClick
+    39:45:void QuickSettingsActivity$$ExternalSyntheticLambda0.onClick(android.view.View):0 -> onClick
+    46:54:void com.gathin.tvhome.QuickSettingsActivity.openBluetooth():157:157 -> onClick
+    46:54:void com.gathin.tvhome.QuickSettingsActivity.lambda$onCreate$7(android.view.View):79 -> onClick
+    46:54:void QuickSettingsActivity$$ExternalSyntheticLambda0.onClick(android.view.View):0 -> onClick
+    55:58:void com.gathin.tvhome.QuickSettingsActivity.openBluetooth():158:158 -> onClick
+    55:58:void com.gathin.tvhome.QuickSettingsActivity.lambda$onCreate$7(android.view.View):79 -> onClick
+    55:58:void QuickSettingsActivity$$ExternalSyntheticLambda0.onClick(android.view.View):0 -> onClick
+    59:65:void com.gathin.tvhome.QuickSettingsActivity.openBluetooth():159:159 -> onClick
+    59:65:void com.gathin.tvhome.QuickSettingsActivity.lambda$onCreate$7(android.view.View):79 -> onClick
+    59:65:void QuickSettingsActivity$$ExternalSyntheticLambda0.onClick(android.view.View):0 -> onClick
+    66:72:void com.gathin.tvhome.QuickSettingsActivity.openBluetooth():162:162 -> onClick
+    66:72:void com.gathin.tvhome.QuickSettingsActivity.lambda$onCreate$7(android.view.View):79 -> onClick
+    66:72:void QuickSettingsActivity$$ExternalSyntheticLambda0.onClick(android.view.View):0 -> onClick
+    73:79:void com.gathin.tvhome.QuickSettingsActivity.openBluetooth():163:163 -> onClick
+    73:79:void com.gathin.tvhome.QuickSettingsActivity.lambda$onCreate$7(android.view.View):79 -> onClick
+    73:79:void QuickSettingsActivity$$ExternalSyntheticLambda0.onClick(android.view.View):0 -> onClick
+    80:88:void com.gathin.tvhome.QuickSettingsActivity.openBluetooth():166:166 -> onClick
+    80:88:void com.gathin.tvhome.QuickSettingsActivity.lambda$onCreate$7(android.view.View):79 -> onClick
+    80:88:void QuickSettingsActivity$$ExternalSyntheticLambda0.onClick(android.view.View):0 -> onClick
+    89:93:void QuickSettingsActivity$$ExternalSyntheticLambda0.onClick(android.view.View):0:0 -> onClick
+    94:100:void com.gathin.tvhome.QuickSettingsActivity.openWifi():142:142 -> onClick
+    94:100:void com.gathin.tvhome.QuickSettingsActivity.lambda$onCreate$6(android.view.View):76 -> onClick
+    94:100:void QuickSettingsActivity$$ExternalSyntheticLambda0.onClick(android.view.View):0 -> onClick
+    101:107:void com.gathin.tvhome.QuickSettingsActivity.openWifi():143:143 -> onClick
+    101:107:void com.gathin.tvhome.QuickSettingsActivity.lambda$onCreate$6(android.view.View):76 -> onClick
+    101:107:void QuickSettingsActivity$$ExternalSyntheticLambda0.onClick(android.view.View):0 -> onClick
+    108:118:void com.gathin.tvhome.QuickSettingsActivity.openWifi():145:145 -> onClick
+    108:118:void com.gathin.tvhome.QuickSettingsActivity.lambda$onCreate$6(android.view.View):76 -> onClick
+    108:118:void QuickSettingsActivity$$ExternalSyntheticLambda0.onClick(android.view.View):0 -> onClick
+    119:123:void QuickSettingsActivity$$ExternalSyntheticLambda0.onClick(android.view.View):0:0 -> onClick
+    124:130:void com.gathin.tvhome.QuickSettingsActivity.openSound():131:131 -> onClick
+    124:130:void com.gathin.tvhome.QuickSettingsActivity.lambda$onCreate$5(android.view.View):73 -> onClick
+    124:130:void QuickSettingsActivity$$ExternalSyntheticLambda0.onClick(android.view.View):0 -> onClick
+    131:137:void com.gathin.tvhome.QuickSettingsActivity.openSound():132:132 -> onClick
+    131:137:void com.gathin.tvhome.QuickSettingsActivity.lambda$onCreate$5(android.view.View):73 -> onClick
+    131:137:void QuickSettingsActivity$$ExternalSyntheticLambda0.onClick(android.view.View):0 -> onClick
+    138:144:void com.gathin.tvhome.QuickSettingsActivity.openSound():134:134 -> onClick
+    138:144:void com.gathin.tvhome.QuickSettingsActivity.lambda$onCreate$5(android.view.View):73 -> onClick
+    138:144:void QuickSettingsActivity$$ExternalSyntheticLambda0.onClick(android.view.View):0 -> onClick
+    145:151:void com.gathin.tvhome.QuickSettingsActivity.openSound():135:135 -> onClick
+    145:151:void com.gathin.tvhome.QuickSettingsActivity.lambda$onCreate$5(android.view.View):73 -> onClick
+    145:151:void QuickSettingsActivity$$ExternalSyntheticLambda0.onClick(android.view.View):0 -> onClick
+    152:160:void com.gathin.tvhome.QuickSettingsActivity.openSound():137:137 -> onClick
+    152:160:void com.gathin.tvhome.QuickSettingsActivity.lambda$onCreate$5(android.view.View):73 -> onClick
+    152:160:void QuickSettingsActivity$$ExternalSyntheticLambda0.onClick(android.view.View):0 -> onClick
+    161:165:void QuickSettingsActivity$$ExternalSyntheticLambda0.onClick(android.view.View):0:0 -> onClick
+    166:172:void com.gathin.tvhome.QuickSettingsActivity.openDisplay():124:124 -> onClick
+    166:172:void com.gathin.tvhome.QuickSettingsActivity.lambda$onCreate$4(android.view.View):70 -> onClick
+    166:172:void QuickSettingsActivity$$ExternalSyntheticLambda0.onClick(android.view.View):0 -> onClick
+    173:179:void com.gathin.tvhome.QuickSettingsActivity.openDisplay():125:125 -> onClick
+    173:179:void com.gathin.tvhome.QuickSettingsActivity.lambda$onCreate$4(android.view.View):70 -> onClick
+    173:179:void QuickSettingsActivity$$ExternalSyntheticLambda0.onClick(android.view.View):0 -> onClick
+    180:188:void com.gathin.tvhome.QuickSettingsActivity.openDisplay():126:126 -> onClick
+    180:188:void com.gathin.tvhome.QuickSettingsActivity.lambda$onCreate$4(android.view.View):70 -> onClick
+    180:188:void QuickSettingsActivity$$ExternalSyntheticLambda0.onClick(android.view.View):0 -> onClick
+    189:193:void QuickSettingsActivity$$ExternalSyntheticLambda0.onClick(android.view.View):0:0 -> onClick
+    194:200:void com.gathin.tvhome.QuickSettingsActivity.openInputs():108:108 -> onClick
+    194:200:void com.gathin.tvhome.QuickSettingsActivity.lambda$onCreate$3(android.view.View):67 -> onClick
+    194:200:void QuickSettingsActivity$$ExternalSyntheticLambda0.onClick(android.view.View):0 -> onClick
+    201:207:void com.gathin.tvhome.QuickSettingsActivity.openInputs():109:109 -> onClick
+    201:207:void com.gathin.tvhome.QuickSettingsActivity.lambda$onCreate$3(android.view.View):67 -> onClick
+    201:207:void QuickSettingsActivity$$ExternalSyntheticLambda0.onClick(android.view.View):0 -> onClick
+    208:212:void com.gathin.tvhome.QuickSettingsActivity.openInputs():112:112 -> onClick
+    208:212:void com.gathin.tvhome.QuickSettingsActivity.lambda$onCreate$3(android.view.View):67 -> onClick
+    208:212:void QuickSettingsActivity$$ExternalSyntheticLambda0.onClick(android.view.View):0 -> onClick
+    213:216:void com.gathin.tvhome.QuickSettingsActivity.openInputs():113:113 -> onClick
+    213:216:void com.gathin.tvhome.QuickSettingsActivity.lambda$onCreate$3(android.view.View):67 -> onClick
+    213:216:void QuickSettingsActivity$$ExternalSyntheticLambda0.onClick(android.view.View):0 -> onClick
+    217:220:void com.gathin.tvhome.QuickSettingsActivity.openInputs():114:114 -> onClick
+    217:220:void com.gathin.tvhome.QuickSettingsActivity.lambda$onCreate$3(android.view.View):67 -> onClick
+    217:220:void QuickSettingsActivity$$ExternalSyntheticLambda0.onClick(android.view.View):0 -> onClick
+    221:223:void com.gathin.tvhome.QuickSettingsActivity.openInputs():116:116 -> onClick
+    221:223:void com.gathin.tvhome.QuickSettingsActivity.lambda$onCreate$3(android.view.View):67 -> onClick
+    221:223:void QuickSettingsActivity$$ExternalSyntheticLambda0.onClick(android.view.View):0 -> onClick
+    224:227:void com.gathin.tvhome.QuickSettingsActivity.openInputs():117:117 -> onClick
+    224:227:void com.gathin.tvhome.QuickSettingsActivity.lambda$onCreate$3(android.view.View):67 -> onClick
+    224:227:void QuickSettingsActivity$$ExternalSyntheticLambda0.onClick(android.view.View):0 -> onClick
+    228:232:void QuickSettingsActivity$$ExternalSyntheticLambda0.onClick(android.view.View):0:0 -> onClick
+    233:239:void com.gathin.tvhome.QuickSettingsActivity.openScreensaver():101:101 -> onClick
+    233:239:void com.gathin.tvhome.QuickSettingsActivity.lambda$onCreate$2(android.view.View):64 -> onClick
+    233:239:void QuickSettingsActivity$$ExternalSyntheticLambda0.onClick(android.view.View):0 -> onClick
+    240:247:void com.gathin.tvhome.QuickSettingsActivity.openScreensaver():102:102 -> onClick
+    240:247:void com.gathin.tvhome.QuickSettingsActivity.lambda$onCreate$2(android.view.View):64 -> onClick
+    240:247:void QuickSettingsActivity$$ExternalSyntheticLambda0.onClick(android.view.View):0 -> onClick
+    248:251:void com.gathin.tvhome.QuickSettingsActivity.openScreensaver():103:103 -> onClick
+    248:251:void com.gathin.tvhome.QuickSettingsActivity.lambda$onCreate$2(android.view.View):64 -> onClick
+    248:251:void QuickSettingsActivity$$ExternalSyntheticLambda0.onClick(android.view.View):0 -> onClick
+    252:256:void QuickSettingsActivity$$ExternalSyntheticLambda0.onClick(android.view.View):0:0 -> onClick
+    257:265:void com.gathin.tvhome.QuickSettingsActivity.lambda$onCreate$1(android.view.View):59:59 -> onClick
+    257:265:void QuickSettingsActivity$$ExternalSyntheticLambda0.onClick(android.view.View):0 -> onClick
+    266:270:void QuickSettingsActivity$$ExternalSyntheticLambda0.onClick(android.view.View):0:0 -> onClick
+    271:284:void com.gathin.tvhome.QuickSettingsActivity.openNotifications():196:196 -> onClick
+    271:284:void com.gathin.tvhome.QuickSettingsActivity.lambda$onCreate$10(android.view.View):91 -> onClick
+    271:284:void QuickSettingsActivity$$ExternalSyntheticLambda0.onClick(android.view.View):0 -> onClick
+    285:290:void com.gathin.tvhome.QuickSettingsActivity.openNotifications():197:197 -> onClick
+    285:290:void com.gathin.tvhome.QuickSettingsActivity.lambda$onCreate$10(android.view.View):91 -> onClick
+    285:290:void QuickSettingsActivity$$ExternalSyntheticLambda0.onClick(android.view.View):0 -> onClick
+    291:294:void com.gathin.tvhome.QuickSettingsActivity.openNotifications():199:199 -> onClick
+    291:294:void com.gathin.tvhome.QuickSettingsActivity.lambda$onCreate$10(android.view.View):91 -> onClick
+    291:294:void QuickSettingsActivity$$ExternalSyntheticLambda0.onClick(android.view.View):0 -> onClick
+    295:301:void com.gathin.tvhome.QuickSettingsActivity.openNotifications():200:200 -> onClick
+    295:301:void com.gathin.tvhome.QuickSettingsActivity.lambda$onCreate$10(android.view.View):91 -> onClick
+    295:301:void QuickSettingsActivity$$ExternalSyntheticLambda0.onClick(android.view.View):0 -> onClick
+    302:308:void com.gathin.tvhome.QuickSettingsActivity.openNotifications():204:204 -> onClick
+    302:308:void com.gathin.tvhome.QuickSettingsActivity.lambda$onCreate$10(android.view.View):91 -> onClick
+    302:308:void QuickSettingsActivity$$ExternalSyntheticLambda0.onClick(android.view.View):0 -> onClick
+    309:312:void com.gathin.tvhome.QuickSettingsActivity.openNotifications():205:205 -> onClick
+    309:312:void com.gathin.tvhome.QuickSettingsActivity.lambda$onCreate$10(android.view.View):91 -> onClick
+    309:312:void QuickSettingsActivity$$ExternalSyntheticLambda0.onClick(android.view.View):0 -> onClick
+    313:323:void com.gathin.tvhome.QuickSettingsActivity.openNotifications():206:206 -> onClick
+    313:323:void com.gathin.tvhome.QuickSettingsActivity.lambda$onCreate$10(android.view.View):91 -> onClick
+    313:323:void QuickSettingsActivity$$ExternalSyntheticLambda0.onClick(android.view.View):0 -> onClick
+    324:331:void com.gathin.tvhome.QuickSettingsActivity.openNotifications():210:210 -> onClick
+    324:331:void com.gathin.tvhome.QuickSettingsActivity.lambda$onCreate$10(android.view.View):91 -> onClick
+    324:331:void QuickSettingsActivity$$ExternalSyntheticLambda0.onClick(android.view.View):0 -> onClick
+    332:336:void QuickSettingsActivity$$ExternalSyntheticLambda0.onClick(android.view.View):0:0 -> onClick
+    337:343:void com.gathin.tvhome.QuickSettingsActivity.openRearrange():215:215 -> onClick
+    337:343:void com.gathin.tvhome.QuickSettingsActivity.lambda$onCreate$9(android.view.View):86 -> onClick
+    337:343:void QuickSettingsActivity$$ExternalSyntheticLambda0.onClick(android.view.View):0 -> onClick
+    344:347:void com.gathin.tvhome.QuickSettingsActivity.openRearrange():216:216 -> onClick
+    344:347:void com.gathin.tvhome.QuickSettingsActivity.lambda$onCreate$9(android.view.View):86 -> onClick
+    344:347:void QuickSettingsActivity$$ExternalSyntheticLambda0.onClick(android.view.View):0 -> onClick
+    348:351:void com.gathin.tvhome.QuickSettingsActivity.openRearrange():217:217 -> onClick
+    348:351:void com.gathin.tvhome.QuickSettingsActivity.lambda$onCreate$9(android.view.View):86 -> onClick
+    348:351:void QuickSettingsActivity$$ExternalSyntheticLambda0.onClick(android.view.View):0 -> onClick
+    352:354:void com.gathin.tvhome.QuickSettingsActivity.openRearrange():219:219 -> onClick
+    352:354:void com.gathin.tvhome.QuickSettingsActivity.lambda$onCreate$9(android.view.View):86 -> onClick
+    352:354:void QuickSettingsActivity$$ExternalSyntheticLambda0.onClick(android.view.View):0 -> onClick
+    355:358:void com.gathin.tvhome.QuickSettingsActivity.openRearrange():220:220 -> onClick
+    355:358:void com.gathin.tvhome.QuickSettingsActivity.lambda$onCreate$9(android.view.View):86 -> onClick
+    355:358:void QuickSettingsActivity$$ExternalSyntheticLambda0.onClick(android.view.View):0 -> onClick
+    359:360:void QuickSettingsActivity$$ExternalSyntheticLambda0.onClick(android.view.View):0:0 -> onClick
+    361:365:void com.gathin.tvhome.QuickSettingsActivity.lambda$onCreate$0(android.view.View):44:44 -> onClick
+    361:365:void QuickSettingsActivity$$ExternalSyntheticLambda0.onClick(android.view.View):0 -> onClick
+com.gathin.tvhome.QuickSettingsActivity$$ExternalSyntheticLambda9 -> com.gathin.tvhome.a:
+# {"id":"sourceFile","fileName":"R8$$SyntheticClass"}
+# {"id":"com.android.tools.r8.synthesized"}
+    com.gathin.tvhome.QuickSettingsActivity com.gathin.tvhome.QuickSettingsActivity$$InternalSyntheticLambda$1$eed14859cd53a69b92b3a2f799fa3cc125fb80aa2dffd05d725118ec2c3351a7$8.f$0 -> a
+      # {"id":"com.android.tools.r8.synthesized"}
+    0:5:void <init>(com.gathin.tvhome.QuickSettingsActivity):0:0 -> <init>
+      # {"id":"com.android.tools.r8.synthesized"}
+    10:20:int com.gathin.tvhome.SleepTimer.chosen(android.content.Context):61:61 -> onClick
+    10:20:void com.gathin.tvhome.QuickSettingsActivity.openSleepTimer():174 -> onClick
+    10:20:void com.gathin.tvhome.QuickSettingsActivity.lambda$onCreate$8(android.view.View):82 -> onClick
+    21:24:android.content.SharedPreferences com.gathin.tvhome.SleepTimer.prefs(android.content.Context):45:45 -> onClick
+    21:24:int com.gathin.tvhome.SleepTimer.chosen(android.content.Context):61 -> onClick
+    21:24:void com.gathin.tvhome.QuickSettingsActivity.openSleepTimer():174 -> onClick
+    21:24:void com.gathin.tvhome.QuickSettingsActivity.lambda$onCreate$8(android.view.View):82 -> onClick
+    25:31:int com.gathin.tvhome.SleepTimer.chosen(android.content.Context):61:61 -> onClick
+    25:31:void com.gathin.tvhome.QuickSettingsActivity.openSleepTimer():174 -> onClick
+    25:31:void com.gathin.tvhome.QuickSettingsActivity.lambda$onCreate$8(android.view.View):82 -> onClick
+    32:44:int com.gathin.tvhome.SleepTimer.next(int):34:34 -> onClick
+    32:44:void com.gathin.tvhome.QuickSettingsActivity.openSleepTimer():174 -> onClick
+    32:44:void com.gathin.tvhome.QuickSettingsActivity.lambda$onCreate$8(android.view.View):82 -> onClick
+    45:52:int com.gathin.tvhome.SleepTimer.next(int):35:35 -> onClick
+    45:52:void com.gathin.tvhome.QuickSettingsActivity.openSleepTimer():174 -> onClick
+    45:52:void com.gathin.tvhome.QuickSettingsActivity.lambda$onCreate$8(android.view.View):82 -> onClick
+    53:61:void com.gathin.tvhome.SleepTimer.set(android.content.Context,int):66:66 -> onClick
+    53:61:void com.gathin.tvhome.QuickSettingsActivity.openSleepTimer():175 -> onClick
+    53:61:void com.gathin.tvhome.QuickSettingsActivity.lambda$onCreate$8(android.view.View):82 -> onClick
+    62:78:void com.gathin.tvhome.SleepTimer.set(android.content.Context,int):67:67 -> onClick
+    62:78:void com.gathin.tvhome.QuickSettingsActivity.openSleepTimer():175 -> onClick
+    62:78:void com.gathin.tvhome.QuickSettingsActivity.lambda$onCreate$8(android.view.View):82 -> onClick
+    79:81:void com.gathin.tvhome.SleepTimer.set(android.content.Context,int):70:70 -> onClick
+    79:81:void com.gathin.tvhome.QuickSettingsActivity.openSleepTimer():175 -> onClick
+    79:81:void com.gathin.tvhome.QuickSettingsActivity.lambda$onCreate$8(android.view.View):82 -> onClick
+    82:85:android.content.SharedPreferences com.gathin.tvhome.SleepTimer.prefs(android.content.Context):45:45 -> onClick
+    82:85:void com.gathin.tvhome.SleepTimer.set(android.content.Context,int):71 -> onClick
+    82:85:void com.gathin.tvhome.QuickSettingsActivity.openSleepTimer():175 -> onClick
+    82:85:void com.gathin.tvhome.QuickSettingsActivity.lambda$onCreate$8(android.view.View):82 -> onClick
+    86:97:void com.gathin.tvhome.SleepTimer.set(android.content.Context,int):71:71 -> onClick
+    86:97:void com.gathin.tvhome.QuickSettingsActivity.openSleepTimer():175 -> onClick
+    86:97:void com.gathin.tvhome.QuickSettingsActivity.lambda$onCreate$8(android.view.View):82 -> onClick
+    98:117:void com.gathin.tvhome.SleepTimer.set(android.content.Context,int):74:74 -> onClick
+    98:117:void com.gathin.tvhome.QuickSettingsActivity.openSleepTimer():175 -> onClick
+    98:117:void com.gathin.tvhome.QuickSettingsActivity.lambda$onCreate$8(android.view.View):82 -> onClick
+    118:122:void com.gathin.tvhome.SleepTimer.set(android.content.Context,int):76:76 -> onClick
+    118:122:void com.gathin.tvhome.QuickSettingsActivity.openSleepTimer():175 -> onClick
+    118:122:void com.gathin.tvhome.QuickSettingsActivity.lambda$onCreate$8(android.view.View):82 -> onClick
+    123:126:android.content.SharedPreferences com.gathin.tvhome.SleepTimer.prefs(android.content.Context):45:45 -> onClick
+    123:126:void com.gathin.tvhome.SleepTimer.set(android.content.Context,int):77 -> onClick
+    123:126:void com.gathin.tvhome.QuickSettingsActivity.openSleepTimer():175 -> onClick
+    123:126:void com.gathin.tvhome.QuickSettingsActivity.lambda$onCreate$8(android.view.View):82 -> onClick
+    127:140:void com.gathin.tvhome.SleepTimer.set(android.content.Context,int):77:77 -> onClick
+    127:140:void com.gathin.tvhome.QuickSettingsActivity.openSleepTimer():175 -> onClick
+    127:140:void com.gathin.tvhome.QuickSettingsActivity.lambda$onCreate$8(android.view.View):82 -> onClick
+    141:150:int com.gathin.tvhome.SleepTimer.bootCount(android.content.Context):49:49 -> onClick
+    141:150:void com.gathin.tvhome.SleepTimer.set(android.content.Context,int):77 -> onClick
+    141:150:void com.gathin.tvhome.QuickSettingsActivity.openSleepTimer():175 -> onClick
+    141:150:void com.gathin.tvhome.QuickSettingsActivity.lambda$onCreate$8(android.view.View):82 -> onClick
+    151:159:void com.gathin.tvhome.SleepTimer.set(android.content.Context,int):77:77 -> onClick
+    151:159:void com.gathin.tvhome.QuickSettingsActivity.openSleepTimer():175 -> onClick
+    151:159:void com.gathin.tvhome.QuickSettingsActivity.lambda$onCreate$8(android.view.View):82 -> onClick
+    160:170:void com.gathin.tvhome.QuickSettingsActivity.openSleepTimer():176:176 -> onClick
+    160:170:void com.gathin.tvhome.QuickSettingsActivity.lambda$onCreate$8(android.view.View):82 -> onClick
+    171:175:void com.gathin.tvhome.QuickSettingsActivity.openSleepTimer():177:177 -> onClick
+    171:175:void com.gathin.tvhome.QuickSettingsActivity.lambda$onCreate$8(android.view.View):82 -> onClick
+    176:181:android.accessibilityservice.AccessibilityService com.gathin.tvhome.SleepTimer.helper():82:82 -> onClick
+    176:181:void com.gathin.tvhome.QuickSettingsActivity.openSleepTimer():178 -> onClick
+    176:181:void com.gathin.tvhome.QuickSettingsActivity.lambda$onCreate$8(android.view.View):82 -> onClick
+    182:186:com.gathin.tvhome.HomeKeyService com.gathin.tvhome.HomeKeyService.bound():146:146 -> onClick
+    182:186:android.accessibilityservice.AccessibilityService com.gathin.tvhome.SleepTimer.helper():83 -> onClick
+    182:186:void com.gathin.tvhome.QuickSettingsActivity.openSleepTimer():178 -> onClick
+    182:186:void com.gathin.tvhome.QuickSettingsActivity.lambda$onCreate$8(android.view.View):82 -> onClick
+    187:197:com.gathin.tvhome.InputKeyService com.gathin.tvhome.InputKeyService.bound():38:38 -> onClick
+    187:197:android.accessibilityservice.AccessibilityService com.gathin.tvhome.SleepTimer.helper():84 -> onClick
+    187:197:void com.gathin.tvhome.QuickSettingsActivity.openSleepTimer():178 -> onClick
+    187:197:void com.gathin.tvhome.QuickSettingsActivity.lambda$onCreate$8(android.view.View):82 -> onClick
+    198:209:void com.gathin.tvhome.QuickSettingsActivity.openSleepTimer():178:178 -> onClick
+    198:209:void com.gathin.tvhome.QuickSettingsActivity.lambda$onCreate$8(android.view.View):82 -> onClick
+    210:218:void com.gathin.tvhome.QuickSettingsActivity.openSleepTimer():179:179 -> onClick
+    210:218:void com.gathin.tvhome.QuickSettingsActivity.lambda$onCreate$8(android.view.View):82 -> onClick
+    219:223:android.accessibilityservice.AccessibilityService com.gathin.tvhome.SleepTimer.helper():82:82 -> onClick
+    219:223:void com.gathin.tvhome.QuickSettingsActivity.openSleepTimer():180 -> onClick
+    219:223:void com.gathin.tvhome.QuickSettingsActivity.lambda$onCreate$8(android.view.View):82 -> onClick
+    224:228:com.gathin.tvhome.HomeKeyService com.gathin.tvhome.HomeKeyService.bound():146:146 -> onClick
+    224:228:android.accessibilityservice.AccessibilityService com.gathin.tvhome.SleepTimer.helper():83 -> onClick
+    224:228:void com.gathin.tvhome.QuickSettingsActivity.openSleepTimer():180 -> onClick
+    224:228:void com.gathin.tvhome.QuickSettingsActivity.lambda$onCreate$8(android.view.View):82 -> onClick
+    229:235:com.gathin.tvhome.InputKeyService com.gathin.tvhome.InputKeyService.bound():38:38 -> onClick
+    229:235:android.accessibilityservice.AccessibilityService com.gathin.tvhome.SleepTimer.helper():84 -> onClick
+    229:235:void com.gathin.tvhome.QuickSettingsActivity.openSleepTimer():180 -> onClick
+    229:235:void com.gathin.tvhome.QuickSettingsActivity.lambda$onCreate$8(android.view.View):82 -> onClick
+    236:241:void com.gathin.tvhome.QuickSettingsActivity.openSleepTimer():180:180 -> onClick
+    236:241:void com.gathin.tvhome.QuickSettingsActivity.lambda$onCreate$8(android.view.View):82 -> onClick
+    242:245:void com.gathin.tvhome.QuickSettingsActivity.openSleepTimer():181:181 -> onClick
+    242:245:void com.gathin.tvhome.QuickSettingsActivity.lambda$onCreate$8(android.view.View):82 -> onClick
 com.gathin.tvhome.RaceWeekend -> c3:
 # {"id":"sourceFile","fileName":"RaceWeekend.java"}
     java.time.Duration LEAD -> a
@@ -29429,18 +29497,18 @@ com.gathin.tvhome.RecentApps -> f3:
     29:37:void com.gathin.tvhome.AnimationScale.enforce(android.content.Context,float):21:21 -> j
     38:48:void com.gathin.tvhome.AnimationScale.enforce(android.content.Context,float):23:23 -> j
     0:1:void com.gathin.tvhome.GuardKeep.ensureHomeKey(android.content.Context):51:51 -> k
-    2:6:void com.gathin.tvhome.HomeKeyService.applyStandbyOptIn():146:146 -> k
+    2:6:void com.gathin.tvhome.HomeKeyService.applyStandbyOptIn():151:151 -> k
     2:6:void com.gathin.tvhome.GuardKeep.ensureHomeKey(android.content.Context):51 -> k
-    7:16:void com.gathin.tvhome.HomeKeyService.applyStandbyOptIn():148:148 -> k
+    7:16:void com.gathin.tvhome.HomeKeyService.applyStandbyOptIn():153:153 -> k
     7:16:void com.gathin.tvhome.GuardKeep.ensureHomeKey(android.content.Context):51 -> k
-    17:21:void com.gathin.tvhome.HomeKeyService.disarmStandbyExit():192:192 -> k
-    17:21:void com.gathin.tvhome.HomeKeyService.applyStandbyOptIn():149 -> k
+    17:21:void com.gathin.tvhome.HomeKeyService.disarmStandbyExit():197:197 -> k
+    17:21:void com.gathin.tvhome.HomeKeyService.applyStandbyOptIn():154 -> k
     17:21:void com.gathin.tvhome.GuardKeep.ensureHomeKey(android.content.Context):51 -> k
-    22:25:void com.gathin.tvhome.HomeKeyService.disarmStandbyExit():194:194 -> k
-    22:25:void com.gathin.tvhome.HomeKeyService.applyStandbyOptIn():149 -> k
+    22:25:void com.gathin.tvhome.HomeKeyService.disarmStandbyExit():199:199 -> k
+    22:25:void com.gathin.tvhome.HomeKeyService.applyStandbyOptIn():154 -> k
     22:25:void com.gathin.tvhome.GuardKeep.ensureHomeKey(android.content.Context):51 -> k
-    26:27:void com.gathin.tvhome.HomeKeyService.disarmStandbyExit():197:197 -> k
-    26:27:void com.gathin.tvhome.HomeKeyService.applyStandbyOptIn():149 -> k
+    26:27:void com.gathin.tvhome.HomeKeyService.disarmStandbyExit():202:202 -> k
+    26:27:void com.gathin.tvhome.HomeKeyService.applyStandbyOptIn():154 -> k
     26:27:void com.gathin.tvhome.GuardKeep.ensureHomeKey(android.content.Context):51 -> k
     28:34:void com.gathin.tvhome.GuardKeep.ensureHomeKey(android.content.Context):52:52 -> k
     35:43:void com.gathin.tvhome.GuardKeep.ensureHomeKey(android.content.Context):53:53 -> k
@@ -30584,6 +30652,35 @@ com.gathin.tvhome.SkyView -> com.gathin.tvhome.SkyView:
     17:19:void setIntensity(int):55:55 -> setIntensity
     20:28:void setIntensity(int):56:56 -> setIntensity
     29:37:void setIntensity(int):57:57 -> setIntensity
+com.gathin.tvhome.SleepTimer -> com.gathin.tvhome.SleepTimer:
+# {"id":"sourceFile","fileName":"SleepTimer.java"}
+    int[] STEPS -> a
+    1:9:void <clinit>():25:25 -> <clinit>
+    0:3:void <init>():22:22 -> <init>
+    0:6:android.content.SharedPreferences prefs(android.content.Context):45:45 -> a
+    0:6:int minutesLeft(android.content.Context):54 -> a
+    7:13:int minutesLeft(android.content.Context):55:55 -> a
+    14:26:int bootCount(android.content.Context):49:49 -> a
+    14:26:int minutesLeft(android.content.Context):55 -> a
+    27:51:int minutesLeft(android.content.Context):56:56 -> a
+    52:54:int minutesLeft(long,long):41:41 -> a
+    52:54:int minutesLeft(android.content.Context):56 -> a
+    0:6:android.content.SharedPreferences prefs(android.content.Context):45:45 -> onReceive
+    0:6:void onReceive(android.content.Context,android.content.Intent):89 -> onReceive
+    7:17:void onReceive(android.content.Context,android.content.Intent):89:89 -> onReceive
+    18:25:android.accessibilityservice.AccessibilityService helper():82:82 -> onReceive
+    18:25:void onReceive(android.content.Context,android.content.Intent):90 -> onReceive
+    26:30:com.gathin.tvhome.HomeKeyService com.gathin.tvhome.HomeKeyService.bound():146:146 -> onReceive
+    26:30:android.accessibilityservice.AccessibilityService helper():83 -> onReceive
+    26:30:void onReceive(android.content.Context,android.content.Intent):90 -> onReceive
+    31:36:com.gathin.tvhome.InputKeyService com.gathin.tvhome.InputKeyService.bound():38:38 -> onReceive
+    31:36:android.accessibilityservice.AccessibilityService helper():84 -> onReceive
+    31:36:void onReceive(android.content.Context,android.content.Intent):90 -> onReceive
+    37:43:void onReceive(android.content.Context,android.content.Intent):91:91 -> onReceive
+    44:54:void onReceive(android.content.Context,android.content.Intent):93:93 -> onReceive
+    55:58:void onReceive(android.content.Context,android.content.Intent):94:94 -> onReceive
+    59:77:void onReceive(android.content.Context,android.content.Intent):95:95 -> onReceive
+    78:85:void onReceive(android.content.Context,android.content.Intent):97:97 -> onReceive
 com.gathin.tvhome.SpookyIconDrawable -> e4:
 # {"id":"sourceFile","fileName":"SpookyIconDrawable.java"}
     int kind -> a

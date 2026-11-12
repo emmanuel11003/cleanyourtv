@@ -11,6 +11,17 @@
 Checks: 349 unit tests pass, lint reports 0 errors, zipalign check passes, v2-only signature verifies.
 **Not yet tried on a TV or the emulator.**
 
+## Built-in sleep timer
+
+The Quick Settings **Sleep timer** tile works without an add-on now:
+
+- **Setting it:** each OK press steps Off → 15 → 30 → 45 → 60 → 90 → 120 min → Off. The panel stays
+  open, a toast confirms the time, and the tile reads "Sleep in N min" whenever the panel opens.
+- **When time is up:** the TV goes to standby through the launcher's own remote-key helper
+  (`HomeKeyService` or `InputKeyService`), the same way the remote's `sleep` action word does. This needs Android 9+.
+  If neither helper is on, the screensaver starts instead, and the toast says so when the timer is set.
+- **Cost:** one system alarm, with no service and no polling. A reboot cancels the timer. 3 new unit tests (352 in total).
+
 ## Maximum packing (lossless)
 
 Same 98 files, same code (classes.dex is still 463,668 B unpacked), same resources and translations:

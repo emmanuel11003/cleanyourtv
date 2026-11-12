@@ -31,10 +31,17 @@ public class InputKeyService extends AccessibilityService {
     private boolean consumeVolumeKeys;
     /** Stops key filtering while a game controller is connected; null unless gamepad_passthrough and key_filter. */
     private GamepadPassthrough gamepads;
+    /** This helper while Android has it bound (SleepTimer puts the TV in standby through it). */
+    private static InputKeyService running;
+
+    static InputKeyService bound() {
+        return running;
+    }
 
     @Override
     protected void onServiceConnected() {
         super.onServiceConnected();
+        running = this;
         // From config.xml or a theme's config.json; theme.sh rebinds this service after a push.
         Config config = Config.load(this);
         // restore_key_services: note that this helper runs, so Home can put it back after a force stop.
@@ -87,6 +94,7 @@ public class InputKeyService extends AccessibilityService {
 
     @Override
     public void onDestroy() {
+        if (running == this) running = null;
         RemoteKeys.release(this);
         if (gamepads != null) gamepads.stop();
         if (consumeVolumeKeys) VolumeKeys.stop();

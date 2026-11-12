@@ -78,8 +78,9 @@ public final class QuickSettingsActivity extends Activity {
         // 6. Bluetooth -> Native Remotes & Accessories (AddAccessoryActivity / DevicePicker)
         findViewById(R.id.tileBluetooth).setOnClickListener(v -> openBluetooth());
 
-        // 7. Sleep timer -> Opens the Sleep Timer add-on
+        // 7. Sleep timer -> built in: each press steps to the next time
         findViewById(R.id.tileSleepTimer).setOnClickListener(v -> openSleepTimer());
+        showSleepTimer();
 
         // 8. Reorder apps -> Triggers CleanYourTV reorder mode directly
         findViewById(R.id.tileRearrange).setOnClickListener(v -> openRearrange());
@@ -165,27 +166,29 @@ public final class QuickSettingsActivity extends Activity {
         safeStart(new Intent(Settings.ACTION_SETTINGS));
     }
 
-    /** 7. Sleep Timer: Directs user to the official Sleep Timer add-on. */
+    /**
+     * 7. Sleep timer, built in: each press steps Off, 15, 30, 45, 60, 90, 120 minutes (SleepTimer). The panel stays
+     * open so OK can be pressed again, and the tile shows the minutes left.
+     */
     private void openSleepTimer() {
-        Intent quickIntent = new Intent()
-                .setComponent(new android.content.ComponentName("io.github.luyzfernando08.sleeptimer",
-                        "io.github.luyzfernando08.sleeptimer.QuickActivity"))
-                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        if (safeStart(quickIntent)) {
-            finish();
-            return;
-        }
+        int minutes = SleepTimer.next(SleepTimer.chosen(this));
+        SleepTimer.set(this, minutes);
+        showSleepTimer();
+        String msg = minutes == 0 ? getString(R.string.sleep_timer_off)
+                : getString(SleepTimer.helper() != null ? R.string.sleep_timer_set : R.string.sleep_timer_no_helper, minutes);
+        if (sleepToast != null) sleepToast.cancel();
+        sleepToast = Toast.makeText(this, msg, minutes != 0 && SleepTimer.helper() == null ? Toast.LENGTH_LONG : Toast.LENGTH_SHORT);
+        sleepToast.show();
+    }
 
-        Intent timerIntent = new Intent()
-                .setComponent(new android.content.ComponentName("io.github.luyzfernando08.sleeptimer",
-                        "io.github.luyzfernando08.sleeptimer.TimerActivity"))
-                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        if (safeStart(timerIntent)) {
-            finish();
-            return;
-        }
+    private Toast sleepToast;
 
-        Toast.makeText(this, R.string.sleep_timer_addon_help, Toast.LENGTH_LONG).show();
+    /** The tile's label: "Sleep timer" while off, else the minutes left. */
+    private void showSleepTimer() {
+        TextView label = findViewById(R.id.sleepTimerLabel);
+        if (label == null) return;
+        int left = SleepTimer.minutesLeft(this);
+        label.setText(left == 0 ? getString(R.string.tile_sleep_timer) : getString(R.string.sleep_timer_left, left));
     }
 
     /** 9. Notifications: Directs user to the official Notification Center add-on. */
@@ -274,6 +277,7 @@ public final class QuickSettingsActivity extends Activity {
         if (date != null) {
             date.setText(DateFormat.getDateInstance(DateFormat.FULL).format(new Date()));
         }
+        showSleepTimer();
     }
 
     @Override

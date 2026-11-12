@@ -141,6 +141,11 @@ public class HomeKeyService extends AccessibilityService {
         unlockReceiver = null;
     }
 
+    /** This helper while Android has it bound, or null (SleepTimer puts the TV in standby through it). */
+    static HomeKeyService bound() {
+        return running;
+    }
+
     /** The opt-in broadcast: arm this binding now, or drop the receiver if the opt-in was turned off. */
     static void applyStandbyOptIn() {
         HomeKeyService service = running;
