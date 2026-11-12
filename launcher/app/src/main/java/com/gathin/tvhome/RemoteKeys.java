@@ -419,8 +419,12 @@ final class RemoteKeys {
     static void launch(Context ctx, String pkg) {
         if (pkg == null || runAction(ctx, pkg)) return;
         if (INPUTS.equals(pkg)) {
-            // This launcher's own Inputs menu, as InputsRequestActivity opens it: addressed to Home directly, so a
-            // vendor input picker that also answers VIEW_INPUTS never turns it into a chooser.
+            Intent viewInputs = new Intent("com.android.tv.action.VIEW_INPUTS");
+            try {
+                ctx.startActivity(viewInputs.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+                return;
+            } catch (ActivityNotFoundException | SecurityException ignored) {
+            }
             try {
                 ctx.startActivity(new Intent(ctx, MainActivity.class).setAction(MainActivity.ACTION_VIEW_INPUTS)
                         .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
