@@ -70,19 +70,27 @@ public class InputKeyService extends AccessibilityService {
     @Override
     protected boolean onKeyEvent(KeyEvent event) {
         if (consumeVolumeKeys && VolumeKeys.handle(this, event)) return true;
+        if (isInputKey(event.getKeyCode())) {
+            if (event.getAction() == KeyEvent.ACTION_UP && !event.isCanceled()) {
+                try {
+                    startActivity(new Intent(ACTION_VIEW_INPUTS).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+                } catch (ActivityNotFoundException | SecurityException unavailable) {
+                    try {
+                        startActivity(new Intent(this, MainActivity.class)
+                                .setAction(MainActivity.ACTION_VIEW_INPUTS)
+                                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+                    } catch (ActivityNotFoundException ignored) {
+                    }
+                }
+            }
+            return true;
+        }
         // A scancode entry is more specific than any keycode, so it goes first.
         if (RemoteKeys.handle(this, event, appScancodes.get(event.getScanCode()),
                 holdAppScancodes.get(event.getScanCode()))) return true;
         if (RemoteKeys.handle(this, event, appKeys.get(event.getKeyCode()),
                 holdAppKeys.get(event.getKeyCode()))) return true;
-        if (!isInputKey(event.getKeyCode())) return false;
-        if (event.getAction() == KeyEvent.ACTION_UP && !event.isCanceled()) {
-            try {
-                startActivity(new Intent(ACTION_VIEW_INPUTS).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
-            } catch (ActivityNotFoundException ignored) {
-            }
-        }
-        return true;
+        return false;
     }
 
     /** Unbound by Android: the user turned the helper off, so Home doesn't put it back (ServiceRepair). */

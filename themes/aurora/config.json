@@ -1,52 +1,56 @@
 {
-    "focus_overshoot":  false,
-    "app_glow":  true,
-    "cinematic_home":  true,
-    "dock_apps":  [
-                      "org.smarttube.stable",
-                      "com.google.android.youtube.tv",
-                      "in.startv.hotstar",
-                      "com.sonyliv",
-                      "com.android.vending"
-                  ],
-    "dock_opacity":  50,
-    "wifi_status_color":  true,
-    "settings_key_scancodes":  [
-                                  240
-                              ],
-    "settings_key_keycodes":  [
-                                  82,
-                                  83,
-                                  176,
-                                  206,
-                                  240,
-                                  312
-                              ],
-    "cinematic_scrim":  0,
-    "wallpaper":  true,
-    "clock_wallpaper":  true,
-    "show_recents_pill":  true,
-    "advanced_effects":  true,
-    "icon_only_inputs":  true,
-    "icon_only_buttons":  true,
-    "settings_key_panel":  true,
-    "clock_glow":  true,
-    "glow_style":  "horizon",
-    "dock_glass":  true,
-    "restore_key_services":  true,
-    "background_color":  "#070A14",
-    "dock_even_padding":  true,
-    "live_tv_package":  "com.mediatek.wwtv.tvcenter",
-    "app_keys":  [
-                     "scan:225:com.mediatek.wwtv.tvcenter",
-                     "scan:225:input:com.mediatek.dtv.tvinput.dvbtuner/.DvbTvInputService/HW0",
-                     "scan:240:com.gathin.tvhome/.QuickSettingsActivity",
-                     "83:com.gathin.tvhome/.QuickSettingsActivity",
-                     "KEYCODE_NOTIFICATION:com.gathin.tvhome/.QuickSettingsActivity",
-                     "206:com.gathin.tvhome/.QuickSettingsActivity",
-                     "176:com.gathin.tvhome/.QuickSettingsActivity",
-                     "KEYCODE_SETTINGS:com.gathin.tvhome/.QuickSettingsActivity",
-                     "82:com.gathin.tvhome/.QuickSettingsActivity",
-                     "312:com.gathin.tvhome/.QuickSettingsActivity"
-                 ]
+    "focus_overshoot": false,
+    "app_glow": true,
+    "cinematic_home": true,
+    "dock_apps": [
+        "org.smarttube.stable",
+        "com.google.android.youtube.tv",
+        "in.startv.hotstar",
+        "com.sonyliv",
+        "com.android.vending"
+    ],
+    "dock_opacity": 50,
+    "wifi_status_color": true,
+    "settings_key_scancodes": [],
+    "settings_key_keycodes": [
+        82,
+        83,
+        176,
+        206,
+        312
+    ],
+    "input_key_keycodes": [
+        178,
+        170
+    ],
+    "cinematic_scrim": 0,
+    "wallpaper": true,
+    "clock_wallpaper": true,
+    "show_recents_pill": true,
+    "advanced_effects": true,
+    "icon_only_inputs": true,
+    "icon_only_buttons": true,
+    "settings_key_panel": true,
+    "clock_glow": true,
+    "glow_style": "horizon",
+    "dock_glass": true,
+    "restore_key_services": true,
+    "background_color": "#070A14",
+    "dock_even_padding": true,
+    "live_tv_package": "com.mediatek.wwtv.tvcenter",
+    "app_keys": [
+        "scan:225:com.mediatek.wwtv.tvcenter",
+        "scan:225:input:com.mediatek.dtv.tvinput.dvbtuner/.DvbTvInputService/HW0",
+        "83:com.gathin.tvhome/.QuickSettingsActivity",
+        "KEYCODE_NOTIFICATION:com.gathin.tvhome/.QuickSettingsActivity",
+        "206:com.gathin.tvhome/.QuickSettingsActivity",
+        "176:com.gathin.tvhome/.QuickSettingsActivity",
+        "KEYCODE_SETTINGS:com.gathin.tvhome/.QuickSettingsActivity",
+        "82:com.gathin.tvhome/.QuickSettingsActivity",
+        "312:com.gathin.tvhome/.QuickSettingsActivity",
+        "178:inputs",
+        "KEYCODE_TV_INPUT:inputs",
+        "170:inputs",
+        "KEYCODE_TV:inputs"
+    ]
 }

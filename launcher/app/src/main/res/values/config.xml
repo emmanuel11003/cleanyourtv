@@ -164,7 +164,6 @@
          evdev MSC_SCAN there, which is not always the scanCode the framework reports, so a number that takes
          nothing is no proof the press never arrived. Leave empty to omit. -->
     <integer-array name="settings_key_scancodes">
-        <item>240</item>
     </integer-array>
     <!-- The same by Android keycode, for buttons whose scancode is shared. TCL Google TV remotes send their
          Settings button as keycode 83 (KEYCODE_NOTIFICATION, which the stock Google TV home turned into its quick
@@ -177,7 +176,7 @@
         <item>82</item>
         <item>83</item>
         <item>176</item>
-        <item>240</item>
+        <item>206</item>
         <item>312</item>
     </integer-array>
     <bool name="settings_key_panel">true</bool>
@@ -194,6 +193,8 @@
          app each such "global key" was routed to. Check with the real remote: keys injected over ADB never
          reach InputKeyService. Leave empty to omit. -->
     <integer-array name="input_key_keycodes">
+        <item>178</item>
+        <item>170</item>
     </integer-array>
     <!-- Answer the system input switcher (com.android.tv.action.VIEW_INPUTS) with the Inputs menu. For TVs whose
          stock launcher was the only handler of that action, so the remote's Input button does nothing once the
@@ -232,7 +233,6 @@
     <string-array name="app_keys" translatable="false">
         <item>scan:225:com.mediatek.wwtv.tvcenter</item>
         <item>scan:225:input:com.mediatek.dtv.tvinput.dvbtuner/.DvbTvInputService/HW0</item>
-        <item>scan:240:com.gathin.tvhome/.QuickSettingsActivity</item>
         <item>83:com.gathin.tvhome/.QuickSettingsActivity</item>
         <item>KEYCODE_NOTIFICATION:com.gathin.tvhome/.QuickSettingsActivity</item>
         <item>206:com.gathin.tvhome/.QuickSettingsActivity</item>
@@ -240,6 +240,10 @@
         <item>KEYCODE_SETTINGS:com.gathin.tvhome/.QuickSettingsActivity</item>
         <item>82:com.gathin.tvhome/.QuickSettingsActivity</item>
         <item>312:com.gathin.tvhome/.QuickSettingsActivity</item>
+        <item>178:inputs</item>
+        <item>KEYCODE_TV_INPUT:inputs</item>
+        <item>170:inputs</item>
+        <item>KEYCODE_TV:inputs</item>
     </string-array>
 
     <!-- Package of the stock launcher, for TVs whose firmware turns it back on after it was disabled. XGIMI's
