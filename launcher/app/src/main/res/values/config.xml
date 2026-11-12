@@ -181,7 +181,7 @@
         <item>240</item>
         <item>312</item>
     </integer-array>
-    <bool name="settings_key_panel">true</bool>
+    <bool name="settings_key_panel">false</bool>
 
     <!-- A force stop of the launcher (Settings, a cleaner app, am force-stop) takes HomeKeyService and InputKeyService
          off the enabled list. true: Home puts the helpers that were running back when it starts; one turned off in
@@ -254,14 +254,6 @@
         <item>KEYCODE_FEATURED_APP_4:in.startv.hotstar</item>
         <item>194:in.startv.hotstar</item>
         <item>KEYCODE_BUTTON_7:in.startv.hotstar</item>
-        <item>scan:240:com.gathin.tvhome/.QuickSettingsActivity</item>
-        <item>83:com.gathin.tvhome/.QuickSettingsActivity</item>
-        <item>KEYCODE_NOTIFICATION:com.gathin.tvhome/.QuickSettingsActivity</item>
-        <item>206:com.gathin.tvhome/.QuickSettingsActivity</item>
-        <item>176:com.gathin.tvhome/.QuickSettingsActivity</item>
-        <item>KEYCODE_SETTINGS:com.gathin.tvhome/.QuickSettingsActivity</item>
-        <item>82:com.gathin.tvhome/.QuickSettingsActivity</item>
-        <item>312:com.gathin.tvhome/.QuickSettingsActivity</item>
         <item>178:inputs</item>
         <item>KEYCODE_TV_INPUT:inputs</item>
         <item>170:inputs</item>
