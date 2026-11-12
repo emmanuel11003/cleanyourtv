@@ -2,18 +2,42 @@
   <a href="https://cleanyour.tv"><img src="https://raw.githubusercontent.com/Gathin23/cleanyourtv/main/docs/banner.png" alt="CleanYourTV. Your TV, minus the ads. Strip the bloatware from any Android TV or Google TV over Wi-Fi and replace the ad-filled home screen with a clean launcher that looks like an Apple TV. No root, no cable, nothing uninstalled, and a one-line restore." width="800"></a>
 </p>
 
-> [!NOTE]
-> **Custom Fork for Haier 55P7GT-P (HR9676EU)**
-> This fork is maintained by [@emmanuel11003](https://github.com/emmanuel11003) and specifically optimized for the **Haier 55P7GT-P / HR9676EUF (MediaTek board `omonia`, Google TV 14)**.
+# CleanYourTV — Optimised Version (v6.2)
+
+> [!TIP]
+> **High-Performance Optimised Edition**  
+> Maintained by [@emmanuel11003](https://github.com/emmanuel11003). Thoroughly optimized, tested, and verified on real hardware (**Haier MatrixTV DE 55" Google TV**, Android 14, MediaTek MT9676).  
 > 
-> **Specific optimizations included in this build:**
-> - **Permanent Aurora Theme**: Hardcoded glass aesthetic with transparent backgrounds tuned for MediaTek hardware.
-> - **5-Column Dock**: Configured for 55" display proportions and remote D-pad ergonomics.
-> - **0.5x System Animation Scales**: Ultra-responsive transitions eliminating UI lag.
-> - **Android 14 Task Switch Fix**: Eliminates pop-up animations and previous app icon flash during app launches.
-> - **LiveClock Optimizations**: Fixed baseline alignment, digit doubling, and stopped background timer threads when idle.
-> 
-> *Original project and upstream attribution: [Gathin23/cleanyourtv](https://github.com/Gathin23/cleanyourtv) (Licensed under MIT).*
+> 📖 **Full Release Notes & Telemetry**: [V6_2_RELEASE_NOTES.md](V6_2_RELEASE_NOTES.md) | [V6_1_RELEASE_NOTES.md](V6_1_RELEASE_NOTES.md) | [V6_RELEASE_NOTES.md](V6_RELEASE_NOTES.md)
+
+### 📸 Live TV Captures (Optimised Version in Action)
+
+| Home Launcher (5-Column Glass Dock) | Month Calendar & Clock Screensaver |
+| :---: | :---: |
+| <img src="docs/screenshots/v6.2-home.png" width="380" alt="Home Launcher Screen"> | <img src="docs/screenshots/v6.2-screensaver.png" width="380" alt="Month Calendar Screensaver"> |
+| **Stock Google TV Input Selector** | **Quick Settings with Built-in Sleep Timer** |
+| <img src="docs/screenshots/v6.2-stock-input-selector.png" width="380" alt="Stock Input Selector"> | <img src="docs/screenshots/v6.2-quick-settings.png" width="380" alt="Quick Settings Overlay"> |
+| **On-Screen Inputs Pill Dialog** | **Notification Center Panel (Modular Add-On)** |
+| <img src="docs/screenshots/v6.2-inputs-pill.png" width="380" alt="Inputs Pill Dialog"> | <img src="docs/screenshots/v6.2-notification-center.png" width="380" alt="Notification Center Panel"> |
+
+### 🚀 Key Optimisations & Features at a Glance
+
+- **~85% Memory Reduction**: Consumes only **58.2 MB Total PSS** (7.3 MB Java heap) compared to ~350 MB on stock Google TV launcher, freeing up >300 MB of system RAM for streaming apps.
+- **Fluid 60 FPS**: **0.00% legacy jank** with consistent 26 ms frametimes and 0% idle CPU overhead.
+- **Centralized `RemoteKeys` Architecture**: Isolated input key precedence prevents button collisions while preserving full access to both Quick Settings and the Stock Google TV input selector.
+- **Golden Navigation Baseline**:
+  - **Remote Input Button**: Stock Google TV Input Selector (`SelectInputActivity`).
+  - **Remote Settings Gear / Menu**: Custom Quick Settings overlay (`QuickSettingsActivity`).
+  - **On-Screen Inputs Pill**: Built-in inputs popup dialog (`showInputs()`).
+  - **On-Screen Settings Pill**: Native Android TV System Settings (`com.android.tv.settings`).
+  - **Remote TV Button**: Direct Live TV / DVB tuner launch (`scan:225`).
+- **Zero-Cost Compile-Time Logging**: `Log.d` debug logs stripped by R8 in release builds for zero runtime key latency.
+- **Native Built-in Sleep Timer**: 15–120 min countdown with standby dispatch via accessibility helper (zero polling).
+- **Resilient Live Clock**: Dynamic second/minute timekeeping that never freezes across standby cycles or translucent overlays.
+- **Offline TV Companion LAN Mirroring**: High-speed, 60 FPS hardware H.264 screen mirroring to mobile devices over local Wi-Fi with on-screen D-pad and touchpad controls ([companion/](companion/) & [tv_server/](tv_server/)).
+- **Notification Center Add-On**: Translucent right-side notification panel matching Google TV styling ([addons/notification-center/](addons/notification-center/)).
+
+*Original upstream project and attribution: [Gathin23/cleanyourtv](https://github.com/Gathin23/cleanyourtv) (Licensed under MIT).*
 
 <p align="center">
   Read in: <a href="README.he.md" lang="he" dir="rtl">עברית</a> · <a href="README.zh-CN.md">简体中文</a> · <a href="README.zh-TW.md">正體中文</a> · <a href="README.vi.md">Tiếng Việt</a> · <a href="README.ja.md">日本語</a> · <a href="README.it.md">Italiano</a> · <a href="README.pt-BR.md">Português</a> · <a href="README.nl.md">Nederlands</a> · <a href="README.de.md">Deutsch</a> · <a href="README.uk.md">Українська</a> · <a href="README.tr.md">Türkçe</a>
