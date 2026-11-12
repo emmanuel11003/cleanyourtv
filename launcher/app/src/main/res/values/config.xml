@@ -235,6 +235,25 @@
     <string-array name="app_keys" translatable="false">
         <item>scan:225:com.mediatek.wwtv.tvcenter</item>
         <item>scan:225:input:com.mediatek.dtv.tvinput.dvbtuner/.DvbTvInputService/HW0</item>
+        <item>scan:362:com.mediatek.wwtv.tvcenter</item>
+        <item>172:com.mediatek.wwtv.tvcenter</item>
+        <item>KEYCODE_GUIDE:com.mediatek.wwtv.tvcenter</item>
+        <item>297:com.google.android.youtube.tv</item>
+        <item>KEYCODE_FEATURED_APP_1:com.google.android.youtube.tv</item>
+        <item>190:com.google.android.youtube.tv</item>
+        <item>KEYCODE_BUTTON_3:com.google.android.youtube.tv</item>
+        <item>298:com.netflix.ninja</item>
+        <item>KEYCODE_FEATURED_APP_2:com.netflix.ninja</item>
+        <item>191:com.netflix.ninja</item>
+        <item>KEYCODE_BUTTON_4:com.netflix.ninja</item>
+        <item>299:com.amazon.amazonvideo.livingroom</item>
+        <item>KEYCODE_FEATURED_APP_3:com.amazon.amazonvideo.livingroom</item>
+        <item>193:com.amazon.amazonvideo.livingroom</item>
+        <item>KEYCODE_BUTTON_6:com.amazon.amazonvideo.livingroom</item>
+        <item>300:in.startv.hotstar</item>
+        <item>KEYCODE_FEATURED_APP_4:in.startv.hotstar</item>
+        <item>194:in.startv.hotstar</item>
+        <item>KEYCODE_BUTTON_7:in.startv.hotstar</item>
         <item>scan:240:com.gathin.tvhome/.QuickSettingsActivity</item>
         <item>83:com.gathin.tvhome/.QuickSettingsActivity</item>
         <item>KEYCODE_NOTIFICATION:com.gathin.tvhome/.QuickSettingsActivity</item>
