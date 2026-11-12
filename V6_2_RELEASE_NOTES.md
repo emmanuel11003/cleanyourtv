@@ -52,24 +52,49 @@ A Google TV–style notification side panel add-on card designed specifically fo
 
 ---
 
-## 4. Built-in Features & Customizations
+## 4. Built-in Features & Visual Customizations
 
-### Native Built-in Sleep Timer (`SleepTimer.java`)
-- Quick Settings tile steps through `Off` → `15` → `30` → `45` → `60` → `90` → `120 min` → `Off`.
-- Puts TV to standby when elapsed via the launcher's own accessibility helper (`HomeKeyService` / `InputKeyService`), with zero background polling or battery drain.
+### Cinematic Top Shelf & Horizon Ambient Glow
+- **Adaptive Top Shelf (`cinematic_home: true`)**: The focused app's artwork is softened and dynamically fills the upper screen backdrop with brand-tinted ambient illumination.
+- **Horizon Brand Wash (`glow_style: "horizon"`)**: Brand color cascades from the top edge with translucent glass sheen highlights (`glass_style: "glass"`), replacing flat solid backgrounds with cinematic visual depth.
+- **Dynamic Usage Metadata**: Features dock position dots (`cinematic_dots`) and a live "Last opened" timestamp (`LastOpened.java`).
+
+### Live RAM & Storage Telemetry Pill (`show_stats: true`)
+- Top bar displays real-time system memory and available storage directly beside the live clock (e.g., `Memory 1350 / 1797 MB • Storage 5.5 GB free`).
 
 ### Resilient Live Clock (`LiveClockView.java`)
-- Keeps ticking across standby cycles, window focus changes, and Android 14 deep sleep transitions.
+- Keeps ticking accurately across standby cycles, window focus changes, and Android 14 deep sleep transitions.
 - Allocates fresh spans and invalidates cleanly under translucent overlays (Quick Settings, Notification Center).
 
-### Glass UI System
-- Cohesive translucent dark theme with reactive glowing focus rings.
-- 12dp–14dp rounded corner hierarchy, 4dp row gaps, and centred pill layout.
-- Real-time RAM and storage stats pill in top bar.
+### Native Built-in Sleep Timer (`SleepTimer.java`)
+- Self-contained Quick Settings tile stepping through `Off` → `15` → `30` → `45` → `60` → `90` → `120 min` → `Off`.
+- Puts TV to standby when elapsed via the launcher's own accessibility helper (`HomeKeyService` / `InputKeyService`), with zero background polling or battery drain.
+
+### Dock Ergonomics & Fluid Glass Styling
+- **5-Column Ergonomic Dock**: 144dp tile width, 50% opacity frosted glass band (`dock_glass: true`, `dock_band: true`), and concentric even padding (`dock_even_padding: true`).
+- **Icon-Only Pill Bar**: Compact round icon buttons for Inputs, Wi-Fi, and Settings.
+- **Connection Health Indicator**: Wi-Fi icon turns green when online, white when unauthenticated/offline (`wifi_status_color: true`).
+- **Smooth 0.5x Motion Profile**: System animation scale set permanently to 0.5x (`animation_scale: "0.5"`) with eliminated popup flash transitions.
+- **Smart Idle Screensaver**: Home screen smoothly transitions to the clock screensaver after 5 minutes of idle time (`home_idle_clock_minutes: 5`, `clock_wallpaper: true`, `clock_wallpaper_dim: 50`) without interrupting running apps.
 
 ---
 
-## 5. Resource Usage & Performance Benchmark (vs. Stock Google TV)
+## 5. Companion & Mirroring Subsystem
+
+### TV Companion App (`companion/`)
+- Ultra-lightweight phone companion app (**43,176 bytes / ~42 KB release APK**).
+- **100% Offline LAN Screen Mirroring**: Streams 60 FPS hardware H.264 video feed directly to phone `SurfaceView` using `MediaCodec` low latency (`KEY_LOW_LATENCY = 1`).
+- **Remote & Touchpad**: On-screen D-pad, OK, Back, Home, Volume, plus touchpad gestures (tap = OK, swipe = D-pad navigation).
+- **Zero Third-Party Bloat**: Built purely on native Android APIs (no ExoPlayer, FFmpeg, or WebRTC).
+
+### TV Streaming Server (`tv_server/`)
+- TV-side companion server running in unprivileged user shell space (`tv-server.jar`).
+- **Hardware Acceleration**: Captures screen using MediaTek hardware AVC encoder (<5% CPU streaming, 0% CPU idle, <25 MB RAM).
+- Zero root required; started seamlessly over local Wi-Fi or adb.
+
+---
+
+## 6. Resource Usage & Performance Benchmark (vs. Stock Google TV)
 
 Real hardware telemetry measured on the **Haier MatrixTV DE 55" Google TV** running Android 14 (`UKN5.251016.114`):
 
@@ -98,7 +123,7 @@ Real hardware telemetry measured on the **Haier MatrixTV DE 55" Google TV** runn
 
 ---
 
-## 6. Live Hardware Verification (Haier MatrixTV DE)
+## 7. Live Hardware Verification (Haier MatrixTV DE)
 
 Verified and running on **Haier MatrixTV DE 55" Google TV** (`HR9676EUF`, Android 14):
 - **Streamed Installation**: Succeeded with `tvhome-v6.2-release.apk`.
@@ -109,7 +134,7 @@ Verified and running on **Haier MatrixTV DE 55" Google TV** (`HR9676EUF`, Androi
 
 ---
 
-## 7. Files & Artifacts
+## 8. Files & Artifacts
 
 - `tvhome-v6.2-release.apk`: Production release APK (570,959 bytes).
 - `tvhome-v6.2-mapping.txt`: ProGuard / R8 obfuscation mapping file for crash symbolication.
