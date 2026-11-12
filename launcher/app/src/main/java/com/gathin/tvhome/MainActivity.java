@@ -849,14 +849,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             btnRecents.setVisibility(cfg.showRecentsPill ? View.VISIBLE : View.GONE);
         }
         View btnSettings = findViewById(R.id.btnSettings);
-        btnInputs.setOnClickListener(v -> {
-            Intent viewInputs = new Intent("com.android.tv.action.VIEW_INPUTS");
-            try {
-                startActivity(viewInputs);
-            } catch (ActivityNotFoundException | SecurityException e) {
-                showInputs();
-            }
-        });
+        btnInputs.setOnClickListener(v -> showInputs());
         btnWifi.setOnClickListener(v -> openNetworkPill());
         btnVpn.setOnClickListener(v -> openVpnPill());
         btnWifi.setOnLongClickListener(v -> {
@@ -1032,12 +1025,6 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     private boolean openInputsIfAsked(Intent intent) {
         if (intent == null || !ACTION_VIEW_INPUTS.equals(intent.getAction())) return false;
         setIntent(new Intent(Intent.ACTION_MAIN));
-        Intent viewInputs = new Intent("com.android.tv.action.VIEW_INPUTS");
-        try {
-            startActivity(viewInputs);
-            return true;
-        } catch (ActivityNotFoundException | SecurityException ignored) {
-        }
         View anchor = topMenu ? findViewById(R.id.btnSettings) : btnInputs;
         if (anchor.getVisibility() != View.VISIBLE) return true;
         if (anchor.isLaidOut()) {
