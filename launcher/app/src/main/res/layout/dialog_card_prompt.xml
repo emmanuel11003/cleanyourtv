@@ -74,6 +74,8 @@
         <TextView
             android:id="@+id/btnKeep"
             style="@style/TopButton"
+            android:paddingStart="18dp"
+            android:paddingEnd="18dp"
             android:text="@string/card_keep_hidden"
             android:nextFocusUp="@+id/btnKeep"
             android:nextFocusDown="@+id/btnKeep"
@@ -83,6 +85,8 @@
         <TextView
             android:id="@+id/btnShow"
             style="@style/TopButton"
+            android:paddingStart="18dp"
+            android:paddingEnd="18dp"
             android:text="@string/card_show"
             android:nextFocusUp="@+id/btnShow"
             android:nextFocusDown="@+id/btnShow"

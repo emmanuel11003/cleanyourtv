@@ -13,8 +13,8 @@ android {
         applicationId providers.gradleProperty('launcherApplicationId').getOrElse('com.gathin.tvhome')
         minSdk 26
         targetSdk 34
-        versionCode 17
-        versionName '6.0'
+        versionCode 18
+        versionName '6.1'
     }
 
     // Version 6: nothing in the APK that the TV never reads. The dependency report only matters to Play Store
@@ -62,7 +62,7 @@ android {
 //     resources through R ids; the only lookup by name is banner_* drawables (AppAdapter.bundledBanner),
 //     which stay named.
 //  2. zipalign, then sign with APK Signature Scheme v2 only: minSdk 26 never reads the v1 JAR signature.
-// Output: app/build/outputs/apk/release/tvhome-v6.0-release.apk
+// Output: app/build/outputs/apk/release/tvhome-v<versionName>-release.apk
 def v6BuildTools = "${android.sdkDirectory}/build-tools/${android.buildToolsVersion}"
 def v6Exe = { String name -> org.gradle.internal.os.OperatingSystem.current().isWindows() ? (name == 'apksigner' ? "${name}.bat" : "${name}.exe") : name }
 tasks.register('optimizeReleaseApk') {
@@ -89,9 +89,25 @@ tasks.register('optimizeReleaseApk') {
             p.consumeProcessOutput(std, err)
             if (p.waitFor() != 0) throw new GradleException("${cmd[0]} failed:\n${std}${err}")
         }
-        run(["${bt}/${v6Exe('aapt2')}", 'optimize', '--collapse-resource-names',
-             '--resources-config-path', keep.absolutePath, '-o', opt.absolutePath, src.absolutePath])
-        run(["${bt}/${v6Exe('zipalign')}", '-f', '-p', '4', opt.absolutePath, aligned.absolutePath])
+        // Build metadata the TV never reads (VCS info, AGP version); AGP adds it after packaging, so excludes miss it.
+        // About 450 B with zip headers, and the v2 signing block pads to a 4 KB boundary, so a few bytes can cost 4 KB.
+        // Removed from a copy before aapt2, which then rewrites the whole zip with plain headers (zipfs adds
+        // timestamp extras to every central-directory entry, about 3 KB).
+        def trimmed = new File(w, 'trimmed.apk')
+        java.nio.file.Files.copy(src.toPath(), trimmed.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING)
+        def zfs = java.nio.file.FileSystems.newFileSystem(trimmed.toPath(), (ClassLoader) null)
+        try {
+            ['META-INF/version-control-info.textproto', 'META-INF/com/android/build/gradle/app-metadata.properties'].each { n ->
+                java.nio.file.Files.deleteIfExists(zfs.getPath(n))
+            }
+        } finally { zfs.close() }
+        // --deduplicate-entry-values: with names collapsed, resources whose value is identical (same colour, same
+        // bool, same translated string) share one stored entry; lookups by id are unchanged (about 6 KB).
+        run(["${bt}/${v6Exe('aapt2')}", 'optimize', '--collapse-resource-names', '--deduplicate-entry-values',
+             '--resources-config-path', keep.absolutePath, '-o', opt.absolutePath, trimmed.absolutePath])
+        // -z: recompress every deflated entry with Zopfli. Standard deflate, so any unzip reads it; just packed
+        // tighter (about 16 KB, mostly classes.dex). resources.arsc stays stored and aligned.
+        run(["${bt}/${v6Exe('zipalign')}", '-f', '-p', '-z', '4', opt.absolutePath, aligned.absolutePath])
         def sc = android.signingConfigs.debug
         run(["${bt}/${v6Exe('apksigner')}", 'sign', '--v1-signing-enabled', 'false', '--v2-signing-enabled', 'true',
              '--v3-signing-enabled', 'false', '--ks', sc.storeFile.absolutePath, '--ks-pass', "pass:${sc.storePassword}",
