@@ -145,6 +145,26 @@ Verified and running on **Haier MatrixTV DE 55" Google TV** (`HR9676EUF`, Androi
 - **Accessibility Helpers**: `HomeKeyService` and `InputKeyService` confirmed active.
 - **Frametime Janks**: 0.00% legacy jank during navigation.
 
+### Visual Verification Screenshots (Captured from TV)
+
+#### 1. Home Launcher Screen (Glass UI, 5-Column Dock & Live Stats)
+![Home Launcher Screen](docs/screenshots/v6.2-home.png)
+
+#### 2. On-Screen Inputs Pill Dialog (`showInputs()`)
+![Inputs Pill Dialog](docs/screenshots/v6.2-inputs-pill.png)
+
+#### 3. Stock Google TV Input Selector (Physical Remote Input Button)
+![Stock Google TV Input Selector](docs/screenshots/v6.2-stock-input-selector.png)
+
+#### 4. Quick Settings Overlay with Sleep Timer & Notification Tile
+![Quick Settings Overlay](docs/screenshots/v6.2-quick-settings.png)
+
+#### 5. Month Calendar & Clock Screensaver (OLED Burn-in Protected)
+![Month Calendar & Clock Screensaver](docs/screenshots/v6.2-screensaver.png)
+
+#### 6. Notification Center Panel (Modular Add-On)
+![Notification Center Panel](docs/screenshots/v6.2-notification-center.png)
+
 ---
 
 ## 8. Files & Artifacts
