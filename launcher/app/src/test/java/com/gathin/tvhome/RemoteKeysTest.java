@@ -328,4 +328,15 @@ public class RemoteKeysTest {
         assertFalse(RemoteKeys.isChannelKey(170));  // KEYCODE_TV
         assertFalse(RemoteKeys.isChannelKey(24));   // KEYCODE_VOLUME_UP
     }
+
+    @Test public void inputKeysAreTvInputDirectInputsAndListedCodes() {
+        int[] none = new int[0];
+        assertTrue(RemoteKeys.isInputKey(170, none));   // KEYCODE_TV
+        assertTrue(RemoteKeys.isInputKey(178, none));   // KEYCODE_TV_INPUT
+        assertTrue(RemoteKeys.isInputKey(243, none));   // KEYCODE_TV_INPUT_HDMI_1
+        assertTrue(RemoteKeys.isInputKey(251, none));   // KEYCODE_TV_INPUT_VGA_1
+        assertFalse(RemoteKeys.isInputKey(252, none));  // KEYCODE_TV_AUDIO_DESCRIPTION
+        assertFalse(RemoteKeys.isInputKey(82, none));   // KEYCODE_MENU stays a Settings key
+        assertTrue(RemoteKeys.isInputKey(240, new int[] {240}));
+    }
 }

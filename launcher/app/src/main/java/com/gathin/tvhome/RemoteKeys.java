@@ -413,6 +413,24 @@ final class RemoteKeys {
         return target != null && inputId(target) == null && target.indexOf('/') > 0;
     }
 
+    /** The remote's Input button: KEYCODE_TV, KEYCODE_TV_INPUT, a direct input key (HDMI 1 to VGA), or one listed in input_key_keycodes. */
+    static boolean isInputKey(int keyCode, int[] extra) {
+        if (keyCode == KeyEvent.KEYCODE_TV || keyCode == KeyEvent.KEYCODE_TV_INPUT) return true;
+        if (keyCode >= KeyEvent.KEYCODE_TV_INPUT_HDMI_1 && keyCode <= KeyEvent.KEYCODE_TV_INPUT_VGA_1) return true;
+        for (int code : extra) if (keyCode == code) return true;
+        return false;
+    }
+
+    /**
+     * HomeKeyService and InputKeyService: an Input button opens the stock input selector (the Inputs menu where the TV
+     * has none) when it is released, and is consumed either way. False for every other key.
+     */
+    static boolean handleInputKey(Context ctx, KeyEvent event, int[] extra) {
+        if (!isInputKey(event.getKeyCode(), extra)) return false;
+        if (event.getAction() == KeyEvent.ACTION_UP && !event.isCanceled()) launch(ctx, INPUTS);
+        return true;
+    }
+
     /** Opens an app from a remote button: its TV entry if it has one, else its phone entry. An "input:<id>" target
      *  switches to that TV input (an HDMI port) instead, an action word runs that action, and a
      *  "package/.Activity" target opens that activity. */

@@ -272,15 +272,8 @@ public class HomeKeyService extends AccessibilityService {
         return alt != null && RemoteKeys.inFront(target, frontPackage) ? alt : target;
     }
 
-    private boolean isInputKey(int keyCode) {
-        if (keyCode == KeyEvent.KEYCODE_TV || keyCode == KeyEvent.KEYCODE_TV_INPUT) return true;
-        if (keyCode >= KeyEvent.KEYCODE_TV_INPUT_HDMI_1 && keyCode <= KeyEvent.KEYCODE_TV_INPUT_VGA_1) return true;
-        for (int code : inputKeycodes) if (keyCode == code) return true;
-        return false;
-    }
-
     private boolean isSettingsKey(KeyEvent event) {
-        if (isInputKey(event.getKeyCode())) return false;
+        if (RemoteKeys.isInputKey(event.getKeyCode(), inputKeycodes)) return false;
         if (event.getKeyCode() == KeyEvent.KEYCODE_SETTINGS) return true;
         if (event.getKeyCode() == KeyEvent.KEYCODE_NOTIFICATION
                 || event.getKeyCode() == KeyEvent.KEYCODE_MENU
@@ -292,7 +285,8 @@ public class HomeKeyService extends AccessibilityService {
 
     @Override
     protected boolean onKeyEvent(KeyEvent event) {
-        android.util.Log.e("TVHOME_KEY", "onKeyEvent: action=" + event.getAction() + " keyCode=" + event.getKeyCode() + " scanCode=" + event.getScanCode());
+        // Debug builds only: R8 strips Log.d from the release build (proguard-rules.pro), so no cost per key press.
+        android.util.Log.d("TVHOME_KEY", "onKeyEvent: action=" + event.getAction() + " keyCode=" + event.getKeyCode() + " scanCode=" + event.getScanCode());
         // power_on_home: the first key after power-on hands the TV to the user (power and wake keys don't count).
         if (powerOnUntil != 0 && event.getAction() == KeyEvent.ACTION_DOWN
                 && event.getKeyCode() != KeyEvent.KEYCODE_POWER && event.getKeyCode() != KeyEvent.KEYCODE_WAKEUP) {
@@ -300,22 +294,8 @@ public class HomeKeyService extends AccessibilityService {
         }
         if (consumeVolumeKeys && VolumeKeys.handle(this, event)) return true;
         if (ButtonMapper.handleKeyEvent(this, event)) return true;
-        if (isInputKey(event.getKeyCode())) {
-            if (event.getAction() == KeyEvent.ACTION_UP && !event.isCanceled()) {
-                try {
-                    startActivity(new Intent("com.android.tv.action.VIEW_INPUTS")
-                            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
-                } catch (ActivityNotFoundException | SecurityException unavailable) {
-                    try {
-                        startActivity(new Intent(this, MainActivity.class)
-                                .setAction(MainActivity.ACTION_VIEW_INPUTS)
-                                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
-                    } catch (ActivityNotFoundException ignored) {
-                    }
-                }
-            }
-            return true;
-        }
+        // The Input button: the stock input selector, else the Inputs menu (RemoteKeys.launch "inputs").
+        if (RemoteKeys.handleInputKey(this, event, inputKeycodes)) return true;
         // A scancode entry is more specific than any keycode, so it goes first.
         if (RemoteKeys.handle(this, event, inFront(appScancodes, frontAppScancodes, event.getScanCode()),
                 holdAppScancodes.get(event.getScanCode()))) return true;
