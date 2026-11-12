@@ -92,22 +92,9 @@ Modular screensaver apps that plug into CleanYourTV without bloating the core la
 - `tv-static`: Vintage CRT static generator.
 - `haunted` & `tatami`: Ambient aesthetic visualizers.
 
-### Dock Ergonomics & Fluid Glass Styling
-
-### TV Companion App (`companion/`)
-- Ultra-lightweight phone companion app (**43,176 bytes / ~42 KB release APK**).
-- **100% Offline LAN Screen Mirroring**: Streams 60 FPS hardware H.264 video feed directly to phone `SurfaceView` using `MediaCodec` low latency (`KEY_LOW_LATENCY = 1`).
-- **Remote & Touchpad**: On-screen D-pad, OK, Back, Home, Volume, plus touchpad gestures (tap = OK, swipe = D-pad navigation).
-- **Zero Third-Party Bloat**: Built purely on native Android APIs (no ExoPlayer, FFmpeg, or WebRTC).
-
-### TV Streaming Server (`tv_server/`)
-- TV-side companion server running in unprivileged user shell space (`tv-server.jar`).
-- **Hardware Acceleration**: Captures screen using MediaTek hardware AVC encoder (<5% CPU streaming, 0% CPU idle, <25 MB RAM).
-- Zero root required; started seamlessly over local Wi-Fi or adb.
-
 ---
 
-## 6. Resource Usage & Performance Benchmark (vs. Stock Google TV)
+## 5. Resource Usage & Performance Benchmark (vs. Stock Google TV)
 
 Real hardware telemetry measured on the **Haier MatrixTV DE 55" Google TV** running Android 14 (`UKN5.251016.114`):
 
@@ -136,7 +123,7 @@ Real hardware telemetry measured on the **Haier MatrixTV DE 55" Google TV** runn
 
 ---
 
-## 7. Live Hardware Verification (Haier MatrixTV DE)
+## 6. Live Hardware Verification (Haier MatrixTV DE)
 
 Verified and running on **Haier MatrixTV DE 55" Google TV** (`HR9676EUF`, Android 14):
 - **Streamed Installation**: Succeeded with `tvhome-v6.2-release.apk`.
@@ -167,7 +154,7 @@ Verified and running on **Haier MatrixTV DE 55" Google TV** (`HR9676EUF`, Androi
 
 ---
 
-## 8. Files & Artifacts
+## 7. Files & Artifacts
 
 - `tvhome-v6.2-release.apk`: Production release APK (570,959 bytes).
 - `tvhome-v6.2-mapping.txt`: ProGuard / R8 obfuscation mapping file for crash symbolication.

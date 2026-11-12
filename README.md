@@ -34,7 +34,6 @@
 - **Zero-Cost Compile-Time Logging**: `Log.d` debug logs stripped by R8 in release builds for zero runtime key latency.
 - **Native Built-in Sleep Timer**: 15–120 min countdown with standby dispatch via accessibility helper (zero polling).
 - **Resilient Live Clock**: Dynamic second/minute timekeeping that never freezes across standby cycles or translucent overlays.
-- **Offline TV Companion LAN Mirroring**: High-speed, 60 FPS hardware H.264 screen mirroring to mobile devices over local Wi-Fi with on-screen D-pad and touchpad controls ([companion/](companion/) & [tv_server/](tv_server/)).
 - **Notification Center Add-On**: Translucent right-side notification panel matching Google TV styling ([addons/notification-center/](addons/notification-center/)).
 
 *Original upstream project and attribution: [Gathin23/cleanyourtv](https://github.com/Gathin23/cleanyourtv) (Licensed under MIT).*
