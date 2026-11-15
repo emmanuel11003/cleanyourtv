@@ -12,6 +12,7 @@ import io.github.maxhayim.tvhub.ui.Ui.dp
 class SourcesScreen(host: MainActivity) : Screen(host) {
     private val actions = Ui.horizontal(ctx, 16)
     private val list = Ui.vertical(ctx, 10)
+    private var activeDialog: AlertDialog? = null
 
     override val view: View = ScrollView(ctx).apply {
         clipChildren = false; clipToPadding = false
@@ -58,35 +59,56 @@ class SourcesScreen(host: MainActivity) : Screen(host) {
         if (hadFocus) list.getChildAt(0)?.requestFocus()
     }
 
+    override fun onHide() {
+        dismissDialog()
+        super.onHide()
+    }
+
+    private fun dismissDialog() {
+        activeDialog?.takeIf { it.isShowing }?.dismiss()
+        activeDialog = null
+    }
+
     private fun actionsFor(s: SourceConfig) {
+        if (ctx.isFinishing || ctx.isDestroyed) return
+        dismissDialog()
         val items = arrayOf(
             if (s.type == SourceType.APPS) "Choose apps" else "Edit",
             if (s.enabled) "Turn off" else "Turn on",
             "Refresh all sources now",
             "Remove",
         )
-        AlertDialog.Builder(ctx, android.R.style.Theme_DeviceDefault_Dialog_Alert)
+        activeDialog = AlertDialog.Builder(ctx, android.R.style.Theme_DeviceDefault_Dialog_Alert)
             .setTitle(s.name)
             .setItems(items) { _, which ->
                 when (which) {
                     0 -> SourceEditorActivity.start(ctx, s.type, s.id)
                     1 -> repo.saveSource(s.copy(enabled = !s.enabled))
                     2 -> repo.refreshAll()
-                    3 -> AlertDialog.Builder(ctx, android.R.style.Theme_DeviceDefault_Dialog_Alert)
-                        .setTitle("Remove ${s.name}?")
-                        .setMessage("Its channels leave the guide. Favourites of channels no other source has are kept in case you add it back.")
-                        .setPositiveButton("Remove") { _, _ -> repo.deleteSource(s.id) }
-                        .setNegativeButton("Cancel", null).show()
+                    3 -> {
+                        if (ctx.isFinishing || ctx.isDestroyed) return@setItems
+                        dismissDialog()
+                        activeDialog = AlertDialog.Builder(ctx, android.R.style.Theme_DeviceDefault_Dialog_Alert)
+                            .setTitle("Remove ${s.name}?")
+                            .setMessage("Its channels leave the guide. Favourites of channels no other source has are kept in case you add it back.")
+                            .setPositiveButton("Remove") { _, _ -> repo.deleteSource(s.id) }
+                            .setNegativeButton("Cancel", null).create()
+                        activeDialog?.show()
+                    }
                 }
-            }.show()
+            }.create()
+        activeDialog?.show()
     }
 
     private fun addDialog() {
+        if (ctx.isFinishing || ctx.isDestroyed) return
+        dismissDialog()
         val types = SourceType.entries
-        AlertDialog.Builder(ctx, android.R.style.Theme_DeviceDefault_Dialog_Alert)
+        activeDialog = AlertDialog.Builder(ctx, android.R.style.Theme_DeviceDefault_Dialog_Alert)
             .setTitle("Add a source")
             .setItems(types.map { typeLabel(it) }.toTypedArray()) { _, i -> SourceEditorActivity.start(ctx, types[i], 0) }
-            .show()
+            .create()
+        activeDialog?.show()
     }
 
     override fun focusFirst(): Boolean = actions.getChildAt(0)?.requestFocus() ?: false

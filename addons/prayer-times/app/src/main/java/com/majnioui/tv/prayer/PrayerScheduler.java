@@ -2,6 +2,7 @@ package com.majnioui.tv.prayer;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -110,20 +111,27 @@ public class PrayerScheduler {
     }
 
     public static void scheduleNext(Context ctx) {
-        if (!ctx.getResources().getBoolean(R.bool.reminders)) {
-            cancel(ctx);
-            return;
-        }
+        scheduleNext(ctx, null);
+    }
 
-        SharedPreferences prefs = ctx.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
-        String savedDate = prefs.getString(KEY_DATE, "");
-        String today = new SimpleDateFormat("yyyy-MM-dd", Locale.ROOT).format(new Date());
+    public static void scheduleNext(Context ctx, BroadcastReceiver.PendingResult pending) {
+        boolean handoffToFetch = false;
+        try {
+            if (!ctx.getResources().getBoolean(R.bool.reminders)) {
+                cancel(ctx);
+                return;
+            }
 
-        if (!today.equals(savedDate)) {
-            // Data for today is not available yet, fetch in background
-            fetchTimingsAndSchedule(ctx);
-            return;
-        }
+            SharedPreferences prefs = ctx.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+            String savedDate = prefs.getString(KEY_DATE, "");
+            String today = new SimpleDateFormat("yyyy-MM-dd", Locale.ROOT).format(new Date());
+
+            if (!today.equals(savedDate)) {
+                // Data for today is not available yet, fetch in background
+                handoffToFetch = true;
+                fetchTimingsAndSchedule(ctx, pending);
+                return;
+            }
 
         String place = prefs.getString(KEY_PLACE, ctx.getString(R.string.place));
         int[] minutes = new int[NAMES.length];
@@ -197,6 +205,9 @@ public class PrayerScheduler {
 
             setAlarm(am, target.getTimeInMillis(), pi);
         }
+        } finally {
+            if (!handoffToFetch && pending != null) pending.finish();
+        }
     }
 
     private static void setAlarm(AlarmManager am, long triggerAtMillis, PendingIntent pi) {
@@ -218,52 +229,66 @@ public class PrayerScheduler {
     }
 
     public static void fetchTimingsAndSchedule(Context ctx) {
+        fetchTimingsAndSchedule(ctx, null);
+    }
+
+    public static void fetchTimingsAndSchedule(Context ctx, BroadcastReceiver.PendingResult pending) {
         if (!ctx.getResources().getBoolean(R.bool.reminders)) {
-            cancel(ctx);
+            try {
+                cancel(ctx);
+            } finally {
+                if (pending != null) pending.finish();
+            }
             return;
         }
 
-        new Thread(() -> {
-            try {
-                Context appContext = ctx.getApplicationContext();
-                String day = new SimpleDateFormat("yyyy-MM-dd", Locale.ROOT).format(new Date());
-                String dayParam = new SimpleDateFormat("dd-MM-yyyy", Locale.ROOT).format(new Date());
-                String url = "https://api.aladhan.com/v1/timings/" + dayParam
-                        + "?latitude=" + appContext.getString(R.string.latitude)
-                        + "&longitude=" + appContext.getString(R.string.longitude)
-                        + "&method=" + appContext.getString(R.string.method)
-                        + "&school=" + appContext.getString(R.string.school);
+        final Context appContext = ctx.getApplicationContext();
+        try {
+            new Thread(() -> {
+                try {
+                    String day = new SimpleDateFormat("yyyy-MM-dd", Locale.ROOT).format(new Date());
+                    String dayParam = new SimpleDateFormat("dd-MM-yyyy", Locale.ROOT).format(new Date());
+                    String url = "https://api.aladhan.com/v1/timings/" + dayParam
+                            + "?latitude=" + appContext.getString(R.string.latitude)
+                            + "&longitude=" + appContext.getString(R.string.longitude)
+                            + "&method=" + appContext.getString(R.string.method)
+                            + "&school=" + appContext.getString(R.string.school);
 
-                HttpURLConnection c = (HttpURLConnection) new URL(url).openConnection();
-                c.setConnectTimeout(10000);
-                c.setReadTimeout(10000);
-                ByteArrayOutputStream out = new ByteArrayOutputStream();
-                try (InputStream in = c.getInputStream()) {
-                    byte[] buf = new byte[4096];
-                    for (int n; (n = in.read(buf)) > 0; ) out.write(buf, 0, n);
+                    HttpURLConnection c = (HttpURLConnection) new URL(url).openConnection();
+                    c.setConnectTimeout(10000);
+                    c.setReadTimeout(10000);
+                    ByteArrayOutputStream out = new ByteArrayOutputStream();
+                    try (InputStream in = c.getInputStream()) {
+                        byte[] buf = new byte[4096];
+                        for (int n; (n = in.read(buf)) > 0; ) out.write(buf, 0, n);
+                    } finally {
+                        c.disconnect();
+                    }
+
+                    JSONObject json = new JSONObject(out.toString("UTF-8"));
+                    JSONObject data = json.getJSONObject("data");
+                    JSONObject t = data.getJSONObject("timings");
+
+                    int[] minutes = new int[NAMES.length];
+                    String[] times = new String[NAMES.length];
+                    for (int i = 0; i < NAMES.length; i++) {
+                        String v = t.getString(NAMES[i]).trim();
+                        int sp = v.indexOf(' ');
+                        if (sp > 0) v = v.substring(0, sp);
+                        times[i] = v;
+                        minutes[i] = Integer.parseInt(v.substring(0, 2)) * 60 + Integer.parseInt(v.substring(3, 5));
+                    }
+
+                    saveTimingsAndSchedule(appContext, day, NAMES, times, minutes, appContext.getString(R.string.place));
+                    Log.i(TAG, "Background fetch and schedule successful for " + day);
+                } catch (Exception e) {
+                    Log.w(TAG, "Background fetch error: " + e);
                 } finally {
-                    c.disconnect();
+                    if (pending != null) pending.finish();
                 }
-
-                JSONObject json = new JSONObject(out.toString("UTF-8"));
-                JSONObject data = json.getJSONObject("data");
-                JSONObject t = data.getJSONObject("timings");
-
-                int[] minutes = new int[NAMES.length];
-                String[] times = new String[NAMES.length];
-                for (int i = 0; i < NAMES.length; i++) {
-                    String v = t.getString(NAMES[i]).trim();
-                    int sp = v.indexOf(' ');
-                    if (sp > 0) v = v.substring(0, sp);
-                    times[i] = v;
-                    minutes[i] = Integer.parseInt(v.substring(0, 2)) * 60 + Integer.parseInt(v.substring(3, 5));
-                }
-
-                saveTimingsAndSchedule(appContext, day, NAMES, times, minutes, appContext.getString(R.string.place));
-                Log.i(TAG, "Background fetch and schedule successful for " + day);
-            } catch (Exception e) {
-                Log.w(TAG, "Background fetch error: " + e);
-            }
-        }).start();
+            }, "prayer-fetch").start();
+        } catch (Throwable t) {
+            if (pending != null) pending.finish();
+        }
     }
 }

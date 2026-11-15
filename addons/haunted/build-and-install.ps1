@@ -34,7 +34,13 @@ try {
 $apk = Join-Path $here 'app\build\outputs\apk\release\app-release.apk'
 & $py -I (Join-Path $tools 'b64push.py') $apk /data/local/tmp/haunted.apk | Out-Null
 if ($LASTEXITCODE) { throw 'sending the APK failed' }
-Tv 'pm install -r /data/local/tmp/haunted.apk; rm -f /data/local/tmp/haunted.apk'
+try {
+    $out = (Tv 'pm install -r /data/local/tmp/haunted.apk') -join "`n"
+} finally {
+    try { Tv 'rm -f /data/local/tmp/haunted.apk' | Out-Null } catch { }
+}
+Write-Host $out
+if ($out -notmatch 'Success') { throw "pm install failed: $out" }
 Tv "[ -f $before ] || { settings get secure screensaver_components; settings get secure screensaver_enabled; } > $before; settings put secure screensaver_components $dream; settings put secure screensaver_enabled 1"
 Write-Host 'Installed: Haunted is the screensaver. Undo with: addons\haunted\build-and-install.ps1 -Uninstall'
 if ($Start) { Tv 'am start -n com.android.systemui/.Somnambulator' }

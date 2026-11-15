@@ -27,8 +27,8 @@ import kotlinx.coroutines.withContext
  */
 class ChannelsScreen(host: MainActivity, private val favoritesOnly: Boolean) : Screen(host) {
 
-    /** A category: a label and the channels in it. */
-    private data class Cat(val label: String, val filter: (Channel) -> Boolean)
+    /** A category: a label, its cached count, and the channels in it. */
+    private data class Cat(val label: String, val count: Int, val filter: (Channel) -> Boolean)
 
     private var channels: List<Channel> = emptyList()
     private var favs: Set<String> = emptySet()
@@ -95,12 +95,21 @@ class ChannelsScreen(host: MainActivity, private val favoritesOnly: Boolean) : S
 
     private fun rebuildCats() {
         val out = ArrayList<Cat>()
-        out += Cat("All channels") { true }
+        val groupCounts = LinkedHashMap<String, Int>()
+        val sourceCounts = LinkedHashMap<String, Int>()
+        var favCount = 0
         if (!favoritesOnly) {
-            out += Cat("Favorites") { it.key in favs }
-            channels.mapNotNull { it.group }.distinct().forEach { g -> out += Cat(g) { it.group == g } }
-            val sources = channels.flatMap { it.sourceNames }.distinct()
-            if (sources.size > 1) sources.forEach { s -> out += Cat("From $s") { s in it.sourceNames } }
+            for (ch in channels) {
+                if (ch.key in favs) favCount++
+                ch.group?.let { groupCounts[it] = (groupCounts[it] ?: 0) + 1 }
+                for (s in ch.sourceNames) sourceCounts[s] = (sourceCounts[s] ?: 0) + 1
+            }
+        }
+        out += Cat("All channels", channels.size) { true }
+        if (!favoritesOnly) {
+            out += Cat("Favorites", favCount) { it.key in favs }
+            groupCounts.forEach { (g, n) -> out += Cat(g, n) { it.group == g } }
+            if (sourceCounts.size > 1) sourceCounts.forEach { (s, n) -> out += Cat("From $s", n) { s in it.sourceNames } }
         }
         cats = out
         if (catIndex >= cats.size) catIndex = 0
@@ -160,8 +169,7 @@ class ChannelsScreen(host: MainActivity, private val favoritesOnly: Boolean) : S
         })
         override fun onBindViewHolder(h: H, position: Int) {
             val c = cats[position]
-            val count = channels.count(c.filter)
-            h.v.text = "${c.label}  ${if (count > 0) count else ""}".trim()
+            h.v.text = "${c.label}  ${if (c.count > 0) c.count else ""}".trim()
             h.v.isSelected = position == catIndex
             h.v.setTextColor(if (position == catIndex) Ui.TEXT else Ui.DIM)
             h.v.setOnFocusChangeListener { _, has ->

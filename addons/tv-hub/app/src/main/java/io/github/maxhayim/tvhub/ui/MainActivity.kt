@@ -34,6 +34,8 @@ class MainActivity : Activity() {
     private val navItems = LinkedHashMap<Page, TextView>()
     private val screens = HashMap<Page, Screen>()
     private var current: Page? = null
+    private var activeScreen: Screen? = null
+    private var resumed = false
     /**
      * Between leaving this window and getting it back, Android may hand focus to the first rail
      * item (when the view that had it was rebuilt meanwhile). That must not switch the page.
@@ -102,7 +104,12 @@ class MainActivity : Activity() {
 
     override fun onResume() {
         super.onResume()
-        current?.let { screens[it]?.onShow() }
+        resumed = true
+        val s = current?.let { screens[it] }
+        if (s != null && s !== activeScreen) {
+            activeScreen = s
+            s.onShow()
+        }
     }
 
     override fun onWindowFocusChanged(hasFocus: Boolean) {
@@ -118,15 +125,23 @@ class MainActivity : Activity() {
 
     override fun onPause() {
         restoring = true
-        current?.let { screens[it]?.onHide() }
+        resumed = false
+        activeScreen?.onHide()
+        activeScreen = null
         super.onPause()
     }
 
-    override fun onDestroy() { scope.cancel(); super.onDestroy() }
+    override fun onDestroy() {
+        activeScreen?.onHide()
+        activeScreen = null
+        scope.cancel()
+        super.onDestroy()
+    }
 
     fun show(p: Page) {
         if (current == p) return
-        current?.let { screens[it]?.onHide() }
+        activeScreen?.onHide()
+        activeScreen = null
         current = p
         val s = screens.getOrPut(p) {
             when (p) {
@@ -146,7 +161,10 @@ class MainActivity : Activity() {
         // The rail item to the left of the page is the current one, so Left from the page returns to it.
         s.view.nextFocusLeftId = navItems.getValue(p).id
         navItems.values.forEach { it.nextFocusRightId = View.NO_ID }
-        s.onShow()
+        if (resumed) {
+            activeScreen = s
+            s.onShow()
+        }
         refreshNavColors()
     }
 

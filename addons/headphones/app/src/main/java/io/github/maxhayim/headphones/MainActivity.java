@@ -44,6 +44,8 @@ public class MainActivity extends Activity {
     private AudioManager audio;
     private BluetoothAdapter adapter;
     private BluetoothA2dp a2dp;
+    private boolean proxyConnecting;
+    private boolean receiverRegistered;
     private LinearLayout rows;
     private TextView status;
     /** Redraws when headphones connect or drop while the screen is open. */
@@ -87,39 +89,64 @@ public class MainActivity extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
-        IntentFilter f = new IntentFilter();
-        f.addAction(BluetoothDevice.ACTION_ACL_CONNECTED);
-        f.addAction(BluetoothDevice.ACTION_ACL_DISCONNECTED);
-        f.addAction(BluetoothDevice.ACTION_BOND_STATE_CHANGED);
-        f.addAction(BluetoothA2dp.ACTION_CONNECTION_STATE_CHANGED);
-        f.addAction(AudioManager.ACTION_AUDIO_BECOMING_NOISY);
-        registerReceiver(changes, f);
-        if (allowed() && adapter != null && a2dp == null) {
-            adapter.getProfileProxy(this, new BluetoothProfile.ServiceListener() {
+        if (!receiverRegistered) {
+            IntentFilter f = new IntentFilter();
+            f.addAction(BluetoothDevice.ACTION_ACL_CONNECTED);
+            f.addAction(BluetoothDevice.ACTION_ACL_DISCONNECTED);
+            f.addAction(BluetoothDevice.ACTION_BOND_STATE_CHANGED);
+            f.addAction(BluetoothA2dp.ACTION_CONNECTION_STATE_CHANGED);
+            f.addAction(AudioManager.ACTION_AUDIO_BECOMING_NOISY);
+            registerReceiver(changes, f);
+            receiverRegistered = true;
+        }
+        if (allowed() && adapter != null && a2dp == null && !proxyConnecting) {
+            proxyConnecting = true;
+            boolean queued = adapter.getProfileProxy(getApplicationContext(), new BluetoothProfile.ServiceListener() {
                 @Override
                 public void onServiceConnected(int profile, BluetoothProfile proxy) {
+                    proxyConnecting = false;
+                    if (isFinishing() || isDestroyed()) {
+                        if (adapter != null) adapter.closeProfileProxy(BluetoothProfile.A2DP, proxy);
+                        return;
+                    }
+                    if (a2dp != null && a2dp != proxy && adapter != null) {
+                        adapter.closeProfileProxy(BluetoothProfile.A2DP, a2dp);
+                    }
                     a2dp = (BluetoothA2dp) proxy;
                     build();
                 }
 
                 @Override
                 public void onServiceDisconnected(int profile) {
+                    proxyConnecting = false;
                     a2dp = null;
                 }
             }, BluetoothProfile.A2DP);
+            if (!queued) {
+                proxyConnecting = false;
+            }
         }
         build();
     }
 
     @Override
     protected void onPause() {
-        unregisterReceiver(changes);
+        if (receiverRegistered) {
+            try {
+                unregisterReceiver(changes);
+            } catch (IllegalArgumentException ignored) {
+            }
+            receiverRegistered = false;
+        }
         super.onPause();
     }
 
     @Override
     protected void onDestroy() {
-        if (a2dp != null && adapter != null) adapter.closeProfileProxy(BluetoothProfile.A2DP, a2dp);
+        if (a2dp != null && adapter != null) {
+            adapter.closeProfileProxy(BluetoothProfile.A2DP, a2dp);
+            a2dp = null;
+        }
         super.onDestroy();
     }
 
@@ -148,7 +175,7 @@ public class MainActivity extends Activity {
                 getString(R.string.pair_detail), this::openBluetooth));
         if (first == null) first = pair;
 
-        boolean fixed = audio.isVolumeFixed();
+        boolean fixed = audio != null && audio.isVolumeFixed();
         Row guard = add(new Row(this, getString(R.string.guard_title),
                 getString(fixed ? R.string.guard_detail_fixed : R.string.guard_detail),
                 () -> {
@@ -156,7 +183,7 @@ public class MainActivity extends Activity {
                     build();
                 }));
         guard.setValue(getString(prefs.getBoolean(QuietReceiver.GUARD, true) ? R.string.on : R.string.off));
-        if (prefs.getBoolean(QuietReceiver.MUTED_BY_US, false)) {
+        if (audio != null && prefs.getBoolean(QuietReceiver.MUTED_BY_US, false)) {
             Row unmute = add(new Row(this, getString(R.string.unmute_title), getString(R.string.unmute_detail), () -> {
                 audio.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_UNMUTE, AudioManager.FLAG_SHOW_UI);
                 prefs.edit().putBoolean(QuietReceiver.MUTED_BY_US, false).apply();
@@ -229,6 +256,7 @@ public class MainActivity extends Activity {
 
     /** The output Android routes media to now, by the name the headphones give themselves. */
     private String output() {
+        if (audio == null) return getString(R.string.output_speakers);
         for (AudioDeviceInfo d : audio.getDevices(AudioManager.GET_DEVICES_OUTPUTS)) {
             int t = d.getType();
             boolean bt = t == AudioDeviceInfo.TYPE_BLUETOOTH_A2DP
@@ -240,10 +268,14 @@ public class MainActivity extends Activity {
 
     private List<BluetoothDevice> pairedAudio() {
         List<BluetoothDevice> out = new ArrayList<>();
+        if (adapter == null) return out;
         try {
-            for (BluetoothDevice d : adapter.getBondedDevices()) {
-                BluetoothClass c = d.getBluetoothClass();
-                if (c != null && Quiet.isAudio(c.getMajorDeviceClass())) out.add(d);
+            Set<BluetoothDevice> bonded = adapter.getBondedDevices();
+            if (bonded != null) {
+                for (BluetoothDevice d : bonded) {
+                    BluetoothClass c = d.getBluetoothClass();
+                    if (c != null && Quiet.isAudio(c.getMajorDeviceClass())) out.add(d);
+                }
             }
             Collections.sort(out, (a, b) -> name(a).compareToIgnoreCase(name(b)));
         } catch (SecurityException ignored) {
@@ -256,7 +288,10 @@ public class MainActivity extends Activity {
         Set<String> out = new HashSet<>();
         if (a2dp == null) return out;
         try {
-            for (BluetoothDevice d : a2dp.getConnectedDevices()) out.add(d.getAddress());
+            List<BluetoothDevice> devices = a2dp.getConnectedDevices();
+            if (devices != null) {
+                for (BluetoothDevice d : devices) out.add(d.getAddress());
+            }
         } catch (SecurityException ignored) {
             // As above.
         }

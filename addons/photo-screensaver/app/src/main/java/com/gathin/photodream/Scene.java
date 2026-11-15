@@ -37,6 +37,7 @@ final class Scene {
     private final Slides slides;
     private final Prints prints;
     private ExecutorService network;
+    private Runnable cancelLocate;
     private boolean running;
 
     private final Runnable tick = new Runnable() {
@@ -112,10 +113,18 @@ final class Scene {
     void stop() {
         running = false;
         handler.removeCallbacksAndMessages(null);
+        cancelLocationLookup();
         if (network != null) network.shutdownNow();
         network = null;
         if (slides != null) slides.stop();
         if (prints != null) prints.stop();
+    }
+
+    private void cancelLocationLookup() {
+        if (cancelLocate != null) {
+            cancelLocate.run();
+            cancelLocate = null;
+        }
     }
 
     private void nudge() {
@@ -136,7 +145,9 @@ final class Scene {
             showWeather(cached);
             return;
         }
-        Weather.locate(context, location -> {
+        cancelLocationLookup();
+        cancelLocate = Weather.locate(context, location -> {
+            cancelLocate = null;
             ExecutorService n = network;
             if (location == null || n == null || !running) return;
             double lat = location.getLatitude(), lon = location.getLongitude();

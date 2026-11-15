@@ -16,6 +16,7 @@ import android.widget.TextView
 import io.github.maxhayim.tvhub.TvHubApp
 import java.text.DateFormat
 import java.util.Date
+import java.util.Locale
 
 /** The small view kit every screen is built from: colours, type sizes and the focus look. */
 object Ui {
@@ -93,6 +94,35 @@ object Ui {
     const val MATCH = ViewGroup.LayoutParams.MATCH_PARENT
     const val WRAP = ViewGroup.LayoutParams.WRAP_CONTENT
 
-    fun time(c: Context, t: Long): String = android.text.format.DateFormat.getTimeFormat(c).format(Date(t))
-    fun dayTime(c: Context, t: Long): String = DateFormat.getDateInstance(DateFormat.MEDIUM).format(Date(t)) + " " + time(c, t)
+    private var cached24Hour: Boolean? = null
+    private var cachedLocale: Locale? = null
+    private var cachedTimeFmt: DateFormat? = null
+    private var cachedDayFmt: DateFormat? = null
+    private val sharedDate = Date()
+
+    @Synchronized
+    private fun ensureFormats(c: Context) {
+        val is24 = android.text.format.DateFormat.is24HourFormat(c)
+        val loc = Locale.getDefault()
+        if (cachedTimeFmt == null || cached24Hour != is24 || cachedLocale != loc) {
+            cached24Hour = is24
+            cachedLocale = loc
+            cachedTimeFmt = android.text.format.DateFormat.getTimeFormat(c)
+            cachedDayFmt = DateFormat.getDateInstance(DateFormat.MEDIUM, loc)
+        }
+    }
+
+    @Synchronized
+    fun time(c: Context, t: Long): String {
+        ensureFormats(c)
+        sharedDate.time = t
+        return cachedTimeFmt!!.format(sharedDate)
+    }
+
+    @Synchronized
+    fun dayTime(c: Context, t: Long): String {
+        ensureFormats(c)
+        sharedDate.time = t
+        return "${cachedDayFmt!!.format(sharedDate)} ${cachedTimeFmt!!.format(sharedDate)}"
+    }
 }

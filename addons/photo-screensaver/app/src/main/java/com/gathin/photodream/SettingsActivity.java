@@ -131,8 +131,12 @@ public class SettingsActivity extends Activity {
     private void openLocationSettings() {
         try {
             startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
-        } catch (ActivityNotFoundException e) {
-            startActivity(new Intent(Settings.ACTION_SETTINGS));
+        } catch (ActivityNotFoundException | SecurityException e) {
+            try {
+                startActivity(new Intent(Settings.ACTION_SETTINGS));
+            } catch (ActivityNotFoundException | SecurityException ignored) {
+                // No system settings screen exposed on this firmware.
+            }
         }
     }
 

@@ -28,6 +28,7 @@ final class CalendarView extends View {
             "Mười", "Mười Một", "Chạp"};
     /** Clock hour each double-hour starts at, Tý first. */
     private static final int[] START_HOUR = {23, 1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21};
+    private static final java.util.Locale VI = new java.util.Locale("vi");
 
     private final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final Typeface serif = Typeface.create("serif", Typeface.NORMAL);
@@ -35,6 +36,8 @@ final class CalendarView extends View {
     private final Typeface sansLight = Typeface.create("sans-serif-light", Typeface.NORMAL);
     private final Path path = new Path();
     private final RectF outer = new RectF(), inner = new RectF();
+    private Shader ruleShader, bgShader, goodGlowShader, badGlowShader, cornerGlowShader;
+    private int shaderW, shaderH;
 
     private VnCalendar.Day day;
     /** Current double-hour, or -1 when another day than today is shown. */
@@ -43,6 +46,27 @@ final class CalendarView extends View {
 
     CalendarView(Context context) {
         super(context);
+    }
+
+    @Override
+    protected void onSizeChanged(int width, int height, int oldw, int oldh) {
+        ensureShaders(width, height);
+    }
+
+    private void ensureShaders(int width, int height) {
+        if (width <= 0 || height <= 0 || (width == shaderW && height == shaderH && bgShader != null)) return;
+        shaderW = width;
+        shaderH = height;
+        float w = Math.min(width, height * 16f / 9f), u = w / 100f;
+        float left = 6 * u;
+        ruleShader = new LinearGradient(left, 0, left + 46 * u, 0, 0x99E8C77D, 0x00E8C77D, Shader.TileMode.CLAMP);
+        bgShader = new LinearGradient(0, 0, 0, height, 0xFF141821, 0xFF0B0D12, Shader.TileMode.CLAMP);
+        goodGlowShader = new RadialGradient(width * 0.22f, height * 0.18f, width * 0.6f,
+                0x3348391C, 0x00000000, Shader.TileMode.CLAMP);
+        badGlowShader = new RadialGradient(width * 0.22f, height * 0.18f, width * 0.6f,
+                0x332E3445, 0x00000000, Shader.TileMode.CLAMP);
+        cornerGlowShader = new RadialGradient(width * 0.8f, height * 0.55f, width * 0.35f,
+                0x1A3A4458, 0x00000000, Shader.TileMode.CLAMP);
     }
 
     void show(VnCalendar.Day day, int nowHour, int nowClockHour) {
@@ -54,6 +78,7 @@ final class CalendarView extends View {
 
     @Override
     protected void onDraw(Canvas c) {
+        ensureShaders(getWidth(), getHeight());
         drawBackground(c, getWidth(), getHeight());
         if (day == null) return;
         // Lay out in a centred 16:9 frame, so another screen shape letterboxes instead of shifting things.
@@ -81,7 +106,7 @@ final class CalendarView extends View {
 
         // Thin gold rule.
         float ry = base + 3.4f * u;
-        paint.setShader(new LinearGradient(left, 0, left + 46 * u, 0, 0x99E8C77D, 0x00E8C77D, Shader.TileMode.CLAMP));
+        paint.setShader(ruleShader);
         c.drawRect(left, ry, left + 46 * u, ry + Math.max(1, 0.1f * u), paint);
         paint.setShader(null);
 
@@ -126,12 +151,11 @@ final class CalendarView extends View {
     }
 
     private void drawBackground(Canvas c, float w, float h) {
-        paint.setShader(new LinearGradient(0, 0, 0, h, 0xFF141821, 0xFF0B0D12, Shader.TileMode.CLAMP));
+        paint.setShader(bgShader);
         c.drawRect(0, 0, w, h, paint);
-        paint.setShader(new RadialGradient(w * 0.22f, h * 0.18f, w * 0.6f,
-                day != null && !day.good ? 0x332E3445 : 0x3348391C, 0x00000000, Shader.TileMode.CLAMP));
+        paint.setShader(day != null && !day.good ? badGlowShader : goodGlowShader);
         c.drawRect(0, 0, w, h, paint);
-        paint.setShader(new RadialGradient(w * 0.8f, h * 0.55f, w * 0.35f, 0x1A3A4458, 0x00000000, Shader.TileMode.CLAMP));
+        paint.setShader(cornerGlowShader);
         c.drawRect(0, 0, w, h, paint);
         paint.setShader(null);
     }
@@ -143,7 +167,7 @@ final class CalendarView extends View {
 
     /** As above, made smaller when it would run past maxRight. */
     private void caps(Canvas c, String text, float x, float y, float size, int color, float maxRight) {
-        String upper = text.toUpperCase(new java.util.Locale("vi"));
+        String upper = text.toUpperCase(VI);
         paint.setTypeface(sansLight);
         paint.setLetterSpacing(0.3f);
         paint.setTextSize(size);
@@ -215,7 +239,7 @@ final class CalendarView extends View {
         paint.setTextSize(r * 0.058f);
         paint.setColor(0x8CF4F1EA);
         paint.setLetterSpacing(0.3f);
-        c.drawText(top.toUpperCase(new java.util.Locale("vi")), cx, cy - r * 0.33f, paint);
+        c.drawText(top.toUpperCase(VI), cx, cy - r * 0.33f, paint);
         paint.setLetterSpacing(0);
         paint.setTypeface(sans);
         paint.setTextSize(r * 0.25f);
@@ -247,7 +271,7 @@ final class CalendarView extends View {
         paint.setTypeface(sansLight);
         paint.setLetterSpacing(0.3f);
         paint.setTextSize(1.45f * u);
-        String upper = truc.toUpperCase(new java.util.Locale("vi"));
+        String upper = truc.toUpperCase(VI);
         if (draw) {
             paint.setColor(0xB3F4F1EA);
             c.drawText(upper, x, y, paint);
@@ -263,7 +287,7 @@ final class CalendarView extends View {
     private static String list(String[] items) {
         StringBuilder b = new StringBuilder(items[0]);
         for (int i = 1; i < items.length; i++) {
-            b.append(", ").append(items[i].substring(0, 1).toLowerCase(new java.util.Locale("vi"))).append(items[i].substring(1));
+            b.append(", ").append(items[i].substring(0, 1).toLowerCase(VI)).append(items[i].substring(1));
         }
         return b.toString();
     }

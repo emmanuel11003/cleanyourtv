@@ -27,6 +27,7 @@ public final class SettingsActivity extends Activity {
     private TextView footer;
     private TextView seconds;
     private String focusId;
+    private AlertDialog helpDialog;
 
     private final ContentObserver changes = new ContentObserver(main) {
         @Override
@@ -68,8 +69,13 @@ public final class SettingsActivity extends Activity {
                 GamesProvider.changed(getApplicationContext());
             });
         });
-        findViewById(R.id.help).setOnClickListener(v -> new AlertDialog.Builder(this)
-                .setTitle(R.string.help_title).setMessage(R.string.help_text).setPositiveButton(R.string.ok, null).show());
+        findViewById(R.id.help).setOnClickListener(v -> {
+            if (isFinishing() || isDestroyed()) return;
+            dismissDialog();
+            helpDialog = new AlertDialog.Builder(this)
+                    .setTitle(R.string.help_title).setMessage(R.string.help_text).setPositiveButton(R.string.ok, null).create();
+            helpDialog.show();
+        });
     }
 
     @Override
@@ -82,8 +88,21 @@ public final class SettingsActivity extends Activity {
 
     @Override
     protected void onPause() {
+        dismissDialog();
         super.onPause();
         getContentResolver().unregisterContentObserver(changes);
+    }
+
+    @Override
+    protected void onDestroy() {
+        dismissDialog();
+        main.removeCallbacksAndMessages(null);
+        super.onDestroy();
+    }
+
+    private void dismissDialog() {
+        if (helpDialog != null && helpDialog.isShowing()) helpDialog.dismiss();
+        helpDialog = null;
     }
 
     private void load() {

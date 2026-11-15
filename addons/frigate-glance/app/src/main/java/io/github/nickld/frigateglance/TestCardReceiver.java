@@ -3,6 +3,7 @@ package io.github.nickld.frigateglance;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.provider.Settings;
 
 /**
  * Shows a test card from ADB without bringing this app to the front, so a card can be checked over
@@ -12,6 +13,8 @@ import android.content.Intent;
 public class TestCardReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
-        GlanceService.showTestCard(context, intent.getStringExtra("camera"));
+        if (Settings.canDrawOverlays(context)) {
+            GlanceService.showTestCard(context, intent == null ? null : intent.getStringExtra("camera"));
+        }
     }
 }

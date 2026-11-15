@@ -66,6 +66,7 @@ class PlayerActivity : Activity() {
     private var retries = 0
     private var triedHls = false
     private var digits = ""
+    private var activeDialog: AlertDialog? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -104,12 +105,23 @@ class PlayerActivity : Activity() {
         tune(index, remember = false)
     }
 
+    override fun onPause() {
+        dismissDialog()
+        super.onPause()
+    }
+
     override fun onStop() {
+        dismissDialog()
         releasePlayer()
         super.onStop()
     }
 
-    override fun onDestroy() { scope.cancel(); main.removeCallbacksAndMessages(null); super.onDestroy() }
+    override fun onDestroy() { dismissDialog(); scope.cancel(); main.removeCallbacksAndMessages(null); super.onDestroy() }
+
+    private fun dismissDialog() {
+        activeDialog?.takeIf { it.isShowing }?.dismiss()
+        activeDialog = null
+    }
 
     private fun createPlayer() {
         if (player != null) return
@@ -326,10 +338,13 @@ class PlayerActivity : Activity() {
             }
         }
         if (text.isEmpty()) opts += Opt("   No subtitles or captions in this stream") {}
-        AlertDialog.Builder(this, android.R.style.Theme_DeviceDefault_Dialog_Alert)
+        if (isFinishing || isDestroyed) return
+        dismissDialog()
+        activeDialog = AlertDialog.Builder(this, android.R.style.Theme_DeviceDefault_Dialog_Alert)
             .setTitle("Audio and subtitles")
             .setItems(opts.map { it.label }.toTypedArray()) { _, i -> opts[i].apply() }
-            .show()
+            .create()
+        activeDialog?.show()
     }
 
     /** Hands the channel list to the player without putting thousands of entries through an Intent. */

@@ -18,6 +18,7 @@ final class Page {
     final LinearLayout root, rows, side;
     final TextView title, subtitle;
     private final Activity a;
+    private AlertDialog activeDialog;
 
     Page(Activity a, String titleText, boolean withSide) {
         this.a = a;
@@ -96,21 +97,29 @@ final class Page {
         void typed(String s);
     }
 
+    void dismiss() {
+        if (activeDialog != null && activeDialog.isShowing()) activeDialog.dismiss();
+        activeDialog = null;
+    }
+
     /** One line of text, typed with the TV's keyboard. Clear empties it. */
     void ask(String titleText, String current, int max, Typed done) {
+        if (a.isFinishing() || a.isDestroyed()) return;
+        dismiss();
         EditText field = new EditText(a);
         field.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
         field.setSingleLine(true);
         field.setFilters(new InputFilter[]{new InputFilter.LengthFilter(max)});
         field.setText(current);
         field.setSelection(field.getText().length());
-        new AlertDialog.Builder(a, android.R.style.Theme_DeviceDefault_Dialog_Alert)
+        activeDialog = new AlertDialog.Builder(a, android.R.style.Theme_DeviceDefault_Dialog_Alert)
                 .setTitle(titleText)
                 .setView(field)
                 .setPositiveButton("OK", (d, w) -> done.typed(field.getText().toString()))
                 .setNeutralButton("Clear", (d, w) -> done.typed(""))
                 .setNegativeButton("Cancel", null)
-                .show();
+                .create();
+        activeDialog.show();
         field.requestFocus();
     }
 

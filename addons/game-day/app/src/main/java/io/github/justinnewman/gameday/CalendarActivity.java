@@ -16,6 +16,7 @@ public final class CalendarActivity extends Activity {
     private final Handler main = new Handler(Looper.getMainLooper());
     private Repository repo;
     private String id;
+    private AlertDialog activeDialog;
 
     @Override
     protected void onCreate(Bundle saved) {
@@ -52,6 +53,25 @@ public final class CalendarActivity extends Activity {
         load();
     }
 
+    @Override
+    protected void onPause() {
+        dismissDialog();
+        main.removeCallbacksAndMessages(null);
+        super.onPause();
+    }
+
+    @Override
+    protected void onDestroy() {
+        dismissDialog();
+        main.removeCallbacksAndMessages(null);
+        super.onDestroy();
+    }
+
+    private void dismissDialog() {
+        if (activeDialog != null && activeDialog.isShowing()) activeDialog.dismiss();
+        activeDialog = null;
+    }
+
     private void load() {
         Background.read(() -> {
             Calendar c = repo.find(id);
@@ -86,8 +106,10 @@ public final class CalendarActivity extends Activity {
     }
 
     private void confirmRemove() {
+        if (isFinishing() || isDestroyed()) return;
         Calendar c = repo.find(id);
         if (c == null) return;
+        dismissDialog();
         AlertDialog d = new AlertDialog.Builder(this)
                 .setTitle(getString(R.string.remove_title, c.name))
                 .setMessage(R.string.remove_text)
@@ -97,7 +119,9 @@ public final class CalendarActivity extends Activity {
                     GamesProvider.changed(getApplicationContext());
                     main.post(this::finish);
                 }))
-                .show();
+                .create();
+        activeDialog = d;
+        d.show();
         // A stray OK keeps it.
         d.getButton(AlertDialog.BUTTON_POSITIVE).requestFocus();
     }

@@ -17,7 +17,13 @@ public class BootReceiver extends BroadcastReceiver {
         String action = intent != null ? intent.getAction() : "";
         Log.i(TAG, "onReceive boot/update action: " + action);
         if (Intent.ACTION_BOOT_COMPLETED.equals(action) || Intent.ACTION_MY_PACKAGE_REPLACED.equals(action)) {
-            PrayerScheduler.scheduleNext(context);
+            PendingResult pending = goAsync();
+            try {
+                PrayerScheduler.scheduleNext(context, pending);
+            } catch (Throwable t) {
+                if (pending != null) pending.finish();
+                throw t;
+            }
         }
     }
 }

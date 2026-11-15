@@ -39,6 +39,7 @@ public class QuietReceiver extends BroadcastReceiver {
         }
         SharedPreferences p = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
         AudioManager am = context.getSystemService(AudioManager.class);
+        if (am == null) return;
         if (disconnected) {
             Quiet.Action a = Quiet.onDisconnect(p.getBoolean(GUARD, true), audio, am.isVolumeFixed());
             if (a == Quiet.Action.NOTHING) return;

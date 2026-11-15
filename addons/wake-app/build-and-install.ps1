@@ -39,7 +39,13 @@ if ($LASTEXITCODE) { throw 'build failed (JDK 17 and Android SDK 34 needed; see 
 $ErrorActionPreference = 'Stop'
 & $py -I (Join-Path $tools 'b64push.py') (Join-Path $here 'app\build\outputs\apk\release\app-release.apk') /data/local/tmp/wakeapp.apk | Out-Null
 if ($LASTEXITCODE) { throw 'sending the APK failed; run this again' }
-Tv 'pm install -r /data/local/tmp/wakeapp.apk; rm -f /data/local/tmp/wakeapp.apk'
+try {
+    $out = (Tv 'pm install -r /data/local/tmp/wakeapp.apk') -join "`n"
+} finally {
+    try { Tv 'rm -f /data/local/tmp/wakeapp.apk' | Out-Null } catch { }
+}
+Write-Host $out
+if ($out -notmatch 'Success') { throw "pm install failed: $out" }
 # Android 10 and later let an app open another from the background only when it may draw over other apps.
 Tv "appops set $pkg SYSTEM_ALERT_WINDOW allow"
 # TCL's TclAppBoot keeps apps from starting at boot unless they may auto-start (AUTO_START on G08 builds,

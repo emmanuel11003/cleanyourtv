@@ -64,6 +64,7 @@ final class Schedule {
     }
     static void reschedule(Context c) {
         AlarmManager am=c.getSystemService(AlarmManager.class);
+        if (am==null) return;
         // Cancel both alarms left by the earlier weekday/weekend implementation.
         for (int id=1;id<=2;id++) am.cancel(PendingIntent.getBroadcast(c,id,
                 new Intent(c,AlarmReceiver.class).setAction(ACTION_BEDTIME),PendingIntent.FLAG_IMMUTABLE|PendingIntent.FLAG_UPDATE_CURRENT));
@@ -73,8 +74,12 @@ final class Schedule {
         ScheduleRules.Event e=ScheduleRules.next(System.currentTimeMillis(),ZoneId.systemDefault(),rules(c),pauses(c));
         if (e==null) return;
         prefs(c).edit().putLong("next_at",e.at).putBoolean("next_wake",e.wake).apply();
-        if (Build.VERSION.SDK_INT>=31 && !am.canScheduleExactAlarms()) am.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP,e.at,pending(c));
-        else am.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP,e.at,pending(c));
+        try {
+            if (Build.VERSION.SDK_INT>=31 && !am.canScheduleExactAlarms()) am.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP,e.at,pending(c));
+            else am.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP,e.at,pending(c));
+        } catch (SecurityException ex) {
+            am.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP,e.at,pending(c));
+        }
     }
     static void wakeScreen(Context c) {wakeScreen(c,()->{});}
     @SuppressWarnings("deprecation")
@@ -87,10 +92,20 @@ final class Schedule {
     }
     // Uses the same screen-wake path as production; accessible only through the shell-protected receiver.
     static void testWake(Context c, int seconds) {
+        AlarmManager am = c.getSystemService(AlarmManager.class);
+        if (am == null) return;
         PendingIntent pi=PendingIntent.getBroadcast(c,4,new Intent(c,AlarmReceiver.class).setAction(ACTION_TEST_WAKE),
                 PendingIntent.FLAG_IMMUTABLE|PendingIntent.FLAG_UPDATE_CURRENT);
-        c.getSystemService(AlarmManager.class).setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP,
-                System.currentTimeMillis()+Math.max(10,Math.min(seconds,300))*1000L,pi);
+        long triggerAt = System.currentTimeMillis()+Math.max(10,Math.min(seconds,300))*1000L;
+        try {
+            if (Build.VERSION.SDK_INT >= 31 && !am.canScheduleExactAlarms()) {
+                am.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, triggerAt, pi);
+            } else {
+                am.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, triggerAt, pi);
+            }
+        } catch (SecurityException e) {
+            am.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, triggerAt, pi);
+        }
     }
     static void fire(Context c) {fire(c,()->{});}
     static void fire(Context c,Runnable finished) {

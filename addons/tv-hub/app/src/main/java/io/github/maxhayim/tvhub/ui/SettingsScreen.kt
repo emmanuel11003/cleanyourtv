@@ -11,6 +11,7 @@ import io.github.maxhayim.tvhub.ui.Ui.dp
 
 class SettingsScreen(host: MainActivity) : Screen(host) {
     private val list = Ui.vertical(ctx, 8)
+    private var activeDialog: AlertDialog? = null
 
     override val view: View = ScrollView(ctx).apply {
         clipChildren = false; clipToPadding = false
@@ -68,15 +69,28 @@ class SettingsScreen(host: MainActivity) : Screen(host) {
         list.addView(r)
     }
 
+    override fun onHide() {
+        dismissDialog()
+        super.onHide()
+    }
+
+    private fun dismissDialog() {
+        activeDialog?.takeIf { it.isShowing }?.dismiss()
+        activeDialog = null
+    }
+
     private fun about() {
+        if (ctx.isFinishing || ctx.isDestroyed) return
+        dismissDialog()
         val text = ctx.assets.open("licenses.txt").bufferedReader().use { it.readText() }
-        AlertDialog.Builder(ctx, android.R.style.Theme_DeviceDefault_Dialog_Alert)
+        activeDialog = AlertDialog.Builder(ctx, android.R.style.Theme_DeviceDefault_Dialog_Alert)
             .setTitle("TV Hub ${BuildConfig.VERSION_NAME}")
             .setView(ScrollView(ctx).apply {
                 isFocusable = true
                 addView(TextView(ctx).apply { this.text = text; setTextColor(Ui.TEXT); textSize = 14f; setPadding(dp(28), dp(8), dp(28), dp(8)) })
             })
-            .setPositiveButton("Close", null).show()
+            .setPositiveButton("Close", null).create()
+        activeDialog?.show()
     }
 
     override fun focusFirst(): Boolean = list.getChildAt(0)?.requestFocus() ?: false

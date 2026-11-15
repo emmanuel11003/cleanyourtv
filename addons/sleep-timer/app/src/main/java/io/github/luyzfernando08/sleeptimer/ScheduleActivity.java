@@ -14,6 +14,7 @@ public class ScheduleActivity extends Activity {
     private List<ScheduleRules.Pause> pauses;
     private LinearLayout list;
     private String[] days;
+    private final List<AlertDialog> dialogs=new ArrayList<>();
     @Override public void onCreate(Bundle state) {
         super.onCreate(state);
         days=new String[]{getString(R.string.sched_23),getString(R.string.sched_24),getString(R.string.sched_25),getString(R.string.sched_26),getString(R.string.sched_27),getString(R.string.sched_28),getString(R.string.sched_29)};
@@ -38,6 +39,16 @@ public class ScheduleActivity extends Activity {
         for(int i=0;i<pauses.size();i++){ ranges[2*i]=pauses.get(i).start.toString(); ranges[2*i+1]=pauses.get(i).end.toString(); }
         out.putStringArray("ranges",ranges);
     }
+    private void track(AlertDialog d) {
+        dialogs.removeIf(x->!x.isShowing());
+        dialogs.add(d);
+    }
+    private void dismissDialogs() {
+        for(AlertDialog d:new ArrayList<>(dialogs)) if(d.isShowing()) d.dismiss();
+        dialogs.clear();
+    }
+    @Override protected void onPause() { dismissDialogs(); super.onPause(); }
+    @Override protected void onDestroy() { dismissDialogs(); super.onDestroy(); }
     private int focusIndex;
     private void render() {
         LinearLayout root=new LinearLayout(this);root.setOrientation(LinearLayout.VERTICAL);root.setBackgroundColor(0xff0b1420);
@@ -56,9 +67,10 @@ public class ScheduleActivity extends Activity {
         button(getString(R.string.sched_4),()->edit(null));
         section(R.string.remote_exclusions);
         for(ScheduleRules.Pause p:pauses) button(getString(R.string.sched_5)+p.start+"  -  "+p.end,()->{
-            new AlertDialog.Builder(this).setTitle(getString(R.string.sched_6)).setItems(new String[]{getString(R.string.sched_7),getString(R.string.sched_8)},(d,n)->{
+            AlertDialog dDialog=new AlertDialog.Builder(this).setTitle(getString(R.string.sched_6)).setItems(new String[]{getString(R.string.sched_7),getString(R.string.sched_8)},(d,n)->{
                 if(n==1){pauses.remove(p);render();}else dateRange(p);
-            }).show();
+            }).create();
+            track(dDialog); dDialog.show();
         });
         button(getString(R.string.sched_9),()->dateRange(null));
         TextView save=Ui.row(root,880);save.setText(R.string.sched_10);save.setGravity(android.view.Gravity.CENTER);save.setTextColor(0xff8cf0d3);
@@ -85,7 +97,7 @@ public class ScheduleActivity extends Activity {
         return name.substring(0,1).toUpperCase(locale)+name.substring(1);
     }
     private void edit(ScheduleRules.Rule old) {
-        new AlertDialog.Builder(this).setTitle(old==null?getString(R.string.sched_13):label(old))
+        AlertDialog outer=new AlertDialog.Builder(this).setTitle(old==null?getString(R.string.sched_13):label(old))
             .setItems(old==null?new String[]{getString(R.string.sched_14),getString(R.string.sched_15)}:new String[]{getString(R.string.sched_14),getString(R.string.sched_15),getString(R.string.sched_8)},(d,n)->{
                 if(n==2){rules.remove(old);render();return;}
                 ScheduleRules.Rule draft=new ScheduleRules.Rule(old==null?31:old.days,old==null?480:old.minute,n==0);
@@ -101,8 +113,10 @@ public class ScheduleActivity extends Activity {
                         if(old!=null)rules.set(rules.indexOf(old),draft);else rules.add(draft);
                         render();
                     });
-                }));dialog.show();
-            }).show();
+                }));
+                track(dialog); dialog.show();
+            }).create();
+        track(outer); outer.show();
     }
     private void dateRange(ScheduleRules.Pause old) {
         RemotePicker.date(this,getString(R.string.sched_22),old==null?LocalDate.now():old.start,first->{

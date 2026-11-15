@@ -2,11 +2,13 @@ package io.github.nickld.frigateglance;
 
 import android.content.ContentProvider;
 import android.content.ContentValues;
+import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Handler;
-import android.os.Looper;
+import android.os.HandlerThread;
 import android.os.ParcelFileDescriptor;
+import android.provider.Settings;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -19,18 +21,31 @@ import java.io.FileNotFoundException;
  */
 public class ConfigProvider extends ContentProvider {
     private static final String NAME = "config.json";
+    private Handler closeHandler;
+
+    private synchronized Handler closeHandler() {
+        if (closeHandler == null) {
+            HandlerThread t = new HandlerThread("config-import");
+            t.start();
+            closeHandler = new Handler(t.getLooper());
+        }
+        return closeHandler;
+    }
 
     @Override
     public ParcelFileDescriptor openFile(Uri uri, String mode) throws FileNotFoundException {
         if (!mode.contains("w") || !NAME.equals(uri.getLastPathSegment())) throw new FileNotFoundException(uri.toString());
-        File dir = getContext().getExternalFilesDir(null);
+        Context ctx = getContext();
+        File dir = ctx == null ? null : ctx.getExternalFilesDir(null);
         if (dir == null || (!dir.isDirectory() && !dir.mkdirs())) throw new FileNotFoundException("no files folder");
         try {
             return ParcelFileDescriptor.open(new File(dir, NAME),
                     ParcelFileDescriptor.MODE_WRITE_ONLY | ParcelFileDescriptor.MODE_CREATE | ParcelFileDescriptor.MODE_TRUNCATE,
-                    new Handler(Looper.getMainLooper()),
+                    closeHandler(),
                     e -> {
-                        if (e == null && new ConfigStore(getContext()).importPushed()) GlanceService.reload(getContext());
+                        if (e == null && new ConfigStore(ctx).importPushed() && Settings.canDrawOverlays(ctx)) {
+                            GlanceService.reload(ctx);
+                        }
                     });
         } catch (java.io.IOException e) {
             throw new FileNotFoundException(e.getMessage());

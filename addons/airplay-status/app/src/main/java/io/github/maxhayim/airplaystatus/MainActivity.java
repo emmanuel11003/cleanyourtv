@@ -47,6 +47,7 @@ public class MainActivity extends Activity {
     private TextView status;
     private Row nameRow, mirroringRow, othersRow, serverRow, againRow;
     private boolean looking;
+    private int scanGen;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -103,12 +104,19 @@ public class MainActivity extends Activity {
         stopLooking();
         seen.clear();
         toResolve.clear();
+        if (nsd == null) {
+            looking = false;
+            show();
+            return;
+        }
         looking = true;
+        final int gen = scanGen;
         status.setText("Looking on the network…");
         for (String type : new String[]{Receivers.AIRPLAY, Receivers.RAOP}) {
             NsdManager.DiscoveryListener l = new NsdManager.DiscoveryListener() {
                 @Override public void onServiceFound(NsdServiceInfo info) {
                     main.post(() -> {
+                        if (gen != scanGen || !looking || isFinishing() || isDestroyed()) return;
                         toResolve.add(info);
                         resolveNext();
                     });
@@ -127,6 +135,7 @@ public class MainActivity extends Activity {
             }
         }
         main.postDelayed(() -> {
+            if (gen != scanGen || isFinishing() || isDestroyed()) return;
             stopLooking();
             show();
         }, LOOK_MS);
@@ -134,42 +143,56 @@ public class MainActivity extends Activity {
     }
 
     private void stopLooking() {
+        scanGen++;
         main.removeCallbacksAndMessages(null);
-        for (NsdManager.DiscoveryListener l : discoveries) {
-            try {
-                nsd.stopServiceDiscovery(l);
-            } catch (RuntimeException ignored) {
-                // Already stopped.
+        if (nsd != null) {
+            for (NsdManager.DiscoveryListener l : discoveries) {
+                try {
+                    nsd.stopServiceDiscovery(l);
+                } catch (RuntimeException ignored) {
+                    // Already stopped.
+                }
             }
         }
         discoveries.clear();
+        toResolve.clear();
+        resolving = false;
         looking = false;
     }
 
     @SuppressWarnings("deprecation") // resolveService works on every version this app supports.
     private void resolveNext() {
-        if (resolving || toResolve.isEmpty()) return;
+        if (resolving || !looking || nsd == null || toResolve.isEmpty()) return;
         resolving = true;
+        final int gen = scanGen;
         NsdServiceInfo info = toResolve.poll();
-        nsd.resolveService(info, new NsdManager.ResolveListener() {
-            @Override public void onServiceResolved(NsdServiceInfo r) {
-                InetAddress host = r.getHost();
-                String type = r.getServiceType() == null ? "" : r.getServiceType().replaceFirst("^\\.", "");
-                main.post(() -> {
-                    seen.add(new Receivers.Seen(type, r.getServiceName(), host == null ? null : host.getHostAddress()));
-                    resolving = false;
-                    show();
-                    resolveNext();
-                });
-            }
+        try {
+            nsd.resolveService(info, new NsdManager.ResolveListener() {
+                @Override public void onServiceResolved(NsdServiceInfo r) {
+                    InetAddress host = r.getHost();
+                    String type = r.getServiceType() == null ? "" : r.getServiceType().replaceFirst("^\\.", "");
+                    main.post(() -> {
+                        if (gen != scanGen || isFinishing() || isDestroyed()) return;
+                        seen.add(new Receivers.Seen(type, r.getServiceName(), host == null ? null : host.getHostAddress()));
+                        resolving = false;
+                        show();
+                        resolveNext();
+                    });
+                }
 
-            @Override public void onResolveFailed(NsdServiceInfo r, int code) {
-                main.post(() -> {
-                    resolving = false;
-                    resolveNext();
-                });
-            }
-        });
+                @Override public void onResolveFailed(NsdServiceInfo r, int code) {
+                    main.post(() -> {
+                        if (gen != scanGen || isFinishing() || isDestroyed()) return;
+                        resolving = false;
+                        resolveNext();
+                    });
+                }
+            });
+        } catch (RuntimeException e) {
+            Log.w(TAG, "resolve not started: " + e.getMessage());
+            resolving = false;
+            resolveNext();
+        }
     }
 
     private void show() {

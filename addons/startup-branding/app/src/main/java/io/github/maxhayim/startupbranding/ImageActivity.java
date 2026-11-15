@@ -13,7 +13,10 @@ import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * The picture: which one, how it's scaled and where it sits, with a live 16:9 preview beside the rows. Pictures
@@ -23,11 +26,15 @@ public class ImageActivity extends Activity {
     private static final int PICK = 1;
 
     private final Handler main = new Handler(Looper.getMainLooper());
+    private final ExecutorService io = Executors.newSingleThreadExecutor();
+    private final ExecutorService previewExec = Executors.newSingleThreadExecutor();
     private Page page;
     private WelcomeView preview;
     private String shownImage;
     private Bitmap shownBitmap;
     private int previewW = 640, previewH = 360;
+    private List<String> pictures = Collections.emptyList();
+    private int listGen;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,13 +72,34 @@ public class ImageActivity extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
-        build(page.focused());
+        reload(page.focused());
+    }
+
+    @Override
+    protected void onDestroy() {
+        main.removeCallbacksAndMessages(null);
+        io.shutdownNow();
+        previewExec.shutdownNow();
+        super.onDestroy();
+    }
+
+    private void reload(int focus) {
+        if (io.isShutdown()) return;
+        int gen = ++listGen;
+        io.execute(() -> {
+            List<String> list = Images.list(this);
+            main.post(() -> {
+                if (gen != listGen || isFinishing() || isDestroyed()) return;
+                pictures = list;
+                build(focus);
+            });
+        });
     }
 
     private void build(int focus) {
         page.rows.removeAllViews();
         Look l = Prefs.load(this);
-        List<String> pictures = Images.list(this);
+        List<String> pictures = this.pictures;
         if (!l.image.isEmpty() && !pictures.contains(l.image)) {
             // The file went away: say None rather than a name that no longer shows.
             l.image = "";
@@ -127,15 +155,16 @@ public class ImageActivity extends Activity {
         if (l.image.isEmpty()) return;
         String name = l.image;
         int w = previewW, h = previewH;
-        new Thread(() -> {
+        if (previewExec.isShutdown()) return;
+        previewExec.execute(() -> {
             Bitmap b = Images.load(this, name, w * 2, h * 2);
             main.post(() -> {
-                if (name.equals(shownImage)) {
+                if (!isFinishing() && !isDestroyed() && name.equals(shownImage)) {
                     shownBitmap = b;
                     preview.show(Prefs.load(this), b);
                 }
             });
-        }, "preview-image").start();
+        });
     }
 
     private interface Change {
@@ -153,12 +182,20 @@ public class ImageActivity extends Activity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         Uri uri = data == null ? null : data.getData();
-        if (requestCode != PICK || resultCode != RESULT_OK || uri == null) return;
-        String name = Images.copyIn(this, uri);
-        if (name == null) {
-            page.subtitle.setText("That file isn't a PNG, JPEG or WebP picture under 15 MB.");
-            return;
-        }
-        change(x -> x.image = name);
+        if (requestCode != PICK || resultCode != RESULT_OK || uri == null || io.isShutdown()) return;
+        io.execute(() -> {
+            String name = Images.copyIn(this, uri);
+            List<String> list = name == null ? null : Images.list(this);
+            main.post(() -> {
+                if (isFinishing() || isDestroyed()) return;
+                if (name == null) {
+                    page.subtitle.setText("That file isn't a PNG, JPEG or WebP picture under 15 MB.");
+                    return;
+                }
+                pictures = list;
+                listGen++;
+                change(x -> x.image = name);
+            });
+        });
     }
 }

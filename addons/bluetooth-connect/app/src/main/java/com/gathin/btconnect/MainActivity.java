@@ -36,6 +36,10 @@ public class MainActivity extends Activity {
     private TextView status;
     private BluetoothAdapter adapter;
     private BluetoothA2dp a2dp;
+    private boolean permissionRequested;
+    private boolean permissionDenied;
+    private boolean proxyConnecting;
+    private boolean receiverRegistered;
     /** Addresses asked to change a moment ago, shown as "Working…" until the state change arrives. */
     private final Set<String> pending = new HashSet<>();
     private final BroadcastReceiver changed = new BroadcastReceiver() {
@@ -70,24 +74,53 @@ public class MainActivity extends Activity {
         scroll.addView(list);
         page.addView(scroll, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1f));
         setContentView(page);
-        adapter = getSystemService(BluetoothManager.class).getAdapter();
+        if (savedInstanceState != null) {
+            permissionRequested = savedInstanceState.getBoolean("perm_req", false);
+            permissionDenied = savedInstanceState.getBoolean("perm_denied", false);
+        }
+        BluetoothManager bm = getSystemService(BluetoothManager.class);
+        adapter = bm == null ? null : bm.getAdapter();
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBoolean("perm_req", permissionRequested);
+        outState.putBoolean("perm_denied", permissionDenied);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        if (Build.VERSION.SDK_INT >= 31
-                && checkSelfPermission(Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(new String[]{Manifest.permission.BLUETOOTH_CONNECT}, 1);
-            return;
+        if (Build.VERSION.SDK_INT >= 31) {
+            if (checkSelfPermission(Manifest.permission.BLUETOOTH_CONNECT) == PackageManager.PERMISSION_GRANTED) {
+                permissionRequested = false;
+                permissionDenied = false;
+            } else {
+                if (!permissionRequested && !permissionDenied) {
+                    permissionRequested = true;
+                    requestPermissions(new String[]{Manifest.permission.BLUETOOTH_CONNECT}, 1);
+                } else if (permissionDenied) {
+                    status.setText("Needs the Nearby devices permission: run install.sh once, or allow it in the app's settings.");
+                }
+                return;
+            }
         }
         start();
     }
 
     @Override
     public void onRequestPermissionsResult(int code, String[] permissions, int[] results) {
-        if (results.length > 0 && results[0] == PackageManager.PERMISSION_GRANTED) start();
-        else status.setText("Needs the Nearby devices permission: run install.sh once, or allow it in the app's settings.");
+        super.onRequestPermissionsResult(code, permissions, results);
+        if (code != 1) return;
+        permissionRequested = false;
+        if (results.length > 0 && results[0] == PackageManager.PERMISSION_GRANTED) {
+            permissionDenied = false;
+            start();
+        } else {
+            permissionDenied = true;
+            status.setText("Needs the Nearby devices permission: run install.sh once, or allow it in the app's settings.");
+        }
     }
 
     private void start() {
@@ -95,27 +128,49 @@ public class MainActivity extends Activity {
             status.setText("Bluetooth is off. Turn it on in the TV's settings.");
             return;
         }
-        registerReceiver(changed, new IntentFilter(BluetoothA2dp.ACTION_CONNECTION_STATE_CHANGED));
+        if (!receiverRegistered) {
+            registerReceiver(changed, new IntentFilter(BluetoothA2dp.ACTION_CONNECTION_STATE_CHANGED));
+            receiverRegistered = true;
+        }
         if (a2dp != null) {
             refresh();
             return;
         }
-        adapter.getProfileProxy(this, new BluetoothProfile.ServiceListener() {
+        if (proxyConnecting) {
+            return;
+        }
+        proxyConnecting = true;
+        boolean queued = adapter.getProfileProxy(getApplicationContext(), new BluetoothProfile.ServiceListener() {
             @Override public void onServiceConnected(int profile, BluetoothProfile proxy) {
+                proxyConnecting = false;
+                if (isFinishing() || isDestroyed()) {
+                    if (adapter != null) adapter.closeProfileProxy(BluetoothProfile.A2DP, proxy);
+                    return;
+                }
+                if (a2dp != null && a2dp != proxy && adapter != null) {
+                    adapter.closeProfileProxy(BluetoothProfile.A2DP, a2dp);
+                }
                 a2dp = (BluetoothA2dp) proxy;
                 refresh();
             }
             @Override public void onServiceDisconnected(int profile) {
+                proxyConnecting = false;
                 a2dp = null;
             }
         }, BluetoothProfile.A2DP);
+        if (!queued) {
+            proxyConnecting = false;
+        }
     }
 
     @Override
     protected void onPause() {
-        try {
-            unregisterReceiver(changed);
-        } catch (IllegalArgumentException notRegistered) {
+        if (receiverRegistered) {
+            try {
+                unregisterReceiver(changed);
+            } catch (IllegalArgumentException notRegistered) {
+            }
+            receiverRegistered = false;
         }
         main.removeCallbacksAndMessages(null);
         super.onPause();
@@ -123,29 +178,38 @@ public class MainActivity extends Activity {
 
     @Override
     protected void onDestroy() {
-        if (a2dp != null) adapter.closeProfileProxy(BluetoothProfile.A2DP, a2dp);
+        if (a2dp != null && adapter != null) {
+            adapter.closeProfileProxy(BluetoothProfile.A2DP, a2dp);
+            a2dp = null;
+        }
         super.onDestroy();
     }
 
     /** Only runs after onResume has checked Nearby devices on Android 12+. */
     @SuppressLint("MissingPermission")
     private void refresh() {
-        if (a2dp == null) return;
+        if (a2dp == null || adapter == null || isFinishing() || isDestroyed()) return;
         int focus = 0;
         for (int i = 0; i < list.getChildCount(); i++) if (list.getChildAt(i).isFocused()) focus = i;
         list.removeAllViews();
         Set<String> on = new HashSet<>();
-        for (BluetoothDevice d : a2dp.getConnectedDevices()) on.add(d.getAddress());
-        for (BluetoothDevice device : adapter.getBondedDevices()) {
-            if (!Link.isAudio(device.getBluetoothClass())) continue;
-            String address = device.getAddress();
-            boolean connected = on.contains(address);
-            Row row = new Row(this, device.getName() == null ? address : device.getName(),
-                    pending.contains(address) ? "Working…" : connected ? "Connected" : "Not connected",
-                    () -> toggle(device, connected));
-            row.setValue(connected ? "Disconnect" : "Connect");
-            list.addView(row, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                    ViewGroup.LayoutParams.WRAP_CONTENT));
+        java.util.List<BluetoothDevice> connectedDevices = a2dp.getConnectedDevices();
+        if (connectedDevices != null) {
+            for (BluetoothDevice d : connectedDevices) on.add(d.getAddress());
+        }
+        Set<BluetoothDevice> bonded = adapter.getBondedDevices();
+        if (bonded != null) {
+            for (BluetoothDevice device : bonded) {
+                if (!Link.isAudio(device.getBluetoothClass())) continue;
+                String address = device.getAddress();
+                boolean connected = on.contains(address);
+                Row row = new Row(this, device.getName() == null ? address : device.getName(),
+                        pending.contains(address) ? "Working…" : connected ? "Connected" : "Not connected",
+                        () -> toggle(device, connected));
+                row.setValue(connected ? "Disconnect" : "Connect");
+                list.addView(row, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                        ViewGroup.LayoutParams.WRAP_CONTENT));
+            }
         }
         status.setText(list.getChildCount() == 0
                 ? "No paired speakers. Pair one in the TV's Bluetooth settings first."

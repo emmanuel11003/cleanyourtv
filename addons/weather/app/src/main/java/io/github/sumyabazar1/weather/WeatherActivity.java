@@ -55,6 +55,7 @@ public final class WeatherActivity extends Activity {
     /** Degrees Fahrenheit (and mph), and the other unit on the "Feels like" line. */
     private boolean fahrenheit;
     private boolean bothUnits;
+    private final List<AlertDialog> dialogs = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle state) {
@@ -90,12 +91,27 @@ public final class WeatherActivity extends Activity {
         requestId++;
         searchId++;
         main.removeCallbacks(tick);   // nothing runs while the page is not on screen
+        dismissDialogs();
     }
 
     @Override
     protected void onDestroy() {
+        dismissDialogs();
+        main.removeCallbacksAndMessages(null);
         super.onDestroy();
         io.shutdownNow();
+    }
+
+    private void track(AlertDialog d) {
+        dialogs.removeIf(x -> !x.isShowing());
+        dialogs.add(d);
+    }
+
+    private void dismissDialogs() {
+        for (AlertDialog d : new ArrayList<>(dialogs)) {
+            if (d.isShowing()) d.dismiss();
+        }
+        dialogs.clear();
     }
 
     private void refresh() {
@@ -228,6 +244,7 @@ public final class WeatherActivity extends Activity {
 
     /** Native lists keep D-pad focus, checked values and Back handling without a new dependency. */
     private void settings() {
+        if (isFinishing() || isDestroyed()) return;
         int initialDays = forecastDays;
         // The array overload uses a fixed-size list; saved changes must be able to replace its rows.
         ArrayAdapter<String> rows = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, new ArrayList<>());
@@ -248,10 +265,12 @@ public final class WeatherActivity extends Activity {
         dialog.setOnDismissListener(d -> {
             if (forecastDays != initialDays) refresh(); // One fetch after all choices, including Back.
         });
+        track(dialog);
         dialog.show();
         dialog.getListView().setOnItemClickListener((parent, view, position, id) -> {
+            if (isFinishing() || isDestroyed()) return;
             if (position == 0) {
-                new AlertDialog.Builder(this, android.R.style.Theme_DeviceDefault_Dialog_Alert)
+                AlertDialog unitDialog = new AlertDialog.Builder(this, android.R.style.Theme_DeviceDefault_Dialog_Alert)
                         .setTitle(R.string.setting_units)
                         .setSingleChoiceItems(new String[] {getString(R.string.unit_c), getString(R.string.unit_f)},
                                 fahrenheit ? 1 : 0, (picker, which) -> {
@@ -259,18 +278,22 @@ public final class WeatherActivity extends Activity {
                                     changed.run();
                                     picker.dismiss();
                                 })
-                        .setNegativeButton(android.R.string.cancel, null).show();
+                        .setNegativeButton(android.R.string.cancel, null).create();
+                track(unitDialog);
+                unitDialog.show();
             } else if (position == 2) {
                 String[] days = new String[Forecast.MAX_DAYS - Forecast.MIN_DAYS + 1];
                 for (int i = 0; i < days.length; i++) days[i] = dayCount(i + Forecast.MIN_DAYS);
-                new AlertDialog.Builder(this, android.R.style.Theme_DeviceDefault_Dialog_Alert)
+                AlertDialog daysDialog = new AlertDialog.Builder(this, android.R.style.Theme_DeviceDefault_Dialog_Alert)
                         .setTitle(R.string.setting_days)
                         .setSingleChoiceItems(days, forecastDays - Forecast.MIN_DAYS, (picker, which) -> {
                             options.edit().putInt("forecast_days", which + Forecast.MIN_DAYS).apply();
                             changed.run();
                             picker.dismiss();
                         })
-                        .setNegativeButton(android.R.string.cancel, null).show();
+                        .setNegativeButton(android.R.string.cancel, null).create();
+                track(daysDialog);
+                daysDialog.show();
             } else {
                 if (position == 1) options.edit().putBoolean("show_both_units", !bothUnits).apply();
                 if (position == 3) options.edit().putBoolean("show_humidity", !showHumidity).apply();
@@ -285,6 +308,7 @@ public final class WeatherActivity extends Activity {
 
     /** Type a city, pick it from the matches, keep it. Back leaves the current place as it was. */
     private void pickCity() {
+        if (isFinishing() || isDestroyed()) return;
         searchId++;
         EditText name = new EditText(this);
         name.setSingleLine(true);
@@ -307,6 +331,7 @@ public final class WeatherActivity extends Activity {
             search(name.getText().toString());
             return true;
         });
+        track(dialog);
         dialog.show();
         name.requestFocus();
     }
@@ -341,12 +366,13 @@ public final class WeatherActivity extends Activity {
     }
 
     private void choose(List<Forecast.Place> places) {
+        if (isFinishing() || isDestroyed()) return;
         CharSequence[] rows = new CharSequence[places.size()];
         for (int i = 0; i < rows.length; i++) {
             Forecast.Place p = places.get(i);
             rows[i] = p.detail.isEmpty() ? p.name : p.name + " · " + p.detail;
         }
-        new AlertDialog.Builder(this, android.R.style.Theme_DeviceDefault_Dialog_Alert)
+        AlertDialog dialog = new AlertDialog.Builder(this, android.R.style.Theme_DeviceDefault_Dialog_Alert)
                 .setTitle(R.string.pick_title)
                 .setItems(rows, (d, which) -> {
                     Forecast.Place p = places.get(which);
@@ -362,6 +388,8 @@ public final class WeatherActivity extends Activity {
                     message.setText(R.string.loading);
                     refresh();
                 })
-                .show();
+                .create();
+        track(dialog);
+        dialog.show();
     }
 }

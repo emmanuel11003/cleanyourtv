@@ -92,13 +92,14 @@ class Db(context: Context) : SQLiteOpenHelper(context, "tvhub.db", null, 2) {
         db.beginTransaction()
         try {
             db.delete("streams", "source_id=?", arrayOf(sourceId.toString()))
-            val st = db.compileStatement("INSERT INTO streams(source_id, idx, name, number, tvg_id, tvg_name, logo, grp, url, ua, ref) VALUES (?,?,?,?,?,?,?,?,?,?,?)")
-            list.forEachIndexed { i, r ->
-                st.clearBindings()
-                st.bindLong(1, sourceId); st.bindLong(2, i.toLong()); st.bindString(3, r.name)
-                bindOpt(st, 4, r.number); bindOpt(st, 5, r.tvgId); bindOpt(st, 6, r.tvgName); bindOpt(st, 7, r.logo); bindOpt(st, 8, r.group)
-                st.bindString(9, r.url); bindOpt(st, 10, r.userAgent); bindOpt(st, 11, r.referrer)
-                st.executeInsert()
+            db.compileStatement("INSERT INTO streams(source_id, idx, name, number, tvg_id, tvg_name, logo, grp, url, ua, ref) VALUES (?,?,?,?,?,?,?,?,?,?,?)").use { st ->
+                list.forEachIndexed { i, r ->
+                    st.clearBindings()
+                    st.bindLong(1, sourceId); st.bindLong(2, i.toLong()); st.bindString(3, r.name)
+                    bindOpt(st, 4, r.number); bindOpt(st, 5, r.tvgId); bindOpt(st, 6, r.tvgName); bindOpt(st, 7, r.logo); bindOpt(st, 8, r.group)
+                    st.bindString(9, r.url); bindOpt(st, 10, r.userAgent); bindOpt(st, 11, r.referrer)
+                    st.executeInsert()
+                }
             }
             db.setTransactionSuccessful()
         } finally { db.endTransaction() }
@@ -125,15 +126,17 @@ class Db(context: Context) : SQLiteOpenHelper(context, "tvhub.db", null, 2) {
         try {
             db.delete("programmes", null, null)
             db.delete("epg_names", null, null)
-            val st = db.compileStatement("INSERT INTO programmes(epg_id, start, stop, title, sub, descr, cat) VALUES (?,?,?,?,?,?,?)")
-            val names = fill { p ->
-                st.clearBindings()
-                st.bindString(1, p.epgId); st.bindLong(2, p.start); st.bindLong(3, p.stop); st.bindString(4, p.title)
-                bindOpt(st, 5, p.subtitle); bindOpt(st, 6, p.description); bindOpt(st, 7, p.category)
-                st.executeInsert()
+            val names = db.compileStatement("INSERT INTO programmes(epg_id, start, stop, title, sub, descr, cat) VALUES (?,?,?,?,?,?,?)").use { st ->
+                fill { p ->
+                    st.clearBindings()
+                    st.bindString(1, p.epgId); st.bindLong(2, p.start); st.bindLong(3, p.stop); st.bindString(4, p.title)
+                    bindOpt(st, 5, p.subtitle); bindOpt(st, 6, p.description); bindOpt(st, 7, p.category)
+                    st.executeInsert()
+                }
             }
-            val ns = db.compileStatement("INSERT OR IGNORE INTO epg_names(name, epg_id) VALUES (?,?)")
-            names.forEach { (n, id) -> ns.bindString(1, n); ns.bindString(2, id); ns.executeInsert() }
+            db.compileStatement("INSERT OR IGNORE INTO epg_names(name, epg_id) VALUES (?,?)").use { ns ->
+                names.forEach { (n, id) -> ns.clearBindings(); ns.bindString(1, n); ns.bindString(2, id); ns.executeInsert() }
+            }
             db.setTransactionSuccessful()
         } finally { db.endTransaction() }
     }

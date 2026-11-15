@@ -14,6 +14,8 @@ final class FlockModel {
 
     private final Random random = new Random();
     private final List<Boid> boids = new ArrayList<>();
+    private final float[] acceleration = new float[2];
+    private float[] x = new float[0], y = new float[0], vx = new float[0], vy = new float[0];
     private float width;
     private float height;
 
@@ -62,7 +64,12 @@ final class FlockModel {
         if (dt == 0f) return;
 
         int count = boids.size();
-        float[] x = new float[count], y = new float[count], vx = new float[count], vy = new float[count];
+        if (x.length < count) {
+            x = new float[count];
+            y = new float[count];
+            vx = new float[count];
+            vy = new float[count];
+        }
         for (int i = 0; i < count; i++) {
             Boid boid = boids.get(i);
             x[i] = boid.x;
@@ -75,7 +82,6 @@ final class FlockModel {
         float neighborRadiusSq = neighborRadius * neighborRadius;
         float separationRadius = neighborRadius * 0.34f;
         float separationRadiusSq = separationRadius * separationRadius;
-        float[] acceleration = new float[2];
         for (int i = 0; i < count; i++) {
             float centerX = 0f, centerY = 0f, headingX = 0f, headingY = 0f;
             float separateX = 0f, separateY = 0f;

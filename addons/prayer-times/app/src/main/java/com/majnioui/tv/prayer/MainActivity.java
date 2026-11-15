@@ -1,6 +1,8 @@
 package com.majnioui.tv.prayer;
 
+import android.Manifest;
 import android.app.Activity;
+import android.content.pm.PackageManager;
 import android.graphics.Typeface;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Build;
@@ -47,6 +49,8 @@ public class MainActivity extends Activity {
     private static final int[] ICONS = {R.drawable.ic_fajr, R.drawable.ic_sunrise, R.drawable.ic_dhuhr,
             R.drawable.ic_asr, R.drawable.ic_maghrib, R.drawable.ic_isha};
     private static final long MINUTE_MS = 60_000L;
+    private static final int REQ_POST_NOTIFICATIONS = 101;
+    private static final String STATE_NOTIF_REQUESTED = "notif_perm_requested";
 
     private final Handler main = new Handler(Looper.getMainLooper());
     private Typeface font;
@@ -61,6 +65,7 @@ public class MainActivity extends Activity {
     /** The day the times are for (yyyy-MM-dd), to reload after midnight. */
     private String loadedFor;
     private boolean loading;
+    private boolean notificationPermissionRequested;
 
     private final Runnable tick = new Runnable() {
         @Override
@@ -74,6 +79,9 @@ public class MainActivity extends Activity {
     @Override
     protected void onCreate(Bundle state) {
         super.onCreate(state);
+        if (state != null) {
+            notificationPermissionRequested = state.getBoolean(STATE_NOTIF_REQUESTED, false);
+        }
         font = getResources().getFont(R.font.outfit);
         accent = getColor(R.color.accent);
 
@@ -109,6 +117,20 @@ public class MainActivity extends Activity {
         col.addView(status);
 
         setContentView(root);
+
+        if (Build.VERSION.SDK_INT >= 33
+                && getResources().getBoolean(R.bool.reminders)
+                && !notificationPermissionRequested
+                && checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+            notificationPermissionRequested = true;
+            requestPermissions(new String[]{Manifest.permission.POST_NOTIFICATIONS}, REQ_POST_NOTIFICATIONS);
+        }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBoolean(STATE_NOTIF_REQUESTED, notificationPermissionRequested);
     }
 
     @Override
@@ -122,6 +144,12 @@ public class MainActivity extends Activity {
     protected void onPause() {
         super.onPause();
         main.removeCallbacks(tick);
+    }
+
+    @Override
+    protected void onDestroy() {
+        main.removeCallbacksAndMessages(null);
+        super.onDestroy();
     }
 
     private static String today() {
@@ -146,6 +174,7 @@ public class MainActivity extends Activity {
             final JSONObject result = json;
             main.post(() -> {
                 loading = false;
+                if (isFinishing() || isDestroyed()) return;
                 if (result == null) {
                     status.setText(getString(R.string.offline));
                     return;

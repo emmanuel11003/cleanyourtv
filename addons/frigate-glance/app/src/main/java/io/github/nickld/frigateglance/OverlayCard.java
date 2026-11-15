@@ -84,6 +84,7 @@ final class OverlayCard implements CardView {
     private final java.util.Map<Integer, TextView> actionLabels = new java.util.HashMap<>();
     private String footerText = "";
     private android.animation.ValueAnimator holdAnim;
+    private View animatingOut;
     private volatile String reviewId;
     private boolean snapshotLogged;
 
@@ -230,13 +231,49 @@ final class OverlayCard implements CardView {
         main.post(() -> {
             if (root == null) return;
             View gone = root;
+            animatingOut = gone;
             stopPicture();
             root = null;
             video = null;
             showingListener.onShowing(false);
             gone.animate().translationX(slideDistance()).alpha(0f).setDuration(200)
-                    .withEndAction(() -> removeQuietly(gone)).start();
+                    .withEndAction(() -> {
+                        if (animatingOut == gone) animatingOut = null;
+                        removeQuietly(gone);
+                    }).start();
         });
+    }
+
+    void destroy() {
+        reviewId = null;
+        Runnable tearDown = () -> {
+            clearHold();
+            stopPicture();
+            View exitView = animatingOut;
+            animatingOut = null;
+            if (exitView != null) {
+                exitView.animate().cancel();
+                removeQuietly(exitView);
+            }
+            View gone = root;
+            root = null;
+            video = null;
+            if (gone != null) {
+                gone.animate().cancel();
+                if (timerBar != null) timerBar.animate().cancel();
+                showingListener.onShowing(false);
+                removeQuietly(gone);
+            }
+            main.removeCallbacksAndMessages(null);
+        };
+        if (Looper.myLooper() == Looper.getMainLooper()) {
+            tearDown.run();
+        } else {
+            main.post(tearDown);
+        }
+        if (!loader.isShutdown()) {
+            loader.shutdownNow();
+        }
     }
 
     private void build() {
@@ -357,30 +394,34 @@ final class OverlayCard implements CardView {
     }
 
     private void loadSnapshot(String id, String camera, Runnable done) {
-        loader.execute(() -> {
-            if (!id.equals(reviewId)) return;   // the card it was for has gone
-            try {
-                byte[] jpeg = source.snapshot(camera);
-                Bitmap bmp = decode(jpeg);
-                main.post(() -> {
-                    if (root == null || !id.equals(reviewId) || bmp == null) return;
-                    // The frame's own shape, in case Frigate's camera sizes were not known when the card opened.
-                    sizePicture((float) bmp.getWidth() / bmp.getHeight());
-                    image.setImageBitmap(bmp);
-                    showProblem(null);
-                });
-            } catch (IOException | RuntimeException e) {
-                if (!snapshotLogged) Log.w(ConfigStore.TAG, "frigate error: snapshot " + camera + ": " + e.getMessage());
-                snapshotLogged = true;
-                String why = CardText.noPicture(source.newCertificate(), e.getMessage());
-                main.post(() -> {
-                    // A frame from a moment ago beats a message; only an empty picture says why it is empty.
-                    if (root != null && id.equals(reviewId) && image.getDrawable() == null) showProblem(why);
-                });
-            } finally {
-                if (done != null) main.post(done);
-            }
-        });
+        if (loader.isShutdown()) return;
+        try {
+            loader.execute(() -> {
+                if (!id.equals(reviewId)) return;   // the card it was for has gone
+                try {
+                    byte[] jpeg = source.snapshot(camera);
+                    Bitmap bmp = decode(jpeg);
+                    main.post(() -> {
+                        if (root == null || !id.equals(reviewId) || bmp == null) return;
+                        // The frame's own shape, in case Frigate's camera sizes were not known when the card opened.
+                        sizePicture((float) bmp.getWidth() / bmp.getHeight());
+                        image.setImageBitmap(bmp);
+                        showProblem(null);
+                    });
+                } catch (IOException | RuntimeException e) {
+                    if (!snapshotLogged) Log.w(ConfigStore.TAG, "frigate error: snapshot " + camera + ": " + e.getMessage());
+                    snapshotLogged = true;
+                    String why = CardText.noPicture(source.newCertificate(), e.getMessage());
+                    main.post(() -> {
+                        // A frame from a moment ago beats a message; only an empty picture says why it is empty.
+                        if (root != null && id.equals(reviewId) && image.getDrawable() == null) showProblem(why);
+                    });
+                } finally {
+                    if (done != null) main.post(done);
+                }
+            });
+        } catch (java.util.concurrent.RejectedExecutionException ignored) {
+        }
     }
 
     /** null hides the message. */

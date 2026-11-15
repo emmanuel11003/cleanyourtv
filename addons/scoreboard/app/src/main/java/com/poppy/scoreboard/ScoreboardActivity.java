@@ -11,6 +11,8 @@ import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.KeyEvent;
@@ -26,8 +28,13 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class ScoreboardActivity extends Activity {
+
+    private final ExecutorService executor = Executors.newSingleThreadExecutor();
+    private final Handler mainHandler = new Handler(Looper.getMainLooper());
 
     static class AppScore {
         String packageName;
@@ -42,7 +49,14 @@ public class ScoreboardActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_scoreboard);
 
-        renderScoreboard();
+        loadAndRenderScoreboard();
+    }
+
+    @Override
+    protected void onDestroy() {
+        mainHandler.removeCallbacksAndMessages(null);
+        executor.shutdownNow();
+        super.onDestroy();
     }
 
     private boolean isStreamingApp(String pkg) {
@@ -124,9 +138,22 @@ public class ScoreboardActivity extends Activity {
                p.equals("com.google.android.videos");
     }
 
-    private void renderScoreboard() {
-        UsageStatsManager usm = (UsageStatsManager) getSystemService(Context.USAGE_STATS_SERVICE);
-        PackageManager pm = getPackageManager();
+    private void loadAndRenderScoreboard() {
+        final Context appCtx = getApplicationContext();
+        executor.execute(() -> {
+            List<AppScore> scores = queryScores(appCtx);
+            mainHandler.post(() -> {
+                if (isFinishing() || isDestroyed()) {
+                    return;
+                }
+                applyScores(scores);
+            });
+        });
+    }
+
+    private List<AppScore> queryScores(Context ctx) {
+        UsageStatsManager usm = (UsageStatsManager) ctx.getSystemService(Context.USAGE_STATS_SERVICE);
+        PackageManager pm = ctx.getPackageManager();
 
         Calendar cal = Calendar.getInstance();
         long endTime = cal.getTimeInMillis();
@@ -207,8 +234,12 @@ public class ScoreboardActivity extends Activity {
             }
             return Long.compare(b.totalTimeMs, a.totalTimeMs);
         });
+        return scores;
+    }
 
+    private void applyScores(List<AppScore> scores) {
         LinearLayout container = findViewById(R.id.scoreboard_list);
+        if (container == null) return;
         container.removeAllViews();
 
         int totalLaunches = 0;

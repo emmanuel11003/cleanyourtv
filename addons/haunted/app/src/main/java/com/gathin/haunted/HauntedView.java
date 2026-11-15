@@ -20,6 +20,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.RejectedExecutionException;
 
 /**
  * Night photos crossfading slowly, a few bats now and then, a ghost that floats up now and then, a flickering
@@ -57,7 +60,11 @@ public class HauntedView extends View {
     private RadialGradient glowShader;
     private float glowR;
 
+    private final Date clockDate = new Date();
     private boolean running;
+    private boolean loadingPhoto;
+    private volatile int loadGen;
+    private ExecutorService loader;
     private long lastFrame, t0;
 
     private final Runnable tick = new Runnable() {
@@ -90,25 +97,68 @@ public class HauntedView extends View {
     public void start() {
         if (running) return;
         running = true;
+        loadGen++;
+        loadingPhoto = false;
+        if (loader == null || loader.isShutdown()) loader = Executors.newSingleThreadExecutor();
         t0 = System.currentTimeMillis();
         nextBat = t0 + 4_000;
         nextGhost = t0 + 12_000;
-        if (current == null) { index = rng.nextInt(Math.max(1, files.size())) - 1; current = load(1); photoSince = t0; }
+        if (current == null && !files.isEmpty()) {
+            if (index < 0) index = rng.nextInt(files.size()) - 1;
+            requestNextPhoto();
+        }
         post(tick);
     }
 
     public void stop() {
         running = false;
+        loadGen++;
+        loadingPhoto = false;
         removeCallbacks(tick);
+        if (loader != null) {
+            loader.shutdownNow();
+            loader = null;
+        }
         current = null;
         next = null;
     }
 
-    /** Photo number index + step, decoded as is (1280x720). */
-    private Bitmap load(int step) {
-        if (files.isEmpty()) return null;
-        index = (index + step) % files.size();
-        try (InputStream in = getContext().getAssets().open("photos/" + files.get(index))) {
+    /** Schedule decoding photo number index + 1 off the UI thread. */
+    private void requestNextPhoto() {
+        if (files.isEmpty() || loadingPhoto || loader == null || loader.isShutdown()) return;
+        loadingPhoto = true;
+        index = (index + 1) % files.size();
+        final String pathName = "photos/" + files.get(index);
+        final int gen = loadGen;
+        final Context appCtx = getContext().getApplicationContext();
+        try {
+            loader.execute(() -> {
+                if (!running || gen != loadGen) return;
+                Bitmap b = decodeAsset(appCtx, pathName);
+                post(() -> {
+                    if (!running || gen != loadGen) return;
+                    loadingPhoto = false;
+                    long now = System.currentTimeMillis();
+                    if (b != null) {
+                        if (current == null) {
+                            current = b;
+                            photoSince = now;
+                        } else {
+                            next = b;
+                            fadeStart = now;
+                        }
+                    } else if (current != null) {
+                        photoSince = now;
+                    }
+                });
+            });
+        } catch (RejectedExecutionException ignored) {
+            loadingPhoto = false;
+        }
+    }
+
+    private static Bitmap decodeAsset(Context ctx, String pathName) {
+        try (InputStream in = ctx.getAssets().open(pathName)) {
             return BitmapFactory.decodeStream(in);
         } catch (Exception e) {
             return null;
@@ -138,9 +188,8 @@ public class HauntedView extends View {
     }
 
     private void drawPhotos(Canvas c, long now, int w, int h) {
-        if (next == null && current != null && files.size() > 1 && now - photoSince > PHOTO_MS) {
-            next = load(1);
-            fadeStart = now;
+        if (next == null && !loadingPhoto && current != null && files.size() > 1 && now - photoSince > PHOTO_MS) {
+            requestNextPhoto();
         }
         if (next != null) {
             float f = Math.min(1f, (now - fadeStart) / (float) FADE_MS);
@@ -259,7 +308,8 @@ public class HauntedView extends View {
         long minute = now / 60_000;
         if (minute != clockMinute) {
             clockMinute = minute;
-            clockText = clockFormat.format(new Date(now));
+            clockDate.setTime(now);
+            clockText = clockFormat.format(clockDate);
         }
         text.setColor(0xCCFFFFFF);
         text.setTextAlign(Paint.Align.RIGHT);

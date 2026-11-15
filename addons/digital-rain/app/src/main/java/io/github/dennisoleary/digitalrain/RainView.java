@@ -41,6 +41,7 @@ final class RainView extends View implements Choreographer.FrameCallback {
     private float[] speed;      // rows per frame
     private int[] lastRow;      // where the head was drawn, to turn it green when it moves on
     private char[] lastGlyph;
+    private final char[] glyphBuf = new char[1];
     private boolean running;
     private long lastFrame;
 
@@ -140,7 +141,8 @@ final class RainView extends View implements Choreographer.FrameCallback {
         float cx = left + cell / 2;
         canvas.save();
         canvas.scale(-1, 1, cx, 0);   // mirrored, like the film's glyphs
-        canvas.drawText(String.valueOf(g), cx, top + cell * 0.85f, glyph);
+        glyphBuf[0] = g;
+        canvas.drawText(glyphBuf, 0, 1, cx, top + cell * 0.85f, glyph);
         canvas.restore();
     }
 

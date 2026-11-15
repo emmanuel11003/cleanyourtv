@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.RejectedExecutionException;
 
 /**
  * The tile and module card open this: a glance of weather and fuel prices at the top, then your Home
@@ -38,6 +39,7 @@ public class MainActivity extends Activity {
     private Config config;
     private List<Ha.Entity> entities = new ArrayList<>();
     private String problem;
+    private AlertDialog activeDialog;
     private final Runnable refresh = new Runnable() {
         @Override
         public void run() {
@@ -82,52 +84,65 @@ public class MainActivity extends Activity {
 
     @Override
     protected void onPause() {
-        main.removeCallbacks(refresh);
+        main.removeCallbacksAndMessages(null);
+        dismissDialog();
         super.onPause();
     }
 
     @Override
     protected void onDestroy() {
+        main.removeCallbacksAndMessages(null);
+        dismissDialog();
         net.shutdownNow();
         super.onDestroy();
     }
 
     private void load() {
+        if (net.isShutdown() || isFinishing() || isDestroyed()) return;
         Config c = config;
-        net.execute(() -> {
-            HaClient.Reply r = new HaClient(c.url, c.token).get("/api/states");
-            List<Ha.Entity> found = null;
-            String why = null;
-            if (r.ok()) {
-                try {
-                    found = Ha.parse(r.body, c.glance);
-                } catch (JSONException e) {
-                    why = "Home Assistant's answer couldn't be read.";
+        try {
+            net.execute(() -> {
+                HaClient.Reply r = new HaClient(c.url, c.token).get("/api/states");
+                List<Ha.Entity> found = null;
+                String why = null;
+                if (r.ok()) {
+                    try {
+                        found = Ha.parse(r.body, c.glance);
+                    } catch (JSONException e) {
+                        why = "Home Assistant's answer couldn't be read.";
+                    }
+                } else {
+                    why = Ha.problem(r.code);
                 }
-            } else {
-                why = Ha.problem(r.code);
-            }
-            List<Ha.Entity> f = found;
-            String w = why;
-            main.post(() -> {
-                if (isFinishing()) return;
-                problem = w;
-                if (f != null) entities = f;
-                build();
+                List<Ha.Entity> f = found;
+                String w = why;
+                main.post(() -> {
+                    if (isFinishing() || isDestroyed()) return;
+                    problem = w;
+                    if (f != null) entities = f;
+                    build();
+                });
             });
-        });
+        } catch (RejectedExecutionException ignored) {
+            // Activity shutting down.
+        }
     }
 
     private void send(Ha.Call call) {
-        if (call == null) return;
+        if (call == null || net.isShutdown() || isFinishing() || isDestroyed()) return;
         Config c = config;
-        net.execute(() -> {
-            HaClient.Reply r = new HaClient(c.url, c.token).post(call.path, call.body);
-            main.post(() -> {
-                if (!r.ok()) status.setText(Ha.problem(r.code));
-                main.postDelayed(this::load, 600);
+        try {
+            net.execute(() -> {
+                HaClient.Reply r = new HaClient(c.url, c.token).post(call.path, call.body);
+                main.post(() -> {
+                    if (isFinishing() || isDestroyed()) return;
+                    if (!r.ok()) status.setText(Ha.problem(r.code));
+                    main.postDelayed(this::load, 600);
+                });
             });
-        });
+        } catch (RejectedExecutionException ignored) {
+            // Activity shutting down.
+        }
     }
 
     /** Rebuilds the list; focus stays on the row it was on. */
@@ -264,18 +279,26 @@ public class MainActivity extends Activity {
         void done(String value);
     }
 
+    private void dismissDialog() {
+        if (activeDialog != null && activeDialog.isShowing()) activeDialog.dismiss();
+        activeDialog = null;
+    }
+
     private void edit(String title, String start, int type, Done done) {
+        if (isFinishing() || isDestroyed()) return;
+        dismissDialog();
         EditText field = new EditText(this);
         field.setInputType(type);
         field.setSingleLine(true);
         field.setText(start);
         field.setSelection(start.length());
-        new AlertDialog.Builder(this, android.R.style.Theme_DeviceDefault_Dialog_Alert)
+        activeDialog = new AlertDialog.Builder(this, android.R.style.Theme_DeviceDefault_Dialog_Alert)
                 .setTitle(title)
                 .setView(field)
                 .setPositiveButton("Save", (d, w) -> done.done(field.getText().toString()))
                 .setNegativeButton("Cancel", null)
-                .show();
+                .create();
+        activeDialog.show();
         field.requestFocus();
     }
 

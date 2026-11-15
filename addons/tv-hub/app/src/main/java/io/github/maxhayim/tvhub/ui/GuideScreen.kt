@@ -25,6 +25,7 @@ class GuideScreen(host: MainActivity) : Screen(host) {
     private var favs: Set<String> = emptySet()
     private var category = "All"
     private var shown: List<Channel> = emptyList()
+    private var activeDialog: AlertDialog? = null
 
     override val view: View = Ui.vertical(ctx, 14).apply {
         addView(Ui.text(ctx, "Guide", 30f, bold = true))
@@ -112,9 +113,21 @@ class GuideScreen(host: MainActivity) : Screen(host) {
         host.play(shown, shown.indexOfFirst { it.key == ch.key }.coerceAtLeast(0))
     }
 
+    override fun onHide() {
+        dismissDialog()
+        super.onHide()
+    }
+
+    private fun dismissDialog() {
+        activeDialog?.takeIf { it.isShowing }?.dismiss()
+        activeDialog = null
+    }
+
     private fun details(ch: Channel, p: Programme?) {
         host.scope.launch {
             val desc = p?.let { withContext(Dispatchers.IO) { repo.description(it) } }
+            if (ctx.isFinishing || ctx.isDestroyed) return@launch
+            dismissDialog()
             val body = Ui.vertical(ctx, 10).apply { setPadding(dp(28), dp(12), dp(28), dp(8)) }
             body.addView(Ui.text(ctx, listOfNotNull(ch.number, ch.name).joinToString("  "), 16f, Ui.DIM))
             if (p != null) {
@@ -126,13 +139,14 @@ class GuideScreen(host: MainActivity) : Screen(host) {
                 body.addView(Ui.text(ctx, if (ch.epgIds.isEmpty()) "This channel has no guide information." else "Nothing is listed for this time.", 17f, lines = 0))
             }
             body.addView(Ui.text(ctx, "From " + ch.sourceNames.joinToString(", "), 14f, Ui.DIM))
-            AlertDialog.Builder(ctx, android.R.style.Theme_DeviceDefault_Dialog_Alert)
+            activeDialog = AlertDialog.Builder(ctx, android.R.style.Theme_DeviceDefault_Dialog_Alert)
                 .setTitle(p?.title?.ifEmpty { null } ?: ch.name)
                 .setView(ScrollView(ctx).apply { addView(body) })
                 .setPositiveButton("Watch now") { _, _ -> play(ch) }
                 .setNeutralButton(if (ch.key in favs) "Remove from Favorites" else "Add to Favorites") { _, _ -> repo.toggleFavorite(ch.key) }
                 .setNegativeButton("Close", null)
-                .show()
+                .create()
+            activeDialog?.show()
         }
     }
 

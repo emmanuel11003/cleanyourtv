@@ -1,5 +1,6 @@
 package com.majnioui.tv.prayer;
 
+import android.Manifest;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -7,11 +8,13 @@ import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.media.AudioAttributes;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
+import android.provider.Settings;
 import android.util.Log;
 
 public class PrayerReceiver extends BroadcastReceiver {
@@ -31,7 +34,13 @@ public class PrayerReceiver extends BroadcastReceiver {
         Log.i(TAG, "onReceive: " + action);
 
         if (PrayerScheduler.ACTION_REFRESH_ALARM.equals(action)) {
-            PrayerScheduler.fetchTimingsAndSchedule(context);
+            PendingResult pending = goAsync();
+            try {
+                PrayerScheduler.fetchTimingsAndSchedule(context, pending);
+            } catch (Throwable t) {
+                if (pending != null) pending.finish();
+                throw t;
+            }
             return;
         }
 
@@ -48,7 +57,9 @@ public class PrayerReceiver extends BroadcastReceiver {
 
             // 1. Post High-Priority Notification (handles sound and tray indicator with fixed ID)
             NotificationManager nm = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-            if (nm != null) {
+            boolean canNotify = Build.VERSION.SDK_INT < 33
+                    || context.checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED;
+            if (nm != null && canNotify) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                     NotificationChannel ch = new NotificationChannel(
                             CHANNEL_ID,
@@ -96,23 +107,37 @@ public class PrayerReceiver extends BroadcastReceiver {
                         .setCategory(Notification.CATEGORY_ALARM)
                         .setColor(Color.parseColor("#2BB673"));
 
-                nm.notify(NOTIFICATION_ID, nb.build());
+                try {
+                    nm.notify(NOTIFICATION_ID, nb.build());
+                } catch (SecurityException e) {
+                    Log.w(TAG, "Notification disallowed: " + e);
+                }
             }
 
             // 2. Launch floating alert banner on screen (single launch path)
-            try {
-                Intent popup = new Intent(context, PrayerAlertActivity.class);
-                popup.putExtra(PrayerScheduler.EXTRA_PRAYER_NAME, name);
-                popup.putExtra(PrayerScheduler.EXTRA_PRAYER_TIME, time);
-                popup.putExtra(PrayerScheduler.EXTRA_PLACE, place);
-                popup.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                context.startActivity(popup);
-            } catch (Exception e) {
-                Log.w(TAG, "Launch alert activity error: " + e);
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M || Settings.canDrawOverlays(context)) {
+                try {
+                    Intent popup = new Intent(context, PrayerAlertActivity.class);
+                    popup.putExtra(PrayerScheduler.EXTRA_PRAYER_NAME, name);
+                    popup.putExtra(PrayerScheduler.EXTRA_PRAYER_TIME, time);
+                    popup.putExtra(PrayerScheduler.EXTRA_PLACE, place);
+                    popup.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    context.startActivity(popup);
+                } catch (Exception e) {
+                    Log.w(TAG, "Launch alert activity error: " + e);
+                }
+            } else {
+                Log.w(TAG, "Overlay permission missing, skipping popup alert activity");
             }
 
             // 3. Schedule next prayer
-            PrayerScheduler.scheduleNext(context);
+            PendingResult pending = goAsync();
+            try {
+                PrayerScheduler.scheduleNext(context, pending);
+            } catch (Throwable t) {
+                if (pending != null) pending.finish();
+                throw t;
+            }
         }
     }
 }

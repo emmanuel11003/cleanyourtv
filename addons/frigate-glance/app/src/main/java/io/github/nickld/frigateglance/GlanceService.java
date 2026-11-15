@@ -63,7 +63,16 @@ public class GlanceService extends Service {
     private volatile String mqttError = "", frigateError = "";
 
     public static void start(Context context) {
-        context.startForegroundService(new Intent(context, GlanceService.class));
+        if (context == null) return;
+        if (!(context instanceof android.app.Activity) && !Settings.canDrawOverlays(context)) {
+            Log.w(TAG, "skipping background GlanceService start: overlay permission not granted");
+            return;
+        }
+        try {
+            context.startForegroundService(new Intent(context, GlanceService.class));
+        } catch (RuntimeException e) {
+            Log.w(TAG, "failed to start GlanceService: " + e.getMessage());
+        }
     }
 
     /** Re-reads the config and reconnects; for the settings screen and a newly pushed config. */
@@ -212,7 +221,7 @@ public class GlanceService extends Service {
     public static void checkFrigate(boolean trustNewCertificate) {
         GlanceService s = instance;
         FrigateApi f = s == null ? null : s.frigate;
-        if (f == null) return;
+        if (f == null || s.refetcher.isShutdown()) return;
         s.refetcher.execute(() -> {
             if (trustNewCertificate && f.trustOffered()) Log.i(TAG, "trusted Frigate's new certificate " + f.pin().substring(0, 12));
             s.fetchFrigateConfig();
@@ -291,13 +300,14 @@ public class GlanceService extends Service {
 
     @Override
     public void onDestroy() {
+        instance = null;
         running = false;
         MqttClient m = mqtt;
         if (m != null) m.stop();
-        if (card != null) card.hide();
-        cardThread.quitSafely();
-        refetcher.shutdownNow();
-        instance = null;
+        if (cards != null) cards.removeCallbacksAndMessages(null);
+        if (card != null) card.destroy();
+        if (cardThread != null) cardThread.quitSafely();
+        if (!refetcher.isShutdown()) refetcher.shutdownNow();
         super.onDestroy();
     }
 
@@ -464,9 +474,12 @@ public class GlanceService extends Service {
 
     private void refetchIfUnknown(String camera) {
         long now = SystemClock.elapsedRealtime();
-        if (detectSizes.containsKey(camera) || frigate == null || now - lastRefetch < REFETCH_EVERY_MS) return;
+        if (detectSizes.containsKey(camera) || frigate == null || now - lastRefetch < REFETCH_EVERY_MS || refetcher.isShutdown()) return;
         lastRefetch = now;
-        refetcher.execute(this::fetchFrigateConfig);
+        try {
+            refetcher.execute(this::fetchFrigateConfig);
+        } catch (java.util.concurrent.RejectedExecutionException ignored) {
+        }
     }
 
     private void tick() {

@@ -29,6 +29,7 @@ public class SettingsActivity extends Activity {
     private Button secondsButton;
     private LinearLayout feedList;
     private EditText address;
+    private AlertDialog activeDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -101,6 +102,23 @@ public class SettingsActivity extends Activity {
         updateSeconds();
     }
 
+    @Override
+    protected void onPause() {
+        dismissDialog();
+        super.onPause();
+    }
+
+    @Override
+    protected void onDestroy() {
+        dismissDialog();
+        super.onDestroy();
+    }
+
+    private void dismissDialog() {
+        if (activeDialog != null && activeDialog.isShowing()) activeDialog.dismiss();
+        activeDialog = null;
+    }
+
     private void updateSeconds() {
         secondsButton.setText(getString(R.string.seconds_per_headline, Config.seconds(dir)));
     }
@@ -119,12 +137,17 @@ public class SettingsActivity extends Activity {
             b.setText(url);
             b.setAllCaps(false);
             b.setSingleLine(true);
-            b.setOnClickListener(v -> new AlertDialog.Builder(this)
-                    .setTitle(R.string.feed_remove)
-                    .setMessage(url)
-                    .setPositiveButton(R.string.feed_remove_yes, (d, w) -> remove(url))
-                    .setNegativeButton(android.R.string.cancel, null)
-                    .show());
+            b.setOnClickListener(v -> {
+                if (isFinishing() || isDestroyed()) return;
+                dismissDialog();
+                activeDialog = new AlertDialog.Builder(this)
+                        .setTitle(R.string.feed_remove)
+                        .setMessage(url)
+                        .setPositiveButton(R.string.feed_remove_yes, (d, w) -> remove(url))
+                        .setNegativeButton(android.R.string.cancel, null)
+                        .create();
+                activeDialog.show();
+            });
             feedList.addView(b, wrap(0));
         }
     }

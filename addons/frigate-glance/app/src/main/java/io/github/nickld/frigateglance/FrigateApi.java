@@ -117,19 +117,29 @@ public final class FrigateApi {
     private byte[] get(String path) throws IOException {
         if (!user.isEmpty() && token == null) login();
         HttpURLConnection c = open(path);
-        int code = c.getResponseCode();
-        if (code == 401 && !user.isEmpty()) {
+        try {
+            int code = c.getResponseCode();
+            if (code != 401 || user.isEmpty()) {
+                if (code != 200) {
+                    throw new IOException("Frigate answered HTTP " + code + " for " + path.replaceFirst("\\?.*", ""));
+                }
+                try (InputStream in = c.getInputStream()) {
+                    return readAll(in);
+                }
+            }
+        } finally {
             c.disconnect();
-            login();
-            c = open(path);
-            code = c.getResponseCode();
         }
-        if (code != 200) {
-            c.disconnect();
-            throw new IOException("Frigate answered HTTP " + code + " for " + path.replaceFirst("\\?.*", ""));
-        }
-        try (InputStream in = c.getInputStream()) {
-            return readAll(in);
+        login();
+        c = open(path);
+        try {
+            int code = c.getResponseCode();
+            if (code != 200) {
+                throw new IOException("Frigate answered HTTP " + code + " for " + path.replaceFirst("\\?.*", ""));
+            }
+            try (InputStream in = c.getInputStream()) {
+                return readAll(in);
+            }
         } finally {
             c.disconnect();
         }
@@ -138,28 +148,31 @@ public final class FrigateApi {
     private void login() throws IOException {
         token = null;
         HttpURLConnection c = connection("/api/login");
-        c.setRequestMethod("POST");
-        c.setDoOutput(true);
-        c.setRequestProperty("Content-Type", "application/json");
-        byte[] body;
         try {
-            body = new JSONObject().put("user", user).put("password", password).toString().getBytes(StandardCharsets.UTF_8);
-        } catch (JSONException e) {
-            throw new IOException(e);
+            c.setRequestMethod("POST");
+            c.setDoOutput(true);
+            c.setRequestProperty("Content-Type", "application/json");
+            byte[] body;
+            try {
+                body = new JSONObject().put("user", user).put("password", password).toString().getBytes(StandardCharsets.UTF_8);
+            } catch (JSONException e) {
+                throw new IOException(e);
+            }
+            try (OutputStream out = c.getOutputStream()) {
+                out.write(body);
+            }
+            int code = c.getResponseCode();
+            String t = null;
+            for (Map.Entry<String, List<String>> e : c.getHeaderFields().entrySet()) {
+                if (e.getKey() != null && e.getKey().toLowerCase(Locale.ROOT).equals("set-cookie")) t = tokenFromSetCookie(e.getValue());
+                if (t != null) break;
+            }
+            if (code == 401 || code == 400) throw new IOException("Frigate refused the username or password");
+            if (code != 200 || t == null) throw new IOException("Frigate login failed (HTTP " + code + ")");
+            token = t;
+        } finally {
+            c.disconnect();
         }
-        try (OutputStream out = c.getOutputStream()) {
-            out.write(body);
-        }
-        int code = c.getResponseCode();
-        String t = null;
-        for (Map.Entry<String, List<String>> e : c.getHeaderFields().entrySet()) {
-            if (e.getKey() != null && e.getKey().toLowerCase(Locale.ROOT).equals("set-cookie")) t = tokenFromSetCookie(e.getValue());
-            if (t != null) break;
-        }
-        c.disconnect();
-        if (code == 401 || code == 400) throw new IOException("Frigate refused the username or password");
-        if (code != 200 || t == null) throw new IOException("Frigate login failed (HTTP " + code + ")");
-        token = t;
     }
 
     private HttpURLConnection open(String path) throws IOException {

@@ -8,6 +8,7 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.CancellationSignal;
 import android.os.Looper;
 
 import org.json.JSONException;
@@ -45,13 +46,13 @@ final class Weather {
         return !lm.getProviders(true).isEmpty();
     }
 
-    /** The newest location the TV knows, or a fresh one; {@code done} gets null when there is none. */
+    /** The newest location the TV knows, or a fresh one; returns a cancel handle if async, else null. */
     @SuppressWarnings("deprecation")
-    static void locate(Context context, Consumer<Location> done) {
+    static Runnable locate(Context context, Consumer<Location> done) {
         LocationManager lm = context.getSystemService(LocationManager.class);
         if (lm == null || !permitted(context) || !locationOn(context)) {
             done.accept(null);
-            return;
+            return null;
         }
         try {
             Location best = null;
@@ -61,26 +62,37 @@ final class Weather {
             }
             if (best != null) {
                 done.accept(best);
-                return;
+                return null;
             }
             if (!lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
                 done.accept(null);
-                return;
+                return null;
             }
             if (Build.VERSION.SDK_INT >= 30) {
-                lm.getCurrentLocation(LocationManager.NETWORK_PROVIDER, null, context.getMainExecutor(),
+                CancellationSignal signal = new CancellationSignal();
+                lm.getCurrentLocation(LocationManager.NETWORK_PROVIDER, signal, context.getMainExecutor(),
                         done::accept);
+                return signal::cancel;
             } else {
                 // All four methods spelled out: before Android 11 they have no defaults.
-                lm.requestSingleUpdate(LocationManager.NETWORK_PROVIDER, new LocationListener() {
+                LocationListener listener = new LocationListener() {
                     @Override public void onLocationChanged(Location location) { done.accept(location); }
                     @Override public void onStatusChanged(String provider, int status, Bundle extras) { }
                     @Override public void onProviderEnabled(String provider) { }
                     @Override public void onProviderDisabled(String provider) { }
-                }, Looper.getMainLooper());
+                };
+                lm.requestSingleUpdate(LocationManager.NETWORK_PROVIDER, listener, Looper.getMainLooper());
+                return () -> {
+                    try {
+                        lm.removeUpdates(listener);
+                    } catch (SecurityException ignored) {
+                        // Permission revoked meanwhile.
+                    }
+                };
             }
         } catch (SecurityException | IllegalArgumentException e) {
             done.accept(null);
+            return null;
         }
     }
 

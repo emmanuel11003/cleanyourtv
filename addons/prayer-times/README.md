@@ -32,6 +32,7 @@ countdown to it, plus today's Gregorian and Hijri dates. Each prayer has its Ara
 | `RECEIVE_BOOT_COMPLETED` | Reschedules prayer alarms automatically when the TV boots. |
 | `WAKE_LOCK` | Briefly wakes the screen to deliver the on-screen alert card. |
 | `SYSTEM_ALERT_WINDOW` | Displays the unobtrusive top-right alert card over other apps and video playback on Android 10+. |
+| `POST_NOTIFICATIONS` | Posts prayer reminder notifications on Android 13+ when `reminders` is enabled. |
 
 That is all. What is sent: today's date, the latitude and longitude from `config.xml`, the method number and the
 Asr school number. No account, no telemetry, no ads, no background service, no location permission. Backups are off.

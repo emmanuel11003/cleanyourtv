@@ -6,6 +6,7 @@ import android.graphics.LinearGradient;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Shader;
+import android.graphics.Typeface;
 import android.os.SystemClock;
 import android.view.View;
 
@@ -23,6 +24,9 @@ final class FlockView extends View {
     private final String runningLabel;
     private final String pausedLabel;
     private final String controls;
+    private final Typeface hudTypeface = Typeface.create("sans-serif", Typeface.NORMAL);
+    private int cachedCount = -1;
+    private String countLabel = "";
     private boolean running;
     private boolean paused;
     private long previousFrame;
@@ -124,7 +128,7 @@ final class FlockView extends View {
     private void drawHud(Canvas canvas, int width, int height) {
         float margin = 36f * density;
         paint.setStyle(Paint.Style.FILL);
-        paint.setTypeface(android.graphics.Typeface.create("sans-serif", android.graphics.Typeface.NORMAL));
+        paint.setTypeface(hudTypeface);
         paint.setTextAlign(Paint.Align.LEFT);
         paint.setTextSize(15f * density);
         String status = paused ? pausedLabel : runningLabel;
@@ -136,15 +140,19 @@ final class FlockView extends View {
         paint.setColor(0xBFE9F5F2);
         canvas.drawText(status, margin, margin + 15f * density, paint);
 
-        String count = getResources().getQuantityString(R.plurals.birds, model.size(), model.size());
+        int size = model.size();
+        if (size != cachedCount) {
+            cachedCount = size;
+            countLabel = getResources().getQuantityString(R.plurals.birds, size, size);
+        }
         paint.setTextAlign(Paint.Align.RIGHT);
-        float countWidth = paint.measureText(count);
+        float countWidth = paint.measureText(countLabel);
         paint.setColor(0xE617303A);
         canvas.drawRoundRect(width - margin - countWidth - 12f * density, margin - 8f * density,
                 width - margin + 12f * density, margin + 24f * density,
                 12f * density, 12f * density, paint);
         paint.setColor(0xAFC8D9D5);
-        canvas.drawText(count, width - margin, margin + 15f * density, paint);
+        canvas.drawText(countLabel, width - margin, margin + 15f * density, paint);
 
         paint.setTextAlign(Paint.Align.CENTER);
         paint.setTextSize(14f * density);

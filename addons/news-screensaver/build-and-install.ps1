@@ -32,7 +32,13 @@ try {
 $apk = Join-Path $here 'app\build\outputs\apk\release\app-release.apk'
 & $py -I (Join-Path $tools 'b64push.py') $apk /data/local/tmp/newsdream.apk | Out-Null
 if ($LASTEXITCODE) { throw 'sending the APK failed' }
-Tv 'pm install -r /data/local/tmp/newsdream.apk; rm -f /data/local/tmp/newsdream.apk'
+try {
+    $out = (Tv 'pm install -r /data/local/tmp/newsdream.apk') -join "`n"
+} finally {
+    try { Tv 'rm -f /data/local/tmp/newsdream.apk' | Out-Null } catch { }
+}
+Write-Host $out
+if ($out -notmatch 'Success') { throw "pm install failed: $out" }
 # TCL's TclAppBoot blocks the app's provider until it may auto-start (AUTO_START on G08 builds, APP_AUTO_START
 # on G10); elsewhere the op doesn't exist. write-settings saves it before the next reboot.
 Tv "appops set $pkg AUTO_START allow 2>/dev/null; appops set $pkg APP_AUTO_START allow 2>/dev/null; appops write-settings 2>/dev/null; true" | Out-Null

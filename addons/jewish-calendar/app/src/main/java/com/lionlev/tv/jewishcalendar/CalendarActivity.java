@@ -16,6 +16,7 @@ import android.widget.*;
 /** A standalone module card; it never writes the launcher's configuration. */
 public final class CalendarActivity extends Activity {
     private CalendarPanel panel;
+    private AlertDialog activeDialog;
 
     @Override public void onCreate(Bundle state) {
         super.onCreate(state);
@@ -41,9 +42,17 @@ public final class CalendarActivity extends Activity {
     }
 
     @Override protected void onResume() { super.onResume(); panel.start(); }
-    @Override protected void onPause() { panel.stop(); super.onPause(); }
+    @Override protected void onPause() { dismissDialog(); panel.stop(); super.onPause(); }
+    @Override protected void onDestroy() { dismissDialog(); super.onDestroy(); }
+
+    private void dismissDialog() {
+        if (activeDialog != null && activeDialog.isShowing()) activeDialog.dismiss();
+        activeDialog = null;
+    }
 
     private void configure() {
+        if (isFinishing() || isDestroyed()) return;
+        dismissDialog();
         SharedPreferences prefs = getSharedPreferences("calendar", Context.MODE_PRIVATE);
         LinearLayout fields = new LinearLayout(this);
         fields.setOrientation(LinearLayout.VERTICAL);
@@ -84,6 +93,7 @@ public final class CalendarActivity extends Activity {
             dialog.dismiss();
             panel.start();
         }));
+        activeDialog = dialog;
         dialog.show();
     }
 

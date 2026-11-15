@@ -38,7 +38,13 @@ if ($LASTEXITCODE) { throw 'build failed (JDK 17 and Android SDK 34 needed; see 
 $ErrorActionPreference = 'Stop'
 & $py -I (Join-Path $tools 'b64push.py') (Join-Path $here 'app\build\outputs\apk\release\app-release.apk') /data/local/tmp/sleeptimer.apk | Out-Null
 if ($LASTEXITCODE) { throw 'sending the APK failed; run this again' }
-Tv 'pm install -r /data/local/tmp/sleeptimer.apk; rm -f /data/local/tmp/sleeptimer.apk'
+try {
+    $out = (Tv 'pm install -r /data/local/tmp/sleeptimer.apk') -join "`n"
+} finally {
+    try { Tv 'rm -f /data/local/tmp/sleeptimer.apk' | Out-Null } catch { }
+}
+Write-Host $out
+if ($out -notmatch 'Success') { throw "pm install failed: $out" }
 Tv ('s=$(settings get secure enabled_accessibility_services); case :$s: in *:SVC:*) ;; *) if [ -z $s ] || [ $s = null ]; then s=SVC; else s=$s:SVC; fi; settings put secure enabled_accessibility_services $s;; esac; settings put secure accessibility_enabled 1'.Replace('SVC', $svc))
 Tv "appops set $pkg SYSTEM_ALERT_WINDOW allow; appops set $pkg SCHEDULE_EXACT_ALARM allow 2>/dev/null; true"
 # TCL's TclAppBoot refuses to bind SleepService unless the app may auto-start; write-settings keeps it past a reboot.

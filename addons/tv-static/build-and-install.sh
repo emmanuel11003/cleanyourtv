@@ -25,7 +25,11 @@ PLAY=true
 
 (cd "$HERE" && ./gradlew assembleRelease -q) || { echo "build failed (JDK 17 and Android SDK 34 needed; see launcher/README)" >&2; exit 1; }
 "$PY" -I "$TOOLS/b64push.py" "$HERE/app/build/outputs/apk/release/app-release.apk" /data/local/tmp/tvstatic.apk >/dev/null
-tv "pm install -r /data/local/tmp/tvstatic.apk; rm -f /data/local/tmp/tvstatic.apk"
+RC=0
+OUT=$(tv "pm install -r /data/local/tmp/tvstatic.apk") || RC=$?
+tv "rm -f /data/local/tmp/tvstatic.apk" >/dev/null 2>&1 || true
+echo "$OUT"
+case "$RC:$OUT" in 0:*Success*) ;; *) echo "ERROR: pm install failed" >&2; exit 1 ;; esac
 # Android 10 and later let an app open a screen from the background only when it may draw over other apps.
 tv "appops set $PKG SYSTEM_ALERT_WINDOW allow"
 # TCL's TclAppBoot keeps apps from starting at boot unless they may auto-start (AUTO_START on G08 builds,

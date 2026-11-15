@@ -60,6 +60,8 @@ class GuideView(c: Context) : View(c) {
     private val numP = TextPaint(Paint.ANTI_ALIAS_FLAG).apply { textSize = sp(15f); color = Ui.DIM }
     private val rect = RectF()
     private val radius = dp(8).toFloat()
+    private val app = c.applicationContext as TvHubApp
+    private val am = c.getSystemService(Context.ACCESSIBILITY_SERVICE) as AccessibilityManager
 
     init {
         isFocusable = true
@@ -194,7 +196,6 @@ class GuideView(c: Context) : View(c) {
     }
 
     private fun announce() {
-        val am = context.getSystemService(Context.ACCESSIBILITY_SERVICE) as AccessibilityManager
         if (!am.isEnabled) return
         val ch = channels.getOrNull(focusRow) ?: return
         val p = focused()
@@ -234,7 +235,7 @@ class GuideView(c: Context) : View(c) {
             rect.set(0f, y + gap, chanW - gap * 2, y + rowH - gap)
             fill.color = if (r == focusRow) Ui.SURFACE_2 else Ui.SURFACE
             canvas.drawRoundRect(rect, radius, radius, fill)
-            val logo = (context.applicationContext as TvHubApp).logos.bitmap(ch.logo, dp(36)) { invalidate() }
+            val logo = app.logos.bitmap(ch.logo, dp(36)) { invalidate() }
             var tx = dp(12).toFloat()
             if (ch.number != null) { canvas.drawText(ch.number, tx, y + rowH / 2 + dp(5), numP); tx += dp(40) }
             if (logo != null) {
@@ -243,8 +244,9 @@ class GuideView(c: Context) : View(c) {
                 canvas.drawBitmap(logo, null, rect, null)
                 tx += lw + dp(10)
             }
-            val star = if (ch.key in favorites) "★ " else ""
-            canvas.drawText(TextUtils.ellipsize(star + ch.name, titleP, chanW - tx - dp(16), TextUtils.TruncateAt.END).toString(), tx, y + rowH / 2 + dp(6), titleP)
+            val label: CharSequence = if (ch.key in favorites) "★ ${ch.name}" else ch.name
+            val ell = TextUtils.ellipsize(label, titleP, chanW - tx - dp(16), TextUtils.TruncateAt.END)
+            canvas.drawText(ell, 0, ell.length, tx, y + rowH / 2 + dp(6), titleP)
 
             // Programmes.
             canvas.save()
@@ -293,10 +295,13 @@ class GuideView(c: Context) : View(c) {
         if (avail < dp(12)) return
         val tx = rect.left + dp(12)
         if (sub == null) {
-            canvas.drawText(TextUtils.ellipsize(title, titleP, avail, TextUtils.TruncateAt.END).toString(), tx, y + rowH / 2 + dp(6), if (title.startsWith("No ") || title == "…") smallP else titleP)
+            val ell = TextUtils.ellipsize(title, titleP, avail, TextUtils.TruncateAt.END)
+            canvas.drawText(ell, 0, ell.length, tx, y + rowH / 2 + dp(6), if (title.startsWith("No ") || title == "…") smallP else titleP)
         } else {
-            canvas.drawText(TextUtils.ellipsize(title, titleP, avail, TextUtils.TruncateAt.END).toString(), tx, y + rowH / 2 - dp(2), titleP)
-            canvas.drawText(TextUtils.ellipsize(sub, smallP, avail, TextUtils.TruncateAt.END).toString(), tx, y + rowH / 2 + dp(17), smallP)
+            val ellTitle = TextUtils.ellipsize(title, titleP, avail, TextUtils.TruncateAt.END)
+            val ellSub = TextUtils.ellipsize(sub, smallP, avail, TextUtils.TruncateAt.END)
+            canvas.drawText(ellTitle, 0, ellTitle.length, tx, y + rowH / 2 - dp(2), titleP)
+            canvas.drawText(ellSub, 0, ellSub.length, tx, y + rowH / 2 + dp(17), smallP)
         }
     }
 

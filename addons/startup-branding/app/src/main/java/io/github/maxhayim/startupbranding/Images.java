@@ -16,6 +16,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -140,8 +142,14 @@ final class Images {
                     o.write(buf, 0, n);
                 }
             }
-            done = usable.test(part) && part.renameTo(new File(dir, name));
-            return done;
+            if (!usable.test(part)) return false;
+            try {
+                Files.move(part.toPath(), new File(dir, name).toPath(), StandardCopyOption.REPLACE_EXISTING);
+                done = true;
+                return true;
+            } catch (IOException e) {
+                return false;
+            }
         } finally {
             if (!done) part.delete();
         }

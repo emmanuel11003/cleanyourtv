@@ -26,6 +26,18 @@ public class MainActivity extends Activity {
         build(page.focused());
     }
 
+    @Override
+    protected void onPause() {
+        page.dismiss();
+        super.onPause();
+    }
+
+    @Override
+    protected void onDestroy() {
+        page.dismiss();
+        super.onDestroy();
+    }
+
     private void build(int focus) {
         page.rows.removeAllViews();
         Look l = Prefs.load(this);

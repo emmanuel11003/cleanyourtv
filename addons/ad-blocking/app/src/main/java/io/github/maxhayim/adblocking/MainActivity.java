@@ -15,6 +15,7 @@ import android.widget.TextView;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.RejectedExecutionException;
 
 /**
  * The tile and module card open this: today's queries and blocked share from your Pi-hole or AdGuard Home, and
@@ -30,6 +31,7 @@ public class MainActivity extends Activity {
     private TextView status;
     private Config config;
     private Server.Result last;
+    private AlertDialog activeDialog;
     private final Runnable refresh = new Runnable() {
         @Override
         public void run() {
@@ -72,12 +74,15 @@ public class MainActivity extends Activity {
 
     @Override
     protected void onPause() {
-        main.removeCallbacks(refresh);
+        main.removeCallbacksAndMessages(null);
+        dismissDialog();
         super.onPause();
     }
 
     @Override
     protected void onDestroy() {
+        main.removeCallbacksAndMessages(null);
+        dismissDialog();
         net.shutdownNow();
         super.onDestroy();
     }
@@ -85,16 +90,20 @@ public class MainActivity extends Activity {
     /** Reads the numbers; pause non-null pauses (true) or resumes first. */
     private void fetch(Boolean pause) {
         Config c = config;
-        if (!c.complete()) return;
-        net.execute(() -> {
-            Server s = new Server(c);
-            Server.Result r = pause == null ? s.stats() : s.pause(pause);
-            main.post(() -> {
-                if (isFinishing()) return;
-                last = r;
-                build();
+        if (!c.complete() || net.isShutdown() || isFinishing() || isDestroyed()) return;
+        try {
+            net.execute(() -> {
+                Server s = new Server(c);
+                Server.Result r = pause == null ? s.stats() : s.pause(pause);
+                main.post(() -> {
+                    if (isFinishing() || isDestroyed()) return;
+                    last = r;
+                    build();
+                });
             });
-        });
+        } catch (RejectedExecutionException ignored) {
+            // Activity shutting down.
+        }
     }
 
     private void reload() {
@@ -174,18 +183,26 @@ public class MainActivity extends Activity {
         void done(String value);
     }
 
+    private void dismissDialog() {
+        if (activeDialog != null && activeDialog.isShowing()) activeDialog.dismiss();
+        activeDialog = null;
+    }
+
     private void edit(String title, String start, int type, Done done) {
+        if (isFinishing() || isDestroyed()) return;
+        dismissDialog();
         EditText field = new EditText(this);
         field.setInputType(type);
         field.setSingleLine(true);
         field.setText(start);
         field.setSelection(start.length());
-        new AlertDialog.Builder(this, android.R.style.Theme_DeviceDefault_Dialog_Alert)
+        activeDialog = new AlertDialog.Builder(this, android.R.style.Theme_DeviceDefault_Dialog_Alert)
                 .setTitle(title)
                 .setView(field)
                 .setPositiveButton("Save", (d, w) -> done.done(field.getText().toString()))
                 .setNegativeButton("Cancel", null)
-                .show();
+                .create();
+        activeDialog.show();
         field.requestFocus();
     }
 

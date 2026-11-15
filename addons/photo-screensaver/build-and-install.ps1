@@ -32,7 +32,13 @@ try {
 $apk = Join-Path $here 'app\build\outputs\apk\release\app-release.apk'
 & $py -I (Join-Path $tools 'b64push.py') $apk /data/local/tmp/photodream.apk | Out-Null
 if ($LASTEXITCODE) { throw 'sending the APK failed' }
-Tv 'pm install -r /data/local/tmp/photodream.apk; rm -f /data/local/tmp/photodream.apk'
+try {
+    $out = (Tv 'pm install -r /data/local/tmp/photodream.apk') -join "`n"
+} finally {
+    try { Tv 'rm -f /data/local/tmp/photodream.apk' | Out-Null } catch { }
+}
+Write-Host $out
+if ($out -notmatch 'Success') { throw "pm install failed: $out" }
 # TCL's TclAppBoot blocks the app's provider until it may auto-start; elsewhere the op doesn't exist.
 Tv "appops set $pkg AUTO_START allow 2>/dev/null; appops set $pkg APP_AUTO_START allow 2>/dev/null; appops write-settings 2>/dev/null; true" | Out-Null
 Write-Host "Installed. Now: addons\photo-screensaver\sync.ps1 -TvHost $TvHost"
