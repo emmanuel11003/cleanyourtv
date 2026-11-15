@@ -14,6 +14,7 @@ import java.util.Enumeration;
 public class Main {
     private static final int DEFAULT_PORT = 55555;
     private static final String DEFAULT_TOKEN = "123456";
+    private static final int HANDSHAKE_TIMEOUT_MS = 5000;
 
     public static void main(String[] args) {
         int port = DEFAULT_PORT;
@@ -99,18 +100,20 @@ public class Main {
     private static void handleClient(Socket socket, TokenAuth tokenAuth, InputInjector inputInjector) {
         ScreenStreamer streamer = null;
         try {
+            socket.setSoTimeout(HANDSHAKE_TIMEOUT_MS);
             BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream(), StandardCharsets.UTF_8));
             OutputStream out = socket.getOutputStream();
 
-            // 1. Read handshake line from client
+            // 1. Read handshake line from client (bounded by handshake SoTimeout)
             String handshakeLine = reader.readLine();
             if (handshakeLine == null || handshakeLine.trim().isEmpty()) {
                 System.err.println("[TvServer] Client disconnected before handshake.");
-                socket.close();
+                closeQuietly(socket);
                 return;
             }
+            socket.setSoTimeout(0);
 
-            // Parse token and profile from JSON (simple zero-dependency string parsing)
+            // Parse token and profile from JSON
             String clientToken = extractJsonField(handshakeLine, "token");
             String clientProfile = extractJsonField(handshakeLine, "profile");
 
@@ -119,18 +122,19 @@ public class Main {
                 String rejectJson = "{\"ok\":false,\"error\":\"Invalid security token\",\"token_ok\":false}\n";
                 out.write(rejectJson.getBytes(StandardCharsets.UTF_8));
                 out.flush();
-                socket.close();
+                closeQuietly(socket);
                 return;
             }
 
-            // 2. Initialize hardware screen streamer
-            streamer = new ScreenStreamer(out, clientProfile);
+            // 2. Initialize hardware screen streamer; close socket immediately if screenrecord exits
+            streamer = new ScreenStreamer(out, clientProfile, () -> closeQuietly(socket));
             int width = streamer.getWidth();
             int height = streamer.getHeight();
             int fps = streamer.getFps();
 
             // 3. Send handshake response
             String acceptJson = String.format(
+                    java.util.Locale.US,
                     "{\"ok\":true,\"width\":%d,\"height\":%d,\"fps\":%d,\"refresh_hz\":60,\"token_ok\":true}\n",
                     width, height, fps
             );
@@ -143,7 +147,7 @@ public class Main {
 
             // 5. Command listening loop
             String line;
-            while ((line = reader.readLine()) != null) {
+            while (!socket.isClosed() && (line = reader.readLine()) != null) {
                 if (line.trim().isEmpty()) continue;
 
                 String type = extractJsonField(line, "t");
@@ -170,30 +174,153 @@ public class Main {
             if (streamer != null) {
                 streamer.stop();
             }
-            try {
-                socket.close();
-            } catch (Exception ignored) {
-            }
+            closeQuietly(socket);
             System.out.println("[TvServer] Client disconnected. Server is idle (0% CPU).");
         }
     }
 
+    private static void closeQuietly(Socket socket) {
+        if (socket == null) return;
+        try {
+            if (!socket.isClosed()) {
+                socket.close();
+            }
+        } catch (Exception ignored) {
+        }
+    }
+
     private static String extractJsonField(String json, String field) {
-        String keyPattern = "\"" + field + "\":";
-        int idx = json.indexOf(keyPattern);
-        if (idx == -1) return "";
+        if (json == null || field == null) return "";
+        int len = json.length();
+        int i = skipWs(json, 0);
+        if (i >= len || json.charAt(i) != '{') return "";
+        i++;
 
-        int valStart = idx + keyPattern.length();
-        while (valStart < json.length() && (json.charAt(valStart) == ' ' || json.charAt(valStart) == '"')) {
-            valStart++;
+        StringBuilder buf = new StringBuilder();
+        while (i < len) {
+            i = skipWs(json, i);
+            if (i >= len || json.charAt(i) == '}') break;
+            if (json.charAt(i) == ',') {
+                i++;
+                continue;
+            }
+            if (json.charAt(i) != '"') break;
+
+            buf.setLength(0);
+            i = readJsonString(json, i, buf);
+            if (i == -1) break;
+            String key = buf.toString();
+
+            i = skipWs(json, i);
+            if (i >= len || json.charAt(i) != ':') break;
+            i = skipWs(json, i + 1);
+            if (i >= len) break;
+
+            if (json.charAt(i) == '"') {
+                buf.setLength(0);
+                i = readJsonString(json, i, buf);
+                if (i == -1) break;
+                if (field.equals(key)) {
+                    return buf.toString().trim();
+                }
+            } else if (json.charAt(i) == '{' || json.charAt(i) == '[') {
+                int endCompound = skipJsonCompound(json, i);
+                if (endCompound == -1) break;
+                if (field.equals(key)) {
+                    return json.substring(i, endCompound).trim();
+                }
+                i = endCompound;
+            } else {
+                int start = i;
+                while (i < len) {
+                    char c = json.charAt(i);
+                    if (c == ',' || c == '}' || c <= ' ') break;
+                    i++;
+                }
+                if (field.equals(key)) {
+                    return json.substring(start, i).trim();
+                }
+            }
         }
+        return "";
+    }
 
-        int valEnd = valStart;
-        while (valEnd < json.length() && json.charAt(valEnd) != '"' && json.charAt(valEnd) != ',' && json.charAt(valEnd) != '}') {
-            valEnd++;
+    private static int skipWs(String s, int i) {
+        int len = s.length();
+        while (i < len && s.charAt(i) <= ' ') {
+            i++;
         }
+        return i;
+    }
 
-        return json.substring(valStart, valEnd).trim();
+    private static int readJsonString(String s, int startQuoteIdx, StringBuilder out) {
+        int len = s.length();
+        int i = startQuoteIdx + 1;
+        while (i < len) {
+            char c = s.charAt(i++);
+            if (c == '"') {
+                return i;
+            }
+            if (c == '\\' && i < len) {
+                char esc = s.charAt(i++);
+                switch (esc) {
+                    case '"': out.append('"'); break;
+                    case '\\': out.append('\\'); break;
+                    case '/': out.append('/'); break;
+                    case 'b': out.append('\b'); break;
+                    case 'f': out.append('\f'); break;
+                    case 'n': out.append('\n'); break;
+                    case 'r': out.append('\r'); break;
+                    case 't': out.append('\t'); break;
+                    case 'u':
+                        if (i + 4 <= len) {
+                            try {
+                                out.append((char) Integer.parseInt(s.substring(i, i + 4), 16));
+                                i += 4;
+                            } catch (NumberFormatException e) {
+                                out.append("\\u");
+                            }
+                        } else {
+                            out.append("\\u");
+                        }
+                        break;
+                    default:
+                        out.append(esc);
+                        break;
+                }
+            } else {
+                out.append(c);
+            }
+        }
+        return -1;
+    }
+
+    private static int skipJsonCompound(String s, int startIdx) {
+        int len = s.length();
+        int depth = 0;
+        boolean inString = false;
+        for (int i = startIdx; i < len; i++) {
+            char c = s.charAt(i);
+            if (inString) {
+                if (c == '\\') {
+                    i++;
+                } else if (c == '"') {
+                    inString = false;
+                }
+            } else {
+                if (c == '"') {
+                    inString = true;
+                } else if (c == '{' || c == '[') {
+                    depth++;
+                } else if (c == '}' || c == ']') {
+                    depth--;
+                    if (depth == 0) {
+                        return i + 1;
+                    }
+                }
+            }
+        }
+        return -1;
     }
 
     private static void printTvNetworkInterfaces() {

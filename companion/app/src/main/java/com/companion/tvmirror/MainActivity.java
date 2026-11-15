@@ -18,6 +18,8 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.Locale;
+
 import com.companion.tvmirror.data.AppSettings;
 import com.companion.tvmirror.input.RemoteCommand;
 import com.companion.tvmirror.input.TouchpadController;
@@ -177,13 +179,23 @@ public class MainActivity extends Activity implements SurfaceHolder.Callback,
         tvConnection = new TvConnection(this, videoDecoder);
         touchpadController = new TouchpadController(this, cmd -> tvConnection.sendCommand(cmd), settings);
         touchpadView.setOnTouchListener(touchpadController);
+        touchpadView.addOnAttachStateChangeListener(touchpadController);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        syncSettingsControlsIntoUi();
     }
 
     private void loadSettingsIntoUi() {
         etTvIp.setText(settings.getTvIp());
         etPort.setText(String.valueOf(settings.getTvPort()));
         etToken.setText(settings.getToken());
+        syncSettingsControlsIntoUi();
+    }
 
+    private void syncSettingsControlsIntoUi() {
         String profile = settings.getStreamProfile();
         if (AppSettings.PROFILE_540P.equals(profile)) {
             rb540p.setChecked(true);
@@ -201,20 +213,17 @@ public class MainActivity extends Activity implements SurfaceHolder.Callback,
         cbHaptic.setChecked(settings.isHapticEnabled());
 
         String sens = settings.getSensitivity();
+        int sensId = R.id.rb_sens_normal;
         if (AppSettings.SENS_LOW.equals(sens)) {
-            findViewById(R.id.rb_sens_low).performClick();
+            sensId = R.id.rb_sens_low;
         } else if (AppSettings.SENS_HIGH.equals(sens)) {
-            findViewById(R.id.rb_sens_high).performClick();
-        } else {
-            findViewById(R.id.rb_sens_normal).performClick();
+            sensId = R.id.rb_sens_high;
         }
+        ((RadioButton) findViewById(sensId)).setChecked(true);
 
         String lpAction = settings.getLongPressAction();
-        if (AppSettings.ACTION_MENU.equals(lpAction)) {
-            findViewById(R.id.rb_lp_menu).performClick();
-        } else {
-            findViewById(R.id.rb_lp_back).performClick();
-        }
+        int lpId = AppSettings.ACTION_MENU.equals(lpAction) ? R.id.rb_lp_menu : R.id.rb_lp_back;
+        ((RadioButton) findViewById(lpId)).setChecked(true);
     }
 
     private void setupListeners() {
@@ -308,10 +317,20 @@ public class MainActivity extends Activity implements SurfaceHolder.Callback,
             return;
         }
 
-        int port = 55555;
-        try {
-            port = Integer.parseInt(portStr);
-        } catch (NumberFormatException ignored) {
+        int port;
+        if (portStr.isEmpty()) {
+            port = 55555;
+        } else {
+            try {
+                port = Integer.parseInt(portStr);
+            } catch (NumberFormatException e) {
+                port = -1;
+            }
+            if (port < 1 || port > 65535) {
+                tvConnectStatus.setText("Please enter a valid port (1-65535).");
+                viewStatusIndicator.setBackgroundTintList(getColorStateList(R.color.status_disconnected));
+                return;
+            }
         }
 
         String profile = AppSettings.PROFILE_720P;
@@ -333,7 +352,6 @@ public class MainActivity extends Activity implements SurfaceHolder.Callback,
         SurfaceHolder holder = surfaceView.getHolder();
         if (holder.getSurface() != null && holder.getSurface().isValid()) {
             videoDecoder.setSurface(holder.getSurface());
-            videoDecoder.start();
             tvConnection.connect(ip, port, token, profile);
         } else {
             isConnectionPending = true;
@@ -434,7 +452,7 @@ public class MainActivity extends Activity implements SurfaceHolder.Callback,
     @Override
     public void onFpsCalculated(float fps, long avgLatencyMs) {
         runOnUiThread(() -> {
-            String text = String.format("%.1f FPS • %dms", fps, avgLatencyMs);
+            String text = String.format(Locale.US, "%.1f FPS • %dms", fps, avgLatencyMs);
             tvFpsOverlay.setText(text);
         });
     }
@@ -446,9 +464,8 @@ public class MainActivity extends Activity implements SurfaceHolder.Callback,
         videoDecoder.setSurface(holder.getSurface());
         if (isConnectionPending) {
             isConnectionPending = false;
-            videoDecoder.start();
             tvConnection.connect(settings.getTvIp(), settings.getTvPort(), settings.getToken(), settings.getStreamProfile());
-        } else if (tvConnection.isConnected()) {
+        } else if (tvConnection.isConnected() && !videoDecoder.isRunning()) {
             videoDecoder.start();
         }
     }
@@ -466,7 +483,7 @@ public class MainActivity extends Activity implements SurfaceHolder.Callback,
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (tvConnection != null) tvConnection.disconnect();
+        if (tvConnection != null) tvConnection.shutdown();
         if (videoDecoder != null) videoDecoder.stop();
         if (wifiManager != null) wifiManager.stopMonitoring();
     }

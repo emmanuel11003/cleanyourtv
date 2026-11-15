@@ -26,7 +26,9 @@ public class RemoteCommand {
             obj.put("fps", targetFps);
             return obj.toString();
         } catch (JSONException e) {
-            return "{\"t\":\"hello\",\"token\":\"" + token + "\"}";
+            return "{\"t\":\"hello\",\"token\":\"" + escapeJson(token)
+                    + "\",\"profile\":\"" + escapeJson(profile)
+                    + "\",\"fps\":" + targetFps + "}";
         }
     }
 
@@ -52,18 +54,32 @@ public class RemoteCommand {
             obj.put("dir", direction);
             return obj.toString();
         } catch (JSONException e) {
-            return "{\"t\":\"swipe\",\"dir\":\"" + direction + "\"}";
+            return "{\"t\":\"swipe\",\"dir\":\"" + escapeJson(direction) + "\"}";
         }
     }
 
-    public static String createText(String value) {
-        try {
-            JSONObject obj = new JSONObject();
-            obj.put("t", "text");
-            obj.put("value", value);
-            return obj.toString();
-        } catch (JSONException e) {
-            return "{\"t\":\"text\",\"value\":\"" + value + "\"}";
+    private static String escapeJson(String value) {
+        if (value == null) return "";
+        StringBuilder sb = new StringBuilder(value.length());
+        for (int i = 0; i < value.length(); i++) {
+            char c = value.charAt(i);
+            switch (c) {
+                case '\\': sb.append("\\\\"); break;
+                case '"': sb.append("\\\""); break;
+                case '\b': sb.append("\\b"); break;
+                case '\f': sb.append("\\f"); break;
+                case '\n': sb.append("\\n"); break;
+                case '\r': sb.append("\\r"); break;
+                case '\t': sb.append("\\t"); break;
+                default:
+                    if (c < 0x20) {
+                        sb.append(String.format(java.util.Locale.US, "\\u%04x", (int) c));
+                    } else {
+                        sb.append(c);
+                    }
+                    break;
+            }
         }
+        return sb.toString();
     }
 }

@@ -12,7 +12,7 @@ $jarPath = "$scriptDir\tv-server.jar"
 
 if (-not (Test-Path $jarPath)) {
     Write-Host "tv-server.jar not found. Building now..." -ForegroundColor Yellow
-    & "$scriptDir\build.ps1"
+    & (Join-Path $scriptDir "build.ps1")
 }
 
 # Connect if TV IP provided

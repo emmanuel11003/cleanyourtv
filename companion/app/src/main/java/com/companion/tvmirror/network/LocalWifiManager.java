@@ -5,7 +5,6 @@ import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkCapabilities;
 import android.net.NetworkRequest;
-import android.os.Build;
 import android.util.Log;
 
 public class LocalWifiManager {
@@ -16,15 +15,14 @@ public class LocalWifiManager {
         void onWifiLost();
     }
 
-    private final Context context;
     private final ConnectivityManager connectivityManager;
     private ConnectivityManager.NetworkCallback networkCallback;
     private WifiStateListener listener;
-    private boolean isBoundToWifi = false;
+    private volatile boolean isBoundToWifi = false;
 
     public LocalWifiManager(Context context) {
-        this.context = context.getApplicationContext();
-        this.connectivityManager = (ConnectivityManager) this.context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        Context appContext = context.getApplicationContext();
+        this.connectivityManager = (ConnectivityManager) appContext.getSystemService(Context.CONNECTIVITY_SERVICE);
     }
 
     public void setListener(WifiStateListener listener) {
@@ -36,8 +34,8 @@ public class LocalWifiManager {
      * Crucially does NOT request NET_CAPABILITY_INTERNET, ensuring local LAN communication
      * succeeds even when the Wi-Fi router or hotspot has no active WAN connection.
      */
-    public void startMonitoring() {
-        if (connectivityManager == null) {
+    public synchronized void startMonitoring() {
+        if (connectivityManager == null || networkCallback != null) {
             return;
         }
 
@@ -47,20 +45,19 @@ public class LocalWifiManager {
                     // Intentionally omitting NET_CAPABILITY_INTERNET so offline LAN is retained
                     .build();
 
-            networkCallback = new ConnectivityManager.NetworkCallback() {
+            final ConnectivityManager.NetworkCallback callback = new ConnectivityManager.NetworkCallback() {
                 @Override
                 public void onAvailable(Network network) {
                     super.onAvailable(network);
                     Log.i(TAG, "Local Wi-Fi network available: " + network);
 
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                        boolean bound = connectivityManager.bindProcessToNetwork(network);
-                        isBoundToWifi = bound;
-                        Log.i(TAG, "Process bound to local Wi-Fi: " + bound);
-                    }
+                    boolean bound = connectivityManager.bindProcessToNetwork(network);
+                    isBoundToWifi = bound;
+                    Log.i(TAG, "Process bound to local Wi-Fi: " + bound);
 
-                    if (listener != null) {
-                        listener.onWifiAvailable("Local Wi-Fi Active");
+                    WifiStateListener currentListener = listener;
+                    if (currentListener != null) {
+                        currentListener.onWifiAvailable("Local Wi-Fi Active");
                     }
                 }
 
@@ -69,13 +66,12 @@ public class LocalWifiManager {
                     super.onLost(network);
                     Log.w(TAG, "Local Wi-Fi network lost: " + network);
 
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                        connectivityManager.bindProcessToNetwork(null);
-                        isBoundToWifi = false;
-                    }
+                    connectivityManager.bindProcessToNetwork(null);
+                    isBoundToWifi = false;
 
-                    if (listener != null) {
-                        listener.onWifiLost();
+                    WifiStateListener currentListener = listener;
+                    if (currentListener != null) {
+                        currentListener.onWifiLost();
                     }
                 }
 
@@ -83,19 +79,22 @@ public class LocalWifiManager {
                 public void onUnavailable() {
                     super.onUnavailable();
                     Log.w(TAG, "Local Wi-Fi network unavailable");
-                    if (listener != null) {
-                        listener.onWifiLost();
+                    WifiStateListener currentListener = listener;
+                    if (currentListener != null) {
+                        currentListener.onWifiLost();
                     }
                 }
             };
 
-            connectivityManager.requestNetwork(request, networkCallback);
+            networkCallback = callback;
+            connectivityManager.requestNetwork(request, callback);
         } catch (Exception e) {
+            networkCallback = null;
             Log.e(TAG, "Failed to request local Wi-Fi network", e);
         }
     }
 
-    public void stopMonitoring() {
+    public synchronized void stopMonitoring() {
         if (connectivityManager != null && networkCallback != null) {
             try {
                 connectivityManager.unregisterNetworkCallback(networkCallback);
@@ -103,7 +102,7 @@ public class LocalWifiManager {
             }
             networkCallback = null;
         }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && connectivityManager != null) {
+        if (connectivityManager != null) {
             try {
                 connectivityManager.bindProcessToNetwork(null);
             } catch (Exception ignored) {

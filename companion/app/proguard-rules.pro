@@ -19,8 +19,3 @@
 -keepclasseswithmembernames class * {
     native <methods>;
 }
-
-# Keep custom JSON/Data models if needed
--keepclassmembers class * {
-    void *(android.view.View);
-}

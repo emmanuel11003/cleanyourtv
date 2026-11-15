@@ -23,21 +23,32 @@ public class IpValidator {
         }
 
         String trimmed = ip.trim();
-        String[] parts = trimmed.split("\\.");
+        String[] parts = trimmed.split("\\.", -1);
         if (parts.length != 4) {
             return Result.INVALID_FORMAT;
         }
 
         int[] octets = new int[4];
-        try {
-            for (int i = 0; i < 4; i++) {
-                octets[i] = Integer.parseInt(parts[i]);
-                if (octets[i] < 0 || octets[i] > 255) {
+        for (int i = 0; i < 4; i++) {
+            String part = parts[i];
+            if (part.isEmpty() || part.length() > 3) {
+                return Result.INVALID_FORMAT;
+            }
+            if (part.length() > 1 && part.charAt(0) == '0') {
+                return Result.INVALID_FORMAT;
+            }
+            int value = 0;
+            for (int j = 0; j < part.length(); j++) {
+                char c = part.charAt(j);
+                if (c < '0' || c > '9') {
                     return Result.INVALID_FORMAT;
                 }
+                value = value * 10 + (c - '0');
             }
-        } catch (NumberFormatException e) {
-            return Result.INVALID_FORMAT;
+            if (value > 255) {
+                return Result.INVALID_FORMAT;
+            }
+            octets[i] = value;
         }
 
         // Localhost
