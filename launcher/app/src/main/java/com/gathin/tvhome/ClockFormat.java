@@ -11,13 +11,27 @@ final class ClockFormat {
     private ClockFormat() {
     }
 
-    /** Every TextClock under root: its 12- and 24-hour patterns become the chosen one's (the AM/PM clock follows). */
+    /** Applies "12", "24", or restores original system-aware patterns ("system"/anything else). */
     static void apply(View root, String mode) {
-        if (!"12".equals(mode) && !"24".equals(mode)) return;
         if (root instanceof TextClock) {
             TextClock c = (TextClock) root;
-            if ("12".equals(mode)) c.setFormat24Hour(c.getFormat12Hour());
-            else c.setFormat12Hour(c.getFormat24Hour());
+            if (!Boolean.TRUE.equals(c.getTag(R.id.tag_clock_format_saved))) {
+                c.setTag(R.id.tag_clock_format_12, c.getFormat12Hour());
+                c.setTag(R.id.tag_clock_format_24, c.getFormat24Hour());
+                c.setTag(R.id.tag_clock_format_saved, Boolean.TRUE);
+            }
+            CharSequence orig12 = (CharSequence) c.getTag(R.id.tag_clock_format_12);
+            CharSequence orig24 = (CharSequence) c.getTag(R.id.tag_clock_format_24);
+            if ("12".equals(mode)) {
+                c.setFormat12Hour(orig12);
+                c.setFormat24Hour(orig12);
+            } else if ("24".equals(mode)) {
+                c.setFormat12Hour(orig24);
+                c.setFormat24Hour(orig24);
+            } else {
+                c.setFormat12Hour(orig12);
+                c.setFormat24Hour(orig24);
+            }
         } else if (root instanceof LiveClockView) {
             ((LiveClockView) root).setClockFormat(mode);
         } else if (root instanceof ViewGroup) {

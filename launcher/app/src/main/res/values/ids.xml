@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="tag_clock_format_saved" type="id" />
+    <item name="tag_clock_format_12" type="id" />
+    <item name="tag_clock_format_24" type="id" />
+</resources>

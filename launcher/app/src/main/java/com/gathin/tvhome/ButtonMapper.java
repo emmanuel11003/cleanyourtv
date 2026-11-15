@@ -2,6 +2,7 @@ package com.gathin.tvhome;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -118,6 +119,9 @@ public final class ButtonMapper {
         return keys;
     }
 
+    private static int lastHandledKeyCode = -1;
+    private static long lastHandledEventTime = -1;
+
     public static void clearAll(Context ctx) {
         ctx.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE).edit().clear().apply();
     }
@@ -129,7 +133,12 @@ public final class ButtonMapper {
         if (target == null) return false;
 
         if (event.getAction() == KeyEvent.ACTION_UP && !event.isCanceled()) {
-            executeTarget(ctx, target);
+            long eventTime = event.getEventTime();
+            if (keyCode != lastHandledKeyCode || eventTime != lastHandledEventTime) {
+                lastHandledKeyCode = keyCode;
+                lastHandledEventTime = eventTime;
+                executeTarget(ctx, target);
+            }
         }
         return true;
     }
@@ -140,7 +149,8 @@ public final class ButtonMapper {
             switch (target) {
                 case ACTION_QUICK_SETTINGS:
                     ctx.startActivity(new Intent(ctx, QuickSettingsActivity.class)
-                            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+                                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
+                            android.app.ActivityOptions.makeCustomAnimation(ctx, 0, 0).toBundle());
                     break;
                 case ACTION_INPUTS:
                     RemoteKeys.launch(ctx, RemoteKeys.INPUTS);
@@ -155,7 +165,7 @@ public final class ButtonMapper {
                     }
                     break;
                 case ACTION_SCREENSAVER:
-                    RemoteKeys.launch(ctx, "sleep");
+                    RemoteKeys.launch(ctx, "screensaver");
                     break;
                 case ACTION_LIBRARY:
                     if (ctx instanceof MainActivity) {
@@ -167,15 +177,20 @@ public final class ButtonMapper {
                     }
                     break;
                 case ACTION_TV_SETTINGS:
-                    ctx.startActivity(SystemSettings.intent(ctx, Settings.ACTION_SETTINGS)
-                            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+                    try {
+                        ctx.startActivity(SystemSettings.intent(ctx, Settings.ACTION_SETTINGS)
+                                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+                    } catch (ActivityNotFoundException | SecurityException e) {
+                        Toast.makeText(ctx, R.string.not_available, Toast.LENGTH_SHORT).show();
+                    }
                     break;
                 case ACTION_RECENTS:
                     // Try native Android Recents overview first via the accessibility service;
                     // fall back to the custom CleanYourTV switcher.
                     if (!HomeKeyService.isServiceBound() || !HomeKeyService.tryNativeRecents()) {
                         ctx.startActivity(new Intent(ctx, RecentAppsActivity.class)
-                                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP));
+                                        .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP),
+                                android.app.ActivityOptions.makeCustomAnimation(ctx, 0, 0).toBundle());
                     }
                     break;
             }

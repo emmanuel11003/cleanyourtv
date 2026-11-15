@@ -31,17 +31,31 @@ public final class QuickSettingsActivity extends Activity {
     private static final String PREFS_NAME = "quick_settings";
 
     private View layoutMainPanel;
+    private WindowMorph morph;
+    private boolean animateTransitions;
+    private boolean launchingChild;
+    private boolean closingWithMorph;
 
     @Override
     protected void onCreate(Bundle state) {
         super.onCreate(state);
-        overridePendingTransition(R.anim.app_open_enter, R.anim.app_open_exit);
+        overridePendingTransition(0, 0);
+        Config cfg = Config.load(this);
+        animateTransitions = cfg.animations && !cfg.reducedMotion;
         setContentView(R.layout.activity_quick_settings);
+        ClockFormat.apply(getWindow().getDecorView(), cfg.clockFormat);
 
         layoutMainPanel = findViewById(R.id.layoutMainPanel);
+        View scrim = findViewById(R.id.scrim);
+        View panel = findViewById(R.id.panel);
+        float density = getResources().getDisplayMetrics().density;
+        morph = new WindowMorph(panel, scrim, layoutMainPanel);
+        morph.setTargetCornerRadius(26f * density);
+        morph.attachSource(getIntent());
+        morph.playEnter(animateTransitions, null);
 
         // Scrim click closes the panel
-        findViewById(R.id.scrim).setOnClickListener(v -> finish());
+        scrim.setOnClickListener(v -> closeWithMorph());
 
         // Update Date and start ticking quickClock
         TextView date = findViewById(R.id.quickDate);
@@ -98,9 +112,19 @@ public final class QuickSettingsActivity extends Activity {
 
     /** 1. Screensaver: Launch CleanYourTV's new Month Calendar & Clock Screensaver. */
     private void openScreensaver() {
+        launchingChild = true;
         Intent screensaver = new Intent(this, ClockActivity.class);
-        startActivity(screensaver);
-        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+        try {
+            startActivity(screensaver);
+            finish();
+            if (animateTransitions) {
+                overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+            } else {
+                overridePendingTransition(0, 0);
+            }
+        } catch (ActivityNotFoundException | SecurityException e) {
+            launchingChild = false;
+        }
     }
 
     /** 2. Inputs: com.android.tv.action.VIEW_INPUTS (SelectInputActivity) on Google TV. */
@@ -112,10 +136,13 @@ public final class QuickSettingsActivity extends Activity {
         Intent localInputs = new Intent(this, MainActivity.class)
                 .setAction(MainActivity.ACTION_VIEW_INPUTS)
                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        launchingChild = true;
         try {
             startActivity(localInputs);
             finish();
+            applyOpenTransition();
         } catch (Exception ignored) {
+            launchingChild = false;
         }
     }
 
@@ -215,58 +242,92 @@ public final class QuickSettingsActivity extends Activity {
         Intent reorderIntent = new Intent(this, MainActivity.class)
                 .setAction(MainActivity.ACTION_REORDER)
                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        launchingChild = true;
         try {
             startActivity(reorderIntent);
             finish();
+            applyOpenTransition();
         } catch (Exception ignored) {
+            launchingChild = false;
         }
     }
 
     private boolean safeStart(Intent intent) {
         if (intent == null) return false;
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        launchingChild = true;
         try {
             startActivity(intent);
             finish();
+            applyOpenTransition();
             return true;
         } catch (ActivityNotFoundException | SecurityException e) {
+            launchingChild = false;
             return false;
+        }
+    }
+
+    private void applyOpenTransition() {
+        if (animateTransitions) {
+            overridePendingTransition(R.anim.app_open_enter, R.anim.app_open_exit);
+        } else {
+            overridePendingTransition(0, 0);
+        }
+    }
+
+    private void applyCloseTransition() {
+        if (animateTransitions) {
+            overridePendingTransition(R.anim.app_close_enter, R.anim.app_close_exit);
+        } else {
+            overridePendingTransition(0, 0);
         }
     }
 
     @Override
     public boolean dispatchKeyEvent(KeyEvent event) {
+        if (closingWithMorph) return true;
         int kc = event.getKeyCode();
         if (kc == KeyEvent.KEYCODE_SETTINGS || kc == KeyEvent.KEYCODE_NOTIFICATION
                 || kc == KeyEvent.KEYCODE_FOCUS) {
             if (event.getAction() == KeyEvent.ACTION_UP && !event.isCanceled()) {
-                finish();
+                closeWithMorph();
             }
             return true;
         }
         return super.dispatchKeyEvent(event);
     }
 
+    private void closeWithMorph() {
+        if (closingWithMorph || isFinishing()) return;
+        closingWithMorph = true;
+        if (morph != null) {
+            morph.playExit(animateTransitions && !launchingChild, () -> {
+                if (!isFinishing()) finish();
+                overridePendingTransition(0, 0);
+            });
+        } else {
+            finish();
+            applyCloseTransition();
+        }
+    }
+
     @Override
     public void onBackPressed() {
-        if (!isFinishing()) {
-            finish();
-        }
-        overridePendingTransition(R.anim.app_close_enter, R.anim.app_close_exit);
+        closeWithMorph();
     }
 
     /** Settings key pressed again while panel is up closes it. */
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
-        if (!isFinishing()) {
-            finish();
-        }
+        closeWithMorph();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+        launchingChild = false;
+        closingWithMorph = false;
         View quickClock = findViewById(R.id.quickClock);
         if (quickClock instanceof LiveClockView) {
             ((LiveClockView) quickClock).updateTime();
@@ -286,9 +347,20 @@ public final class QuickSettingsActivity extends Activity {
         if (quickClock instanceof LiveClockView) {
             ((LiveClockView) quickClock).stopTicking();
         }
-        if (!isFinishing()) {
-            finish();
+        if (!closingWithMorph) {
+            if (morph != null) morph.cancelAndReset();
+            if (!isFinishing()) {
+                finish();
+            }
+            if (!launchingChild) {
+                applyCloseTransition();
+            }
         }
-        overridePendingTransition(R.anim.app_close_enter, R.anim.app_close_exit);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (morph != null) morph.cancelAndReset();
     }
 }

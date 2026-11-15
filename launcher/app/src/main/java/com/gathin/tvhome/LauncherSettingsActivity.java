@@ -10,16 +10,23 @@ import android.content.pm.ResolveInfo;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.Settings;
+import android.view.KeyEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /** Remote-friendly settings owned by the launcher; system settings stay one row away. */
 public final class LauncherSettingsActivity extends Activity {
@@ -29,8 +36,11 @@ public final class LauncherSettingsActivity extends Activity {
     }
 
     private static final int PICK_WALLPAPER_REQUEST = 43;
+    private static final long MAX_WALLPAPER_BYTES = 15L * 1024L * 1024L;
     static final String EXTRA_REORDER = "com.gathin.tvhome.extra.REORDER_FROM_SETTINGS";
     private SharedPreferences choices;
+    private ExecutorService wallpaperExecutor;
+    private volatile boolean wallpaperBusy;
     private final TextView[] columnChoices = new TextView[4];
     private final TextView[] rowChoices = new TextView[4];
     private static final int[] DOCK_OPACITIES = {100, 70, 50, 30};
@@ -67,19 +77,31 @@ public final class LauncherSettingsActivity extends Activity {
     private int dockOpacity;
     private boolean animations;
     private boolean advancedEffects;
+    private WindowMorph morph;
+    private boolean animateTransitions;
+    private boolean finishing;
 
     @Override
     protected void onCreate(Bundle state) {
         super.onCreate(state);
-        setContentView(R.layout.activity_launcher_settings);
-        choices = getSharedPreferences(Config.SETTINGS_NAME, MODE_PRIVATE);
+        overridePendingTransition(0, 0);
         Config config = Config.load(this);
+        animateTransitions = config.animations && !config.reducedMotion;
+        setContentView(R.layout.activity_launcher_settings);
+        View surface = findViewById(R.id.settingsRoot);
+        View content = surface instanceof ViewGroup && ((ViewGroup) surface).getChildCount() > 0
+                ? ((ViewGroup) surface).getChildAt(0) : null;
+        morph = new WindowMorph(surface, null, content);
+        morph.attachSource(getIntent());
+        morph.setTargetCornerRadius(0f);
+        morph.playEnter(animateTransitions, null);
+        choices = getSharedPreferences(Config.SETTINGS_NAME, MODE_PRIVATE);
         View reorderChoice = findViewById(R.id.reorderChoice);
         if (reorderChoice != null) {
             reorderChoice.setVisibility(View.VISIBLE);
             reorderChoice.setOnClickListener(v -> {
                 setResult(RESULT_OK, new Intent().putExtra(EXTRA_REORDER, true));
-                finish();
+                finishWithMorph();
             });
         }
         View buttonMapperChoice = findViewById(R.id.buttonMapperChoice);
@@ -161,15 +183,51 @@ public final class LauncherSettingsActivity extends Activity {
         wallpaperSummary = findViewById(R.id.wallpaperSummary);
         chooseWallpaperRow = findViewById(R.id.chooseWallpaperRow);
         View.OnClickListener wallpaperToggle = v -> {
-            String wp = choices.getString(Config.WALLPAPER_CHOICE_KEY, null);
-            boolean isOn = !"none".equals(wp);
-            if (isOn) {
-                choices.edit().putString(Config.WALLPAPER_CHOICE_KEY, "none").apply();
-            } else {
-                choices.edit().remove(Config.WALLPAPER_CHOICE_KEY).apply();
-            }
-            changed();
-            refresh();
+            if (wallpaperBusy) return;
+            wallpaperBusy = true;
+            executor().execute(() -> {
+                List<File> available = null;
+                Config nextConfig = null;
+                boolean modified = false;
+                try {
+                    Config currentConfig = Config.load(this);
+                    boolean isOn = currentConfig.wallpaperEnabled && !currentConfig.wallpapers.isEmpty();
+                    if (isOn) {
+                        choices.edit().putString(Config.WALLPAPER_CHOICE_KEY, "none").apply();
+                        nextConfig = Config.load(this);
+                        modified = true;
+                    } else {
+                        choices.edit().remove(Config.WALLPAPER_CHOICE_KEY).apply();
+                        Config reloaded = Config.load(this);
+                        if (!reloaded.wallpaperEnabled || reloaded.wallpapers.isEmpty()) {
+                            available = collectWallpaperFiles();
+                            if (!available.isEmpty()) {
+                                choices.edit().putString(Config.WALLPAPER_CHOICE_KEY,
+                                        available.get(0).getAbsolutePath()).apply();
+                                nextConfig = Config.load(this);
+                                modified = true;
+                            }
+                        } else {
+                            nextConfig = reloaded;
+                            modified = true;
+                        }
+                    }
+                } finally {
+                    final Config resolvedConfig = nextConfig;
+                    final List<File> resolvedFiles = available;
+                    final boolean didModify = modified;
+                    runOnUiThread(() -> {
+                        wallpaperBusy = false;
+                        if (isFinishing() || isDestroyed()) return;
+                        if (didModify) {
+                            changed();
+                            refresh(resolvedConfig != null ? resolvedConfig : Config.load(this));
+                        } else if (resolvedFiles != null) {
+                            showWallpaperDialog(resolvedFiles);
+                        }
+                    });
+                }
+            });
         };
         if (wallpaperChoice != null) {
             wallpaperChoice.setOnClickListener(wallpaperToggle);
@@ -338,23 +396,7 @@ public final class LauncherSettingsActivity extends Activity {
         followThemeChoice = findViewById(R.id.followThemeChoice);
         followThemeChoice.setOnClickListener(v -> {
             if (!hasOnTvChoices()) return;
-            choices.edit()
-                    .remove("columns")
-                    .remove(Config.ROWS_BELOW_DOCK_KEY)
-                    .remove("animations")
-                    .remove("advanced_effects")
-                    .remove(Config.WALLPAPER_CHOICE_KEY)
-                    .remove(Config.SCREENSAVER_STYLE_KEY)
-                    .remove(Config.SCREENSAVER_BG_KEY)
-                    .remove("screensaver_enabled")
-                    .remove("show_stats")
-                    .remove("show_inputs_pill")
-                    .remove("show_recents_pill")
-                    .remove("show_network_pill")
-                    .remove(Config.DOCK_OPACITY_KEY)
-                    .remove(Config.CLOCK_FORMAT_KEY)
-                    .remove(OpenOnStart.KEY)
-                    .commit();
+            Config.clearOnTvChoices(choices.edit()).apply();
             Config current = Config.load(this);
             columns = current.columns;
             rowsBelowDock = current.rowsBelowDock;
@@ -363,7 +405,7 @@ public final class LauncherSettingsActivity extends Activity {
             animations = current.animations;
             advancedEffects = current.animations && current.advancedEffects;
             changed();
-            refresh();
+            refresh(current);
         });
         findViewById(R.id.defaultHomeChoice).setOnClickListener(v -> {
             Toast.makeText(this, R.string.home_settings_help, Toast.LENGTH_LONG).show();
@@ -371,7 +413,7 @@ public final class LauncherSettingsActivity extends Activity {
         });
         findViewById(R.id.tvSettingsChoice).setOnClickListener(v ->
                 open(SystemSettings.intent(this, Settings.ACTION_SETTINGS)));
-        refresh();
+        refresh(config);
         if (config.launcherSettingsButton) reorderChoice.requestFocus();
         else columnChoices[Math.max(0, Math.min(columns - 4, 3))].requestFocus();
     }
@@ -382,21 +424,49 @@ public final class LauncherSettingsActivity extends Activity {
         for (int i = views.length - 1; i >= 0; i--) row.addView(views[i]);
     }
 
-    private void showWallpaperPicker() {
+    private ExecutorService executor() {
+        if (wallpaperExecutor == null || wallpaperExecutor.isShutdown()) {
+            wallpaperExecutor = Executors.newSingleThreadExecutor();
+        }
+        return wallpaperExecutor;
+    }
+
+    private List<File> collectWallpaperFiles() {
         File dir = Config.dir(this);
         List<File> images = new java.util.ArrayList<>(WallpaperRotation.images(
                 dir == null ? null : new File(dir, "wallpapers")));
+        File custom = dir == null ? null : new File(dir, "custom_wallpaper.jpg");
+        if (custom != null && custom.isFile() && !images.contains(custom)) images.add(0, custom);
         File single = dir == null ? null : new File(dir, Config.WALLPAPER_NAME);
-        if (single != null && single.isFile()) images.add(0, single);
+        if (single != null && single.isFile() && !images.contains(single)) images.add(0, single);
 
-        File extWp = new File(Environment.getExternalStorageDirectory(), "Wallpapers");
-        if (!extWp.exists()) extWp.mkdirs();
-
-        scanImages(new File(Environment.getExternalStorageDirectory(), "Pictures"), images);
-        scanImages(new File(Environment.getExternalStorageDirectory(), "Download"), images);
-        scanImages(extWp, images);
+        File extRoot = Environment.getExternalStorageDirectory();
+        scanImages(new File(extRoot, "Pictures"), images);
+        scanImages(new File(extRoot, "Download"), images);
+        scanImages(new File(extRoot, "Wallpapers"), images);
         if (dir != null) scanImages(new File(dir, "custom"), images);
+        return images;
+    }
 
+    private void showWallpaperPicker() {
+        if (wallpaperBusy) return;
+        wallpaperBusy = true;
+        executor().execute(() -> {
+            List<File> images = null;
+            try {
+                images = collectWallpaperFiles();
+            } finally {
+                final List<File> resolved = images != null ? images : Collections.emptyList();
+                runOnUiThread(() -> {
+                    wallpaperBusy = false;
+                    if (isFinishing() || isDestroyed()) return;
+                    showWallpaperDialog(resolved);
+                });
+            }
+        });
+    }
+
+    private void showWallpaperDialog(List<File> images) {
         String current = choices.getString(Config.WALLPAPER_CHOICE_KEY, null);
         int totalItems = images.size() + 2;
         String[] labels = new String[totalItems];
@@ -413,7 +483,7 @@ public final class LauncherSettingsActivity extends Activity {
         labels[totalItems - 1] = getString(R.string.wallpaper_none);
 
         if (images.isEmpty()) {
-            Toast.makeText(this, "Add photos to TV's Wallpapers or Pictures folder", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, R.string.wallpaper_folder_hint, Toast.LENGTH_LONG).show();
         }
 
         int checked = -1;
@@ -457,8 +527,10 @@ public final class LauncherSettingsActivity extends Activity {
     }
 
     private void showScreensaverPicker() {
+        Config cfg = Config.load(this);
+        String defaultBg = cfg.clockWallpaper ? "wallpaper" : (cfg.clockGlow ? "glow" : "black");
         String currentStyle = choices.getString(Config.SCREENSAVER_STYLE_KEY, "calendar");
-        String currentBg = choices.getString(Config.SCREENSAVER_BG_KEY, "wallpaper");
+        String currentBg = choices.getString(Config.SCREENSAVER_BG_KEY, defaultBg);
 
         String[] items = {
                 getString(R.string.screensaver_style_calendar) + ("calendar".equals(currentStyle) ? "  ✓" : ""),
@@ -555,25 +627,96 @@ public final class LauncherSettingsActivity extends Activity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == PICK_WALLPAPER_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
-            try {
-                File dir = Config.dir(this);
-                if (dir != null) {
-                    File customFile = new File(dir, "custom_wallpaper.jpg");
-                    try (java.io.InputStream in = getContentResolver().openInputStream(data.getData());
-                         java.io.FileOutputStream out = new java.io.FileOutputStream(customFile)) {
-                        byte[] buf = new byte[8192];
-                        int len;
-                        while ((len = in.read(buf)) > 0) out.write(buf, 0, len);
-                    }
-                    choices.edit().putString(Config.WALLPAPER_CHOICE_KEY, customFile.getAbsolutePath()).apply();
-                    changed();
-                    Toast.makeText(this, R.string.wallpaper_applied, Toast.LENGTH_SHORT).show();
-                    refresh();
+        if (requestCode == PICK_WALLPAPER_REQUEST && resultCode == RESULT_OK
+                && data != null && data.getData() != null) {
+            final android.net.Uri sourceUri = data.getData();
+            final File dir = Config.dir(this);
+            if (dir == null) return;
+            executor().execute(() -> copyCustomWallpaper(sourceUri, dir));
+        }
+    }
+
+    private void copyCustomWallpaper(android.net.Uri sourceUri, File dir) {
+        File customFile = new File(dir, "custom_wallpaper.jpg");
+        File tmpFile = new File(dir, "custom_wallpaper.jpg.tmp");
+        try {
+            try (InputStream in = getContentResolver().openInputStream(sourceUri)) {
+                if (in == null) {
+                    throw new IOException(getString(R.string.wallpaper_open_error));
                 }
-            } catch (Exception e) {
-                Toast.makeText(this, "Could not load image: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                try (FileOutputStream out = new FileOutputStream(tmpFile)) {
+                    byte[] buf = new byte[8192];
+                    long total = 0L;
+                    int len;
+                    while ((len = in.read(buf)) > 0) {
+                        total += len;
+                        if (total > MAX_WALLPAPER_BYTES) {
+                            throw new IOException(getString(R.string.wallpaper_size_limit));
+                        }
+                        out.write(buf, 0, len);
+                    }
+                    out.flush();
+                }
             }
+            if (customFile.exists() && !customFile.delete()) {
+                throw new IOException(getString(R.string.wallpaper_replace_error));
+            }
+            if (!tmpFile.renameTo(customFile)) {
+                throw new IOException(getString(R.string.wallpaper_finalize_error));
+            }
+            runOnUiThread(() -> {
+                if (isFinishing() || isDestroyed()) return;
+                choices.edit().putString(Config.WALLPAPER_CHOICE_KEY, customFile.getAbsolutePath()).apply();
+                changed();
+                Toast.makeText(this, R.string.wallpaper_applied, Toast.LENGTH_SHORT).show();
+                refresh();
+            });
+        } catch (Exception e) {
+            if (tmpFile.exists()) {
+                //noinspection ResultOfMethodCallIgnored
+                tmpFile.delete();
+            }
+            final String detail = e.getMessage() != null ? e.getMessage() : e.getClass().getSimpleName();
+            runOnUiThread(() -> {
+                if (isFinishing() || isDestroyed()) return;
+                Toast.makeText(this, getString(R.string.wallpaper_error, detail), Toast.LENGTH_LONG).show();
+            });
+        }
+    }
+
+    @Override
+    public boolean dispatchKeyEvent(KeyEvent event) {
+        if (finishing) return true;
+        return super.dispatchKeyEvent(event);
+    }
+
+    @Override
+    @SuppressWarnings("deprecation")
+    public void onBackPressed() {
+        finishWithMorph();
+    }
+
+    private void finishWithMorph() {
+        if (finishing || isFinishing()) return;
+        finishing = true;
+        if (morph != null) {
+            morph.playExit(animateTransitions, () -> {
+                if (!isFinishing()) super.finish();
+                overridePendingTransition(0, 0);
+            });
+        } else {
+            super.finish();
+            overridePendingTransition(0, 0);
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (morph != null) morph.cancelAndReset();
+        if (wallpaperExecutor != null) {
+            wallpaperExecutor.shutdownNow();
+            wallpaperExecutor = null;
         }
     }
 
@@ -617,7 +760,10 @@ public final class LauncherSettingsActivity extends Activity {
     }
 
     private void refresh() {
-        Config config = Config.load(this);
+        refresh(Config.load(this));
+    }
+
+    private void refresh(Config config) {
         for (int i = 0; i < columnChoices.length; i++) {
             columnChoices[i].setSelected(columns == i + 4);
         }
@@ -630,7 +776,7 @@ public final class LauncherSettingsActivity extends Activity {
 
         // 1. Wallpaper Switch & Summary
         String wallpaperCurrent = choices.getString(Config.WALLPAPER_CHOICE_KEY, null);
-        boolean wallpaperOn = !"none".equals(wallpaperCurrent);
+        boolean wallpaperOn = config.wallpaperEnabled && !config.wallpapers.isEmpty();
         updateSwitch(wallpaperSwitch, wallpaperOn);
         if (wallpaperSummary != null) {
             if (!wallpaperOn) {
@@ -641,6 +787,7 @@ public final class LauncherSettingsActivity extends Activity {
                 wallpaperSummary.setText(R.string.wallpaper_theme_default);
             }
         }
+        ClockFormat.apply(getWindow().getDecorView(), clockFormat);
 
         // 2. Screensaver Switch & Summary
         boolean ssOn = choices.getBoolean("screensaver_enabled", config.homeIdleClockMinutes > 0);
@@ -716,15 +863,7 @@ public final class LauncherSettingsActivity extends Activity {
     }
 
     private boolean hasOnTvChoices() {
-        return choices.contains("columns") || choices.contains(Config.ROWS_BELOW_DOCK_KEY)
-                || choices.contains("animations") || choices.contains("advanced_effects")
-                || choices.contains(Config.WALLPAPER_CHOICE_KEY) || choices.contains(Config.DOCK_OPACITY_KEY)
-                || choices.contains(Config.CLOCK_FORMAT_KEY)
-                || choices.contains(Config.SCREENSAVER_STYLE_KEY) || choices.contains(Config.SCREENSAVER_BG_KEY)
-                || choices.contains("screensaver_enabled") || choices.contains("show_stats")
-                || choices.contains("show_inputs_pill") || choices.contains("show_recents_pill")
-                || choices.contains("show_network_pill")
-                || choices.contains(OpenOnStart.KEY);
+        return Config.hasOnTvChoices(choices);
     }
 
     // Documentation contract for ScreenRows test:

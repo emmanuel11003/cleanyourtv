@@ -2,6 +2,7 @@ package com.gathin.tvhome;
 
 import android.accessibilityservice.AccessibilityService;
 import android.accessibilityservice.AccessibilityServiceInfo;
+import android.app.ActivityOptions;
 import android.content.ActivityNotFoundException;
 import android.content.ComponentName;
 import android.content.Context;
@@ -9,6 +10,7 @@ import android.content.Intent;
 import android.media.AudioManager;
 import android.media.tv.TvContract;
 import android.os.Build;
+import android.os.Bundle;
 import android.provider.Settings;
 import android.os.Handler;
 import android.os.Looper;
@@ -381,10 +383,6 @@ final class RemoteKeys {
             case "settings":
                 start(ctx, SystemSettings.intent(ctx, Settings.ACTION_SETTINGS));
                 break;
-            case "panel":
-            case "quick_settings":
-                start(ctx, new Intent(ctx, QuickSettingsActivity.class).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP));
-                break;
             case "wifi":
                 start(ctx, SystemSettings.intent(ctx, Settings.ACTION_WIFI_SETTINGS));
                 break;
@@ -398,9 +396,26 @@ final class RemoteKeys {
         return true;
     }
 
+    private static Bundle openOpts(Context ctx) {
+        try {
+            Config cfg = Config.load(ctx);
+            if (cfg.animations && !cfg.reducedMotion) {
+                return ActivityOptions.makeCustomAnimation(ctx, R.anim.app_open_enter, R.anim.app_open_exit).toBundle();
+            }
+            return ActivityOptions.makeCustomAnimation(ctx, 0, 0).toBundle();
+        } catch (Throwable ignored) {}
+        return null;
+    }
+
+    private static void startWithOpts(Context ctx, Intent intent) {
+        Bundle opts = openOpts(ctx);
+        if (opts != null) ctx.startActivity(intent, opts);
+        else ctx.startActivity(intent);
+    }
+
     private static void start(Context ctx, Intent intent) {
         try {
-            ctx.startActivity(intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+            startWithOpts(ctx, intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
         } catch (ActivityNotFoundException | SecurityException ignored) {
         }
     }
@@ -466,7 +481,13 @@ final class RemoteKeys {
         ComponentName activity = isActivity(pkg) ? ComponentName.unflattenFromString(pkg) : null;
         if (activity != null) {
             try {
-                ctx.startActivity(new Intent().setComponent(activity).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+                Bundle opts = openOpts(ctx);
+                if (opts != null) {
+                    ctx.startActivity(new Intent().setComponent(activity).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK), opts);
+                } else {
+                    ctx.startActivity(new Intent().setComponent(activity).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+                }
+                RecentApps.record(ctx, activity.getPackageName(), activity, null);
             } catch (ActivityNotFoundException | SecurityException ignored) {
             }
             return;
@@ -480,7 +501,8 @@ final class RemoteKeys {
             return;
         }
         try {
-            ctx.startActivity(open.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+            startWithOpts(ctx, open.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+            RecentApps.record(ctx, pkg, open.getComponent(), null);
         } catch (ActivityNotFoundException ignored) {
         }
     }

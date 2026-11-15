@@ -91,20 +91,20 @@ public class LiveClockView extends TextView {
     private DisplayManager displayManager;
     private Boolean cachedIs24 = null;
     private String cachedClockFormat = null;
+    private int lastHour = -1;
+    private int lastMin = -1;
+    private int lastSec = -1;
+    private int lastTextColor = 0;
+    private boolean lastIs24 = false;
 
     private final Runnable ticker = new Runnable() {
         @Override
         public void run() {
-            if (!attached || !shouldTick) {
+            if (!attached || !shouldTick || !isShown()) {
                 return;
             }
-            if (getVisibility() == View.VISIBLE) {
-                updateTime();
-            }
-            long now = System.currentTimeMillis();
-            long delay = 1000L - (now % 1000L);
-            if (delay < 20L) delay += 1000L;
-            handler.postDelayed(this, delay);
+            updateTime();
+            scheduleNextTick();
         }
     };
 
@@ -113,7 +113,7 @@ public class LiveClockView extends TextView {
         public void onReceive(Context context, Intent intent) {
             cachedIs24 = null;
             if (attached) {
-                startTicking();
+                resumeTickingIfEnabled();
             } else {
                 updateTime();
             }
@@ -125,7 +125,7 @@ public class LiveClockView extends TextView {
         public void onDisplayChanged(int displayId) {
             Display d = getDisplay();
             if (d != null && d.getState() == Display.STATE_ON && attached) {
-                startTicking();
+                resumeTickingIfEnabled();
             } else if (d != null && d.getState() == Display.STATE_OFF) {
                 handler.removeCallbacks(ticker);
             }
@@ -163,6 +163,7 @@ public class LiveClockView extends TextView {
         attached = false;
         unregisterReceivers();
         stopTicking();
+        handler.removeCallbacksAndMessages(null);
     }
 
     private void registerReceivers() {
@@ -209,21 +210,19 @@ public class LiveClockView extends TextView {
     @Override
     protected void onVisibilityChanged(View changedView, int visibility) {
         super.onVisibilityChanged(changedView, visibility);
-        if (changedView == this) {
-            if (visibility == View.VISIBLE && attached) {
-                startTicking();
-            } else if (visibility != View.VISIBLE) {
-                handler.removeCallbacks(ticker);
-            }
+        if (isShown()) {
+            resumeTickingIfEnabled();
+        } else {
+            handler.removeCallbacks(ticker);
         }
     }
 
     @Override
     protected void onWindowVisibilityChanged(int visibility) {
         super.onWindowVisibilityChanged(visibility);
-        if (visibility == View.VISIBLE && attached) {
-            startTicking();
-        } else if (visibility != View.VISIBLE) {
+        if (visibility == View.VISIBLE && isShown()) {
+            resumeTickingIfEnabled();
+        } else {
             handler.removeCallbacks(ticker);
         }
     }
@@ -231,27 +230,39 @@ public class LiveClockView extends TextView {
     @Override
     public void onWindowFocusChanged(boolean hasWindowFocus) {
         super.onWindowFocusChanged(hasWindowFocus);
-        if (hasWindowFocus && attached) {
-            startTicking();
+        if (hasWindowFocus && isShown()) {
+            resumeTickingIfEnabled();
         }
     }
 
     public void setClockFormat(String mode) {
         this.cachedClockFormat = mode;
         this.cachedIs24 = ClockFormat.is24(getContext(), mode);
+        this.lastHour = -1;
+        this.lastMin = -1;
+        this.lastSec = -1;
         updateTime();
     }
 
     public void startTicking() {
         shouldTick = true;
+        resumeTickingIfEnabled();
+    }
+
+    private void resumeTickingIfEnabled() {
+        if (!shouldTick) return;
         handler.removeCallbacks(ticker);
         updateTime();
-        if (attached) {
-            long now = System.currentTimeMillis();
-            long delay = 1000L - (now % 1000L);
-            if (delay < 20L) delay += 1000L;
-            handler.postDelayed(ticker, delay);
+        if (attached && isShown()) {
+            scheduleNextTick();
         }
+    }
+
+    private void scheduleNextTick() {
+        long now = System.currentTimeMillis();
+        long delay = 1000L - (now % 1000L);
+        if (delay < 10L) delay = 10L;
+        handler.postDelayed(ticker, delay);
     }
 
     public void stopTicking() {
@@ -277,6 +288,17 @@ public class LiveClockView extends TextView {
         if (!is24 && hour == 0) hour = 12;
         int min = calendar.get(Calendar.MINUTE);
         int sec = calendar.get(Calendar.SECOND);
+        int textColor = getCurrentTextColor();
+        if (hour == lastHour && min == lastMin && sec == lastSec
+                && is24 == lastIs24 && textColor == lastTextColor
+                && getText() != null && getText().length() > 0) {
+            return;
+        }
+        lastHour = hour;
+        lastMin = min;
+        lastSec = sec;
+        lastIs24 = is24;
+        lastTextColor = textColor;
 
         spanBuilder.clear();
         spanBuilder.clearSpans();
@@ -296,7 +318,6 @@ public class LiveClockView extends TextView {
         int secEnd = spanBuilder.length();
 
         // 72% opacity matching secondary am/pm styling
-        int textColor = getCurrentTextColor();
         if (colorSpan == null || cachedColor != textColor) {
             cachedColor = textColor;
             int alpha = Color.alpha(textColor);
@@ -311,6 +332,5 @@ public class LiveClockView extends TextView {
         spanBuilder.setSpan(colorSpan, secStart, secEnd, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
 
         setText(new SpannableString(spanBuilder));
-        invalidate();
     }
 }

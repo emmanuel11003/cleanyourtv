@@ -79,10 +79,6 @@ if ($LASTEXITCODE -ne 0 -or "$out" -notmatch 'Success') { throw 'pm install fail
 # drops the inner double quotes from a native argument.
 's=$(settings get secure enabled_accessibility_services); a=$(settings get secure accessibility_enabled); am force-stop com.gathin.tvhome; case "$s" in *com.gathin.tvhome*) settings put secure enabled_accessibility_services ""; settings put secure enabled_accessibility_services "$s"; settings put secure accessibility_enabled "$a" ;; esac' |
     & $py -I ..\tools\tv.py --batch | Out-Null
-# Android 9 only accepts a component here; Android 10+ also takes a bare package name.
-$out = & $py -I ..\tools\tv.py 'cmd package set-home-activity --user 0 com.gathin.tvhome/.MainActivity'
-Write-Host $out
-if ($LASTEXITCODE -ne 0 -or "$out" -match 'Error') { throw 'could not set the new launcher as home; the stock launcher was left untouched' }
 # Start the launcher on its own, before the stock Home is touched (see build-and-install.sh, #239):
 # in the batch a failed start only prints an Error line and the stock launcher would be disabled anyway.
 # With -StockLauncher none the stock launcher stays Home (stock_home_redirect): a MAIN+HOME start would make this
@@ -92,6 +88,11 @@ $startCmd = if ($StockLauncher -eq 'none') { 'am start -W -n com.gathin.tvhome/.
 $start = (& $py -I ..\tools\tv.py $startCmd) -join "`n"
 Write-Host $start
 if ($LASTEXITCODE -ne 0 -or $start -notmatch 'Status: ok' -or $start -match '(?m)^Error') { throw "the new launcher did not start (see above); $StockLauncher was left enabled" }
+$focused = (& $py -I ..\tools\tv.py 'dumpsys activity activities 2>/dev/null | grep mFocusedApp || true') -join "`n"
+if ($LASTEXITCODE -ne 0 -or ($focused -match 'mFocusedApp' -and $focused -notmatch 'com\.gathin\.tvhome')) {
+    throw "the new launcher did not take focus ($focused); $StockLauncher was left enabled and Home preference untouched"
+}
+# Android 9 only accepts a component here; Android 10+ also takes a bare package name.
 @(
     'pm grant com.gathin.tvhome android.permission.ACCESS_FINE_LOCATION 2>/dev/null; echo location-granted',
     'cmd package compile -m speed -f com.gathin.tvhome',

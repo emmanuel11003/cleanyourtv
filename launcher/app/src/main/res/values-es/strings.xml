@@ -116,6 +116,9 @@
     <string name="race_race">Carrera</string>
     <string name="last_opened">Abierta por última vez %1$s</string>
     <string name="game_live">En directo</string>
+    <string name="wifi">Wi-Fi</string>
+    <string name="vpn">VPN</string>
+    <string name="greeting_with_name">%1$s, %2$s</string>
     <string name="clock_format_system">Sistema</string>
     <string name="clock_format_12">12 horas</string>
     <string name="clock_format_24">24 horas</string>

@@ -23,4 +23,14 @@ public class MotionTest {
     public void reducedAnimationsLastAtMost100ms() {
         assertTrue(Motion.REDUCED_MS <= 100);
     }
+
+    @Test
+    public void clampAnimationScaleBoundsAndHandlesNonFinite() {
+        org.junit.Assert.assertEquals(1.0f, Config.clampAnimationScale(Float.NaN, 1.0f), 0f);
+        org.junit.Assert.assertEquals(1.0f, Config.clampAnimationScale(Float.POSITIVE_INFINITY, 1.0f), 0f);
+        org.junit.Assert.assertEquals(0.5f, Config.clampAnimationScale(Float.NEGATIVE_INFINITY, 0.5f), 0f);
+        org.junit.Assert.assertEquals(0.0f, Config.clampAnimationScale(-1.5f, 1.0f), 0f);
+        org.junit.Assert.assertEquals(0.5f, Config.clampAnimationScale(0.5f, 1.0f), 0f);
+        org.junit.Assert.assertEquals(5.0f, Config.clampAnimationScale(9.0f, 1.0f), 0f);
+    }
 }

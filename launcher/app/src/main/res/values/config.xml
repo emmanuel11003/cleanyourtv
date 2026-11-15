@@ -238,6 +238,8 @@
         <item>KEYCODE_FEATURED_APP_3:com.amazon.amazonvideo.livingroom</item>
         <item>300:in.startv.hotstar</item>
         <item>KEYCODE_FEATURED_APP_4:in.startv.hotstar</item>
+        <item>scan:379:in.startv.hotstar</item>
+        <item>scan:580:com.android.vending</item>
     </string-array>
 
     <!-- Package of the stock launcher, for TVs whose firmware turns it back on after it was disabled. XGIMI's
@@ -426,8 +428,8 @@
     <string name="background_color" translatable="false">#070A14</string>
     <!-- Dock opacity in percent (30-100) -->
     <integer name="dock_opacity">30</integer>
-    <!-- System animation scale (0.5 for 0.5x, enforced permanently across TV reboots) -->
-    <string name="animation_scale" translatable="false">0.5</string>
+    <!-- System animation scale (1.0 for fluid Apple-speed transitions across TV reboots) -->
+    <string name="animation_scale" translatable="false">1.0</string>
 
     <!-- Optional Default-home tile; keep this key for existing themes and tile-ordering work.
          Off by default because the chooser is also available from launcher settings. -->

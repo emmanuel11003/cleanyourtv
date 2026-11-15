@@ -86,45 +86,107 @@ public final class RecentApps {
 
     static String escape(String s) {
         if (s == null) return "";
-        return s.replace("\\", "\\\\").replace("\"", "\\\"");
+        StringBuilder sb = new StringBuilder(s.length());
+        for (int i = 0; i < s.length(); i++) {
+            char c = s.charAt(i);
+            switch (c) {
+                case '\\': sb.append("\\\\"); break;
+                case '"': sb.append("\\\""); break;
+                case '\n': sb.append("\\n"); break;
+                case '\r': sb.append("\\r"); break;
+                case '\t': sb.append("\\t"); break;
+                default:
+                    if (c < 0x20) sb.append(String.format(java.util.Locale.ROOT, "\\u%04x", (int) c));
+                    else sb.append(c);
+            }
+        }
+        return sb.toString();
     }
 
     static String unescape(String s) {
-        if (s == null) return "";
-        return s.replace("\\\"", "\"").replace("\\\\", "\\");
-    }
-
-    static String extractField(String objStr, String key) {
-        String pattern = "\"" + key + "\":\"";
-        int start = objStr.indexOf(pattern);
-        if (start == -1) return null;
-        start += pattern.length();
-        int end = -1;
-        for (int i = start; i < objStr.length(); i++) {
-            if (objStr.charAt(i) == '"' && objStr.charAt(i - 1) != '\\') {
-                end = i;
-                break;
+        if (s == null || s.isEmpty()) return "";
+        if (s.indexOf('\\') < 0) return s;
+        StringBuilder sb = new StringBuilder(s.length());
+        for (int i = 0; i < s.length(); i++) {
+            char c = s.charAt(i);
+            if (c == '\\' && i + 1 < s.length()) {
+                char next = s.charAt(++i);
+                switch (next) {
+                    case '\\': sb.append('\\'); break;
+                    case '"': sb.append('"'); break;
+                    case '/': sb.append('/'); break;
+                    case 'n': sb.append('\n'); break;
+                    case 'r': sb.append('\r'); break;
+                    case 't': sb.append('\t'); break;
+                    case 'b': sb.append('\b'); break;
+                    case 'f': sb.append('\f'); break;
+                    case 'u':
+                        if (i + 4 < s.length()) {
+                            try {
+                                sb.append((char) Integer.parseInt(s.substring(i + 1, i + 5), 16));
+                                i += 4;
+                                break;
+                            } catch (NumberFormatException ignored) {}
+                        }
+                        sb.append("\\u");
+                        break;
+                    default: sb.append(next);
+                }
+            } else {
+                sb.append(c);
             }
         }
-        if (end == -1) return null;
-        return unescape(objStr.substring(start, end));
+        return sb.toString();
     }
 
-    static long extractLongField(String objStr, String key) {
-        String pattern = "\"" + key + "\":";
-        int start = objStr.indexOf(pattern);
-        if (start == -1) return 0L;
-        start += pattern.length();
-        int end = start;
-        while (end < objStr.length() && (Character.isDigit(objStr.charAt(end)) || objStr.charAt(end) == '-')) {
-            end++;
+    private static Record parseRecordObject(String objStr) {
+        String pkg = null;
+        String cmp = "";
+        String lbl = "";
+        long time = 0L;
+        int i = 0;
+        int n = objStr.length();
+        while (i < n) {
+            while (i < n && (objStr.charAt(i) <= ' ' || objStr.charAt(i) == ',')) i++;
+            if (i >= n || objStr.charAt(i) != '"') break;
+            int keyEnd = findClosingQuote(objStr, i + 1);
+            if (keyEnd < 0) break;
+            String key = unescape(objStr.substring(i + 1, keyEnd));
+            i = keyEnd + 1;
+            while (i < n && objStr.charAt(i) <= ' ') i++;
+            if (i >= n || objStr.charAt(i) != ':') break;
+            i++;
+            while (i < n && objStr.charAt(i) <= ' ') i++;
+            if (i >= n) break;
+            if (objStr.charAt(i) == '"') {
+                int valEnd = findClosingQuote(objStr, i + 1);
+                if (valEnd < 0) break;
+                String val = unescape(objStr.substring(i + 1, valEnd));
+                i = valEnd + 1;
+                if ("pkg".equals(key)) pkg = val;
+                else if ("cmp".equals(key)) cmp = val;
+                else if ("lbl".equals(key)) lbl = val;
+            } else {
+                int valStart = i;
+                while (i < n && objStr.charAt(i) != ',' && objStr.charAt(i) > ' ') i++;
+                if ("time".equals(key)) {
+                    try {
+                        time = Long.parseLong(objStr.substring(valStart, i));
+                    } catch (NumberFormatException ignored) {}
+                }
+            }
         }
-        if (end > start) {
-            try {
-                return Long.parseLong(objStr.substring(start, end));
-            } catch (NumberFormatException ignored) {}
+        if (pkg == null || pkg.isEmpty()) return null;
+        return new Record(pkg, cmp, lbl, time);
+    }
+
+    private static int findClosingQuote(String s, int from) {
+        for (int i = from; i < s.length(); i++) {
+            char c = s.charAt(i);
+            if (c == '\\') i++;
+            else if (c == '"') return i;
         }
-        return 0L;
+        return -1;
     }
 
     public static List<Record> decodeRecords(String text) {
@@ -132,21 +194,29 @@ public final class RecentApps {
         if (text == null || text.trim().isEmpty() || !text.contains("{")) {
             return list;
         }
-        int idx = 0;
-        while (idx < text.length()) {
-            int start = text.indexOf('{', idx);
-            if (start == -1) break;
-            int end = text.indexOf('}', start);
-            if (end == -1) break;
-            String objStr = text.substring(start + 1, end);
-            String pkg = extractField(objStr, "pkg");
-            if (pkg != null && !pkg.isEmpty()) {
-                String cmp = extractField(objStr, "cmp");
-                String lbl = extractField(objStr, "lbl");
-                long time = extractLongField(objStr, "time");
-                list.add(new Record(pkg, cmp != null ? cmp : "", lbl != null ? lbl : "", time));
+        boolean inString = false;
+        int depth = 0;
+        int objStart = -1;
+        for (int i = 0; i < text.length(); i++) {
+            char c = text.charAt(i);
+            if (inString) {
+                if (c == '\\') i++;
+                else if (c == '"') inString = false;
+                continue;
             }
-            idx = end + 1;
+            if (c == '"') {
+                inString = true;
+            } else if (c == '{') {
+                if (depth == 0) objStart = i + 1;
+                depth++;
+            } else if (c == '}' && depth > 0) {
+                depth--;
+                if (depth == 0 && objStart >= 0) {
+                    Record parsed = parseRecordObject(text.substring(objStart, i));
+                    if (parsed != null) list.add(parsed);
+                    objStart = -1;
+                }
+            }
         }
         return list;
     }

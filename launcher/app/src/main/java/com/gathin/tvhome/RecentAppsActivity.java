@@ -52,6 +52,10 @@ public final class RecentAppsActivity extends Activity {
     private ExecutorService loaderExecutor;
 
     private int focusedPosition = 0;
+    private WindowMorph morph;
+    private boolean animateTransitions;
+    private boolean launchingApp;
+    private boolean closingWithMorph;
 
     @Override
     protected void attachBaseContext(Context base) {
@@ -61,11 +65,20 @@ public final class RecentAppsActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        overridePendingTransition(R.anim.app_open_enter, R.anim.app_open_exit);
+        overridePendingTransition(0, 0);
+        Config cfg = Config.load(this);
+        animateTransitions = cfg.animations && !cfg.reducedMotion;
         setContentView(R.layout.activity_recent_apps);
+        ClockFormat.apply(getWindow().getDecorView(), cfg.clockFormat);
 
+        View root = findViewById(R.id.recentRoot);
+        View header = findViewById(R.id.headerLayout);
         contentLayout = findViewById(R.id.contentLayout);
         emptyLayout = findViewById(R.id.emptyLayout);
+        morph = new WindowMorph(root, null, header, contentLayout, emptyLayout);
+        morph.setTargetCornerRadius(0f);
+        morph.attachSource(getIntent());
+        morph.playEnter(animateTransitions, null);
         recentsRecycler = findViewById(R.id.recentsRecycler);
         btnActionOpen = findViewById(R.id.btnActionOpen);
         btnActionDismiss = findViewById(R.id.btnActionDismiss);
@@ -74,10 +87,7 @@ public final class RecentAppsActivity extends Activity {
 
         TextView btnEmptyHome = findViewById(R.id.btnEmptyHome);
         if (btnEmptyHome != null) {
-            btnEmptyHome.setOnClickListener(v -> {
-                finish();
-                overridePendingTransition(R.anim.app_close_enter, R.anim.app_close_exit);
-            });
+            btnEmptyHome.setOnClickListener(v -> finishWithCloseTransition());
         }
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
@@ -91,10 +101,53 @@ public final class RecentAppsActivity extends Activity {
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        launchingApp = false;
+    }
+
+    @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
+        launchingApp = false;
+        closingWithMorph = false;
         setIntent(intent);
+        if (morph != null) {
+            morph.cancelAndReset();
+            morph.attachSource(intent);
+            morph.playEnter(animateTransitions, null);
+        }
         loadRecentApps();
+    }
+
+    private void applyOpenTransition() {
+        if (animateTransitions) {
+            overridePendingTransition(R.anim.app_open_enter, R.anim.app_open_exit);
+        } else {
+            overridePendingTransition(0, 0);
+        }
+    }
+
+    private void applyCloseTransition() {
+        if (animateTransitions) {
+            overridePendingTransition(R.anim.app_close_enter, R.anim.app_close_exit);
+        } else {
+            overridePendingTransition(0, 0);
+        }
+    }
+
+    private void finishWithCloseTransition() {
+        if (closingWithMorph || isFinishing()) return;
+        closingWithMorph = true;
+        if (morph != null) {
+            morph.playExit(animateTransitions && !launchingApp, () -> {
+                if (!isFinishing()) finish();
+                overridePendingTransition(0, 0);
+            });
+        } else {
+            if (!isFinishing()) finish();
+            applyCloseTransition();
+        }
     }
 
     private void setupActionButtons() {
@@ -177,6 +230,20 @@ public final class RecentAppsActivity extends Activity {
         });
     }
 
+    private Bundle launchOptions() {
+        if (!animateTransitions) {
+            return ActivityOptions.makeCustomAnimation(this, 0, 0).toBundle();
+        }
+        if (recentsRecycler != null) {
+            RecyclerView.ViewHolder vh = recentsRecycler.findViewHolderForAdapterPosition(focusedPosition);
+            if (vh != null && vh.itemView.getWidth() > 0 && vh.itemView.getHeight() > 0) {
+                return ActivityOptions.makeScaleUpAnimation(
+                        vh.itemView, 0, 0, vh.itemView.getWidth(), vh.itemView.getHeight()).toBundle();
+            }
+        }
+        return ActivityOptions.makeCustomAnimation(this, R.anim.app_open_enter, R.anim.app_open_exit).toBundle();
+    }
+
     private void performOpen(RecentApps.Item item) {
         if (item == null) return;
         Intent intent = RecentApps.buildResumeIntent(this, item.pkg, item.componentName);
@@ -184,31 +251,32 @@ public final class RecentAppsActivity extends Activity {
             Toast.makeText(this, getString(R.string.cant_open, item.label), Toast.LENGTH_SHORT).show();
             return;
         }
+        launchingApp = true;
         try {
-            ActivityOptions opts = ActivityOptions.makeCustomAnimation(this, R.anim.app_open_enter, R.anim.app_open_exit);
-            startActivity(intent, opts.toBundle());
+            startActivity(intent, launchOptions());
             ComponentName cn = (item.componentName != null && !item.componentName.isEmpty())
                     ? ComponentName.unflattenFromString(item.componentName) : null;
             RecentApps.record(this, item.pkg, cn, item.label);
             LastOpened.record(this, item.pkg);
             finish();
-            overridePendingTransition(R.anim.app_open_enter, R.anim.app_open_exit);
         } catch (Exception e) {
+            launchingApp = false;
             Log.w(TAG, "Cannot resume app " + item.pkg + ": " + e);
             // Fallback attempt with standard launch intent
             try {
                 Intent fallback = getPackageManager().getLaunchIntentForPackage(item.pkg);
                 if (fallback != null) {
                     fallback.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    ActivityOptions opts = ActivityOptions.makeCustomAnimation(this, R.anim.app_open_enter, R.anim.app_open_exit);
-                    startActivity(fallback, opts.toBundle());
+                    launchingApp = true;
+                    startActivity(fallback, launchOptions());
                     RecentApps.record(this, item.pkg, null, item.label);
                     LastOpened.record(this, item.pkg);
                     finish();
-                    overridePendingTransition(R.anim.app_open_enter, R.anim.app_open_exit);
                     return;
                 }
-            } catch (Exception ignored) {}
+            } catch (Exception ignored) {
+                launchingApp = false;
+            }
             Toast.makeText(this, getString(R.string.cant_open, item.label), Toast.LENGTH_SHORT).show();
         }
     }
@@ -273,11 +341,18 @@ public final class RecentAppsActivity extends Activity {
             }
             if (info != null) {
                 info.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(info);
+                launchingApp = true;
+                if (animateTransitions) {
+                    ActivityOptions opts = ActivityOptions.makeCustomAnimation(this, R.anim.app_open_enter, R.anim.app_open_exit);
+                    startActivity(info, opts.toBundle());
+                } else {
+                    startActivity(info);
+                }
             } else {
                 Toast.makeText(this, getString(R.string.cant_open, item.label), Toast.LENGTH_SHORT).show();
             }
         } catch (Exception e) {
+            launchingApp = false;
             Log.w(TAG, "Cannot open App Info for " + item.pkg + ": " + e);
             Toast.makeText(this, getString(R.string.cant_open, item.label), Toast.LENGTH_SHORT).show();
         }
@@ -293,12 +368,15 @@ public final class RecentAppsActivity extends Activity {
     }
 
     @Override
+    public boolean dispatchKeyEvent(KeyEvent event) {
+        if (closingWithMorph) return true;
+        return super.dispatchKeyEvent(event);
+    }
+
+    @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
-            if (!isFinishing()) {
-                finish();
-            }
-            overridePendingTransition(R.anim.app_close_enter, R.anim.app_close_exit);
+            finishWithCloseTransition();
             return true;
         }
         return super.onKeyDown(keyCode, event);
@@ -306,21 +384,27 @@ public final class RecentAppsActivity extends Activity {
 
     @Override
     public void onBackPressed() {
-        if (!isFinishing()) {
-            finish();
+        finishWithCloseTransition();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (!closingWithMorph) {
+            if (morph != null) morph.cancelAndReset();
+            if (isFinishing() && !launchingApp) {
+                applyCloseTransition();
+            }
         }
-        overridePendingTransition(R.anim.app_close_enter, R.anim.app_close_exit);
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        if (morph != null) morph.cancelAndReset();
         if (loaderExecutor != null) {
             loaderExecutor.shutdownNow();
             loaderExecutor = null;
-        }
-        if (adapter != null) {
-            adapter.clear();
         }
         if (recentsRecycler != null) {
             recentsRecycler.setAdapter(null);
@@ -394,22 +478,21 @@ public final class RecentAppsActivity extends Activity {
 
             itemView.setOnFocusChangeListener((v, hasFocus) -> {
                 v.animate().cancel();
+                float targetScale = hasFocus ? FOCUS_SCALE : 1.0f;
                 if (hasFocus) {
                     int pos = getBindingAdapterPosition();
                     if (pos != RecyclerView.NO_POSITION) {
                         focusedPosition = pos;
+                        recentsRecycler.smoothScrollToPosition(pos);
                     }
-                    v.animate()
-                            .scaleX(FOCUS_SCALE)
-                            .scaleY(FOCUS_SCALE)
-                            .setDuration(ANIM_DURATION_MS)
-                            .setInterpolator(new DecelerateInterpolator())
-                            .start();
-                    recentsRecycler.smoothScrollToPosition(focusedPosition);
+                }
+                if (!animateTransitions) {
+                    v.setScaleX(targetScale);
+                    v.setScaleY(targetScale);
                 } else {
                     v.animate()
-                            .scaleX(1.0f)
-                            .scaleY(1.0f)
+                            .scaleX(targetScale)
+                            .scaleY(targetScale)
                             .setDuration(ANIM_DURATION_MS)
                             .setInterpolator(new DecelerateInterpolator())
                             .start();
@@ -437,8 +520,10 @@ public final class RecentAppsActivity extends Activity {
         }
 
         void bind(RecentApps.Item item, int position) {
-            itemView.setScaleX(1.0f);
-            itemView.setScaleY(1.0f);
+            itemView.animate().cancel();
+            float scale = itemView.hasFocus() ? FOCUS_SCALE : 1.0f;
+            itemView.setScaleX(scale);
+            itemView.setScaleY(scale);
 
             txtAppName.setText(item.label);
             txtAppTime.setText(item.relativeTime != null && !item.relativeTime.isEmpty() ? item.relativeTime : "");

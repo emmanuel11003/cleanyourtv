@@ -12,5 +12,6 @@ public class ClockFormatTest {
         // A null context would throw if the TV's own setting were read.
         assertTrue(ClockFormat.is24(null, "24"));
         assertFalse(ClockFormat.is24(null, "12"));
+        ClockFormat.apply(null, "system");
     }
 }

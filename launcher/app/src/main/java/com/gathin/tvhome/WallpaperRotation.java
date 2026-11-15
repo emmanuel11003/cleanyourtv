@@ -36,7 +36,9 @@ final class WallpaperRotation {
     }
 
     static File find(List<File> images, String name) {
-        for (File image : images) if (image.getName().equals(name)) return image;
+        for (File image : images) {
+            if (image.getName().equals(name) || image.getAbsolutePath().equals(name)) return image;
+        }
         return null;
     }
 
@@ -46,13 +48,20 @@ final class WallpaperRotation {
     /**
      * What an on-TV wallpaper choice puts on Home in place of the theme's rotation: null when the theme decides
      * (no choice, or a picture that is no longer there), an empty list for {@link #CHOICE_NONE}, or the one picture
-     * chosen from the theme's collection or its single {@code single} wallpaper.
+     * chosen from the theme's collection, its single {@code single} wallpaper, or a custom image file path.
      */
     static List<File> chosen(List<File> collection, File single, String choice) {
         if (choice == null) return null;
         if (CHOICE_NONE.equals(choice)) return Collections.emptyList();
         File picked = find(collection, choice);
-        if (picked == null && single != null && choice.equals(single.getName())) picked = single;
+        if (picked == null && single != null
+                && (choice.equals(single.getName()) || choice.equals(single.getAbsolutePath()))) {
+            picked = single;
+        }
+        if (picked == null && (choice.indexOf('/') >= 0 || choice.indexOf('\\') >= 0)) {
+            File direct = new File(choice);
+            if (direct.isFile() && direct.length() > 0) picked = direct;
+        }
         return picked == null ? null : Collections.singletonList(picked);
     }
 

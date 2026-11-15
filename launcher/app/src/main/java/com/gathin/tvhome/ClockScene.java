@@ -48,6 +48,17 @@ final class ClockScene {
     private final MonthCalendarView calendar;
     private final View calendarDivider;
     private final GradientDrawable glow;
+    private final ArgbEvaluator colorMix = new ArgbEvaluator();
+    private final int[] glowColors = new int[3];
+    private boolean started;
+    private final Runnable startEnter = new Runnable() {
+        @Override
+        public void run() {
+            if (!started) return;
+            placeClock();
+            content.animate().alpha(1f).setDuration(1200).start();
+        }
+    };
     private int colorIndex;
     private int glowColor;
     /** clock_wallpaper or clock_glow false: something else (a picture, or plain black) replaced the coloured glow. */
@@ -96,11 +107,10 @@ final class ClockScene {
     }
 
     void start() {
+        started = true;
         content.setAlpha(0f);
-        content.post(() -> {
-            placeClock();
-            content.animate().alpha(1f).setDuration(1200).start();
-        });
+        content.removeCallbacks(startEnter);
+        content.post(startEnter);
         handler.removeCallbacks(tick);
         handler.postDelayed(tick, MOVE_MS);
         clockRefresh.start();
@@ -108,6 +118,8 @@ final class ClockScene {
     }
 
     void stop() {
+        started = false;
+        content.removeCallbacks(startEnter);
         handler.removeCallbacksAndMessages(null);   // the tick and any glow steps still queued
         clockRefresh.stop();
         content.animate().cancel();
@@ -132,7 +144,7 @@ final class ClockScene {
             calendarDivider.setVisibility(showCalendar ? View.VISIBLE : View.GONE);
         }
 
-        String bgChoice = choices.getString(Config.SCREENSAVER_BG_KEY, "wallpaper");
+        String bgChoice = choices.getString(Config.SCREENSAVER_BG_KEY, null);
         if ("black".equals(bgChoice)) {
             wallpaperShown = true;
             ambient.setBackground(null);
@@ -151,7 +163,8 @@ final class ClockScene {
         } catch (RuntimeException e) {
             return;
         }
-        if (!cfg.clockWallpaper) {
+        boolean wantWallpaper = "wallpaper".equals(bgChoice) || (bgChoice == null && cfg.clockWallpaper);
+        if (!wantWallpaper) {
             // clock_glow false: plain black behind the clock (OLED); the clock itself still moves every minute.
             if (!cfg.clockGlow) {
                 wallpaperShown = true;   // also stops the glow's colour cycle
@@ -159,14 +172,30 @@ final class ClockScene {
             }
             return;
         }
+        List<File> availableWallpapers = cfg.wallpapers;
+        if (availableWallpapers.isEmpty()) {
+            availableWallpapers = new ArrayList<>();
+            for (File root : new File[]{Config.dir(ctx), ctx.getFilesDir()}) {
+                if (root == null) continue;
+                File custom = new File(root, "custom_wallpaper.jpg");
+                if (custom.isFile() && custom.length() > 0) availableWallpapers.add(custom);
+                File single = new File(root, Config.WALLPAPER_NAME);
+                if (single.isFile() && single.length() > 0 && !availableWallpapers.contains(single)) {
+                    availableWallpapers.add(single);
+                }
+                for (File img : WallpaperRotation.images(new File(root, "wallpapers"))) {
+                    if (!availableWallpapers.contains(img)) availableWallpapers.add(img);
+                }
+            }
+        }
         // What Home plays, and Config puts the single wallpaper in it when a theme has no collection.
         // Reading cfg.wallpaper first held the screensaver on wallpaper.jpg while Home rotated.
-        if (cfg.wallpapers.isEmpty()) {
+        if (availableWallpapers.isEmpty()) {
             wallpaperFile = null;
         } else {
             // Start on the picture Home is showing. WallpaperPlayer records it under the same
             // preferences and the screensaver runs in the same process, so this is just a read.
-            rotation = new ArrayList<>(cfg.wallpapers);
+            rotation = new ArrayList<>(availableWallpapers);
             String shown = ctx.getSharedPreferences("wallpaper_rotation", Context.MODE_PRIVATE)
                     .getString("image", "");
             File current = WallpaperRotation.find(rotation, shown);
@@ -242,7 +271,7 @@ final class ClockScene {
         // The same pick as Home's, so a shuffled collection stays shuffled and wallpaper_moods still
         // decides what may show at this hour.
         File next = WallpaperRotation.pick(playable(), wallpaperFile.getName(), order, random);
-        if (next.equals(wallpaperFile)) return;   // a mood group of one
+        if (next == null || next.equals(wallpaperFile)) return;   // empty or a mood group of one
         wallpaperFile = next;
         wallpaperShown = false;
         loadWallpaper();
@@ -284,16 +313,19 @@ final class ClockScene {
         int from = glowColor;
         colorIndex = (colorIndex + 1) % PALETTE.length;
         int to = PALETTE[colorIndex];
-        ArgbEvaluator mix = new ArgbEvaluator();
         for (int i = 1; i <= GLOW_STEPS; i++) {
             float f = (float) i / GLOW_STEPS;
-            handler.postDelayed(() -> setGlow((int) mix.evaluate(f, from, to)), i * GLOW_STEP_MS);
+            int stepColor = (int) colorMix.evaluate(f, from, to);
+            handler.postDelayed(() -> setGlow(stepColor), i * GLOW_STEP_MS);
         }
     }
 
     private void setGlow(int color) {
         glowColor = color;
         int c = color & 0x00FFFFFF;
-        glow.setColors(new int[]{0x40000000 | c, 0x14000000 | c, 0x00000000 | c});
+        glowColors[0] = 0x40000000 | c;
+        glowColors[1] = 0x14000000 | c;
+        glowColors[2] = 0x00000000 | c;
+        glow.setColors(glowColors);
     }
 }

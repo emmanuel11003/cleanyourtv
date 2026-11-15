@@ -43,6 +43,8 @@
         "299:com.amazon.amazonvideo.livingroom",
         "KEYCODE_FEATURED_APP_3:com.amazon.amazonvideo.livingroom",
         "300:in.startv.hotstar",
-        "KEYCODE_FEATURED_APP_4:in.startv.hotstar"
+        "KEYCODE_FEATURED_APP_4:in.startv.hotstar",
+        "scan:379:in.startv.hotstar",
+        "scan:580:com.android.vending"
     ]
 }

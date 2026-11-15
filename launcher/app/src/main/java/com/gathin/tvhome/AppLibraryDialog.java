@@ -19,7 +19,6 @@ import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -77,7 +76,13 @@ final class AppLibraryDialog {
     private final Activity activity;
     private final Predicate<String> onHome;
     private final Runnable changed;
+    private final FrameLayout scrim;
     private final LinearLayout panel;
+    private WindowMorph morph;
+    private final Rect anchorRect = new Rect();
+    private float anchorRadius;
+    private boolean dismissingNow;
+    private boolean closingWithMorph;
     private final boolean reducedMotion;
     private final boolean selectionMode;
     /** library_ok_opens without app_library_selection: OK opens every app, Add to Home is in the hold menu. */
@@ -129,20 +134,42 @@ final class AppLibraryDialog {
         highlight.setAlpha(1f);
     }
 
-    private GradientDrawable surface(int color, int radius) {
+    private final Map<Long, Drawable.ConstantState> surfaceCache = new HashMap<>();
+
+    private Drawable surface(int color, int radius) {
+        long key = (((long) color) << 32) | (radius & 0xFFFFFFFFL);
+        Drawable.ConstantState cached = surfaceCache.get(key);
+        if (cached != null) return cached.newDrawable(activity.getResources());
         // The launcher's one glass look (drawable/pill_bg rest state), tinted when the colour carries a hue.
         int tint = color & 0x00FFFFFF;
         GradientDrawable bg = new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, tint == 0xFFFFFF
                 ? new int[]{0x2EFFFFFF, 0x14FFFFFF} : new int[]{0x40000000 | tint, 0x1F000000 | tint});
         bg.setCornerRadius(dp(radius));
         bg.setStroke(dp(1), 0x38FFFFFF);
+        Drawable.ConstantState state = bg.getConstantState();
+        if (state != null) surfaceCache.put(key, state);
         return bg;
     }
 
     private void resize(int width, int height) {
-        popup.setWidth(width);
-        popup.setHeight(height);
-        if (popup.isShowing()) popup.update(width, height);
+        FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) panel.getLayoutParams();
+        if (lp == null) {
+            lp = new FrameLayout.LayoutParams(width, height, Gravity.CENTER);
+        } else {
+            lp.width = width;
+            lp.height = height;
+            lp.gravity = Gravity.CENTER;
+        }
+        panel.setLayoutParams(lp);
+    }
+
+    /** Anchor the iOS morph animation on the button or pill that opened the library. */
+    void setMorphAnchor(View anchor) {
+        if (WindowMorph.captureScreenRect(anchor, anchorRect)) {
+            anchorRadius = Math.min(anchorRect.width(), anchorRect.height()) * 0.5f;
+        } else {
+            anchorRect.setEmpty();
+        }
     }
 
     /** library_excluded_apps (config.xml), never offered in the catalogue; empty by default, so existing
@@ -161,21 +188,38 @@ final class AppLibraryDialog {
         this.dismissed = dismissed;
         this.excludedApps = excludedApps;
         density = activity.getResources().getDisplayMetrics().density;
+        scrim = new FrameLayout(activity);
+        scrim.setBackgroundColor(0x8C000000);
+        scrim.setClipChildren(false);
+        scrim.setOnClickListener(v -> close());
         panel = new LinearLayout(activity);
         panel.setLayoutDirection(rtl ? View.LAYOUT_DIRECTION_RTL : View.LAYOUT_DIRECTION_LTR);
         panel.setOrientation(LinearLayout.VERTICAL);
         panel.setPadding(dp(12), dp(8), dp(12), dp(12));
         panel.setBackgroundResource(R.drawable.glass_panel);
+        panel.setClickable(true);
         View decor = activity.getWindow().getDecorView();
         catalogWidth = Math.min(dp(800), Math.max(dp(200), decor.getWidth() - dp(64)));
         int width = catalogWidth;
         int height = dp(280);
-        popup = new PopupWindow(panel, width, height, true);
+        scrim.addView(panel, new FrameLayout.LayoutParams(width, height, Gravity.CENTER));
+        popup = new PopupWindow(scrim, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT, true) {
+            @Override
+            public void dismiss() {
+                if (dismissingNow) {
+                    super.dismiss();
+                } else {
+                    AppLibraryDialog.this.close();
+                }
+            }
+        };
         popup.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         popup.setOutsideTouchable(true);
         popup.setAnimationStyle(0);
         popup.setOnDismissListener(() -> {
             closed = true;
+            closingWithMorph = false;
+            if (morph != null) morph.cancelAndReset();
             dismissActions();
             stopHighlight();
             icons.clear();
@@ -186,10 +230,36 @@ final class AppLibraryDialog {
     void close() {
         dismissActions();
         if (popup.isShowing()) {
-            popup.dismiss();
+            if (morph != null && animations && !reducedMotion && !closingWithMorph) {
+                closingWithMorph = true;
+                morph.playExit(true, this::dismissNow);
+            } else if (!closingWithMorph) {
+                dismissNow();
+            }
         } else if (!closed) {
             closed = true;   // still loading: it never shows
             dismissed.run();
+        }
+    }
+
+    void closeImmediate() {
+        dismissActions();
+        closingWithMorph = false;
+        if (morph != null) morph.cancelAndReset();
+        if (popup.isShowing()) {
+            dismissNow();
+        } else if (!closed) {
+            closed = true;
+            dismissed.run();
+        }
+    }
+
+    private void dismissNow() {
+        dismissingNow = true;
+        try {
+            popup.dismiss();
+        } finally {
+            dismissingNow = false;
         }
     }
 
@@ -199,15 +269,14 @@ final class AppLibraryDialog {
 
     private void reveal() {
         popup.showAtLocation(activity.getWindow().getDecorView(), Gravity.CENTER, 0, 0);
-        View container = panel.getRootView();
-        if (container.getLayoutParams() instanceof WindowManager.LayoutParams) {
-            WindowManager.LayoutParams params = (WindowManager.LayoutParams) container.getLayoutParams();
-            params.flags |= WindowManager.LayoutParams.FLAG_DIM_BEHIND;
-            params.dimAmount = 0.55f;
-            activity.getWindowManager().updateViewLayout(container, params);
+        if (morph == null) {
+            morph = new WindowMorph(panel, scrim);
+            morph.setTargetCornerRadius(20f * density);
         }
-        panel.setAlpha(0f);
-        panel.animate().alpha(1f).setDuration(reducedMotion ? Motion.REDUCED_MS : 180).start();
+        if (!anchorRect.isEmpty()) {
+            morph.setSource(anchorRect, anchorRadius);
+        }
+        morph.playEnter(animations && !reducedMotion, null);
     }
 
     /** Called by the activity's existing package receiver; an uninstall cannot leave a stale action. */
@@ -508,14 +577,20 @@ final class AppLibraryDialog {
     }
 
     private void open(ResolveInfo app) {
-        close();
+        closeImmediate();
         Intent intent = new Intent(Intent.ACTION_MAIN).setComponent(
                 new ComponentName(app.activityInfo.packageName, app.activityInfo.name));
         // TV apps keep the leanback launch intent, so an app already running resumes instead of restarting.
         if (tvPackages.contains(app.activityInfo.packageName)) intent.addCategory(Intent.CATEGORY_LEANBACK_LAUNCHER);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
-        try { activity.startActivity(intent); }
-        catch (ActivityNotFoundException | SecurityException e) {
+        try {
+            if (animations && !reducedMotion) {
+                activity.startActivity(intent, android.app.ActivityOptions.makeCustomAnimation(
+                        activity, R.anim.app_open_enter, R.anim.app_open_exit).toBundle());
+            } else {
+                activity.startActivity(intent);
+            }
+        } catch (ActivityNotFoundException | SecurityException e) {
             Toast.makeText(activity, activity.getString(R.string.cant_open, label(app)), Toast.LENGTH_SHORT).show();
         }
     }
@@ -543,9 +618,14 @@ final class AppLibraryDialog {
                 () -> changeHome(app, !home));
         Intent info = SystemSettings.appInfo(activity, pkg);
         if (info != null) addAction(rows, R.string.library_app_info, () -> {
-            close();
+            closeImmediate();
             try {
-                activity.startActivity(info);
+                if (animations && !reducedMotion) {
+                    activity.startActivity(info, android.app.ActivityOptions.makeCustomAnimation(
+                            activity, R.anim.app_open_enter, R.anim.app_open_exit).toBundle());
+                } else {
+                    activity.startActivity(info);
+                }
             } catch (ActivityNotFoundException | SecurityException e) {
                 Toast.makeText(activity, activity.getString(R.string.cant_open, label(app)), Toast.LENGTH_SHORT).show();
             }
@@ -659,8 +739,13 @@ final class AppLibraryDialog {
             status.setVisibility(home || !okOpens ? View.VISIBLE : View.INVISIBLE);
             holder.itemView.setBackground(surface(home ? 0x1475BBA4 : 0x0CFFFFFF, 18));
             View check = holder.itemView.findViewById(R.id.dot);
-            check.getLayoutParams().width = dp(home ? 18 : 8);
-            check.getLayoutParams().height = dp(home ? 18 : 8);
+            int dotSize = dp(home ? 18 : 8);
+            ViewGroup.LayoutParams dotLp = check.getLayoutParams();
+            if (dotLp.width != dotSize || dotLp.height != dotSize) {
+                dotLp.width = dotSize;
+                dotLp.height = dotSize;
+                check.setLayoutParams(dotLp);
+            }
             if (home) check.setBackgroundResource(R.drawable.library_check);
             else check.setBackground(surface(0xFF70D9A0, 8));
             check.setVisibility(home || recent ? View.VISIBLE : View.GONE);

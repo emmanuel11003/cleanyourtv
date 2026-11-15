@@ -1,16 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <set xmlns:android="http://schemas.android.com/apk/res/android"
-    android:interpolator="@interpolator/apple_accelerate"
-    android:duration="260"
-    android:shareInterpolator="true">
+    android:shareInterpolator="false"
+    android:fillEnabled="true"
+    android:fillBefore="true"
+    android:fillAfter="true">
     <alpha
+        android:interpolator="@android:anim/accelerate_interpolator"
+        android:startOffset="130"
+        android:duration="230"
         android:fromAlpha="1.0"
         android:toAlpha="0.0" />
     <scale
+        android:interpolator="@interpolator/apple_decelerate"
+        android:duration="400"
         android:fromXScale="1.0"
-        android:toXScale="0.85"
+        android:toXScale="0.52"
         android:fromYScale="1.0"
-        android:toYScale="0.85"
+        android:toYScale="0.52"
         android:pivotX="50%"
-        android:pivotY="50%" />
+        android:pivotY="68%" />
 </set>

@@ -59,6 +59,12 @@
     <string name="wallpaper_applied">Wallpaper changed</string>
     <string name="wallpaper_theme_default">Theme default</string>
     <string name="wallpaper_custom_browse" translatable="false">Pick image from storage…</string>
+    <string name="wallpaper_folder_hint" translatable="false">Add photos to TV\'s Wallpapers or Pictures folder</string>
+    <string name="wallpaper_error" translatable="false">Could not load image: %1$s</string>
+    <string name="wallpaper_open_error" translatable="false">Cannot open URI</string>
+    <string name="wallpaper_size_limit" translatable="false">Image exceeds 15 MB limit</string>
+    <string name="wallpaper_replace_error" translatable="false">Cannot replace existing wallpaper</string>
+    <string name="wallpaper_finalize_error" translatable="false">Cannot finalize wallpaper file</string>
     <string name="screensaver_label" translatable="false">Screensaver</string>
     <string name="screensaver_state" translatable="false">Screensaver: %1$s</string>
     <string name="screensaver_style_calendar" translatable="false">Clock &amp; Month Calendar</string>

@@ -49,6 +49,11 @@ public class ClockActivity extends Activity {
 
     @Override
     public boolean dispatchKeyEvent(KeyEvent event) {
+        int kc = event.getKeyCode();
+        if (kc == KeyEvent.KEYCODE_VOLUME_UP || kc == KeyEvent.KEYCODE_VOLUME_DOWN
+                || kc == KeyEvent.KEYCODE_VOLUME_MUTE) {
+            return super.dispatchKeyEvent(event);
+        }
         // The key that wakes the clock should not also act on Home, so it is consumed here.
         if (event.getAction() == KeyEvent.ACTION_UP) finish();
         return true;

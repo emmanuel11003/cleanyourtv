@@ -2,6 +2,7 @@ package com.gathin.tvhome;
 
 import android.accessibilityservice.AccessibilityService;
 import android.accessibilityservice.AccessibilityServiceInfo;
+import android.app.ActivityOptions;
 import android.content.ActivityNotFoundException;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
@@ -10,6 +11,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.PowerManager;
@@ -116,7 +118,7 @@ public class HomeKeyService extends AccessibilityService {
         // locked at boot, writes accessibility_enabled=0 and, on TCL G03 firmware, never binds it after the
         // unlock. Config.load reads credential-protected storage, so wait for the unlock before reading it.
         UserManager users = getSystemService(UserManager.class);
-        if (users.isUserUnlocked()) {
+        if (users == null || users.isUserUnlocked()) {
             loadConfig();
             return;
         }
@@ -157,6 +159,7 @@ public class HomeKeyService extends AccessibilityService {
     @Override
     public void onDestroy() {
         if (running == this) running = null;
+        handler.removeCallbacksAndMessages(null);
         RemoteKeys.release(this);
         stopWaitingForUnlock();
         if (screenOnReceiver != null) {
@@ -248,7 +251,7 @@ public class HomeKeyService extends AccessibilityService {
         }
         // home_key_service.xml subscribes to no events, so the redirects ask for window changes only when one is on.
         AccessibilityServiceInfo info = getServiceInfo();
-        if (info != null && (!stockHome.isEmpty() || !powerOnLiveTv.isEmpty() || watchFront)) {
+        if (info != null && (!stockHome.isEmpty() || !powerOnLiveTv.isEmpty() || watchFront || config.showRecentsPill)) {
             info.eventTypes |= AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED;
             setServiceInfo(info);
         }
@@ -305,7 +308,10 @@ public class HomeKeyService extends AccessibilityService {
                 Intent open = settingsPanel ? new Intent(this, QuickSettingsActivity.class)
                         : SystemSettings.intent(this, Settings.ACTION_SETTINGS);
                 try {
-                    startActivity(open.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP));
+                    startActivity(open.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP),
+                            settingsPanel
+                                    ? android.app.ActivityOptions.makeCustomAnimation(this, 0, 0).toBundle()
+                                    : null);
                 } catch (ActivityNotFoundException | SecurityException unavailable) {
                     Toast.makeText(this, R.string.not_available, Toast.LENGTH_SHORT).show();
                 }
@@ -339,29 +345,26 @@ public class HomeKeyService extends AccessibilityService {
     @Override
     public void onAccessibilityEvent(AccessibilityEvent event) {
         if (event.getEventType() != AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) return;
-        // app_keys "front:" entries: only activities count, so a toast or the volume bar doesn't change the app in front.
-        if ((!frontAppKeys.isEmpty() || !frontAppScancodes.isEmpty())
-                && event.getPackageName() != null && event.getClassName() != null) {
-            try {
-                ComponentName window = new ComponentName(event.getPackageName().toString(), event.getClassName().toString());
-                getPackageManager().getActivityInfo(window, 0);
-                frontPackage = window.getPackageName();
-            } catch (PackageManager.NameNotFoundException notAnActivity) {
-                // a dialog, panel or overlay: the app under it is still in front
-            }
-        }
+        // app_keys "front:" entries & Recent Apps: only activities count, so a toast or volume bar doesn't record.
         if (event.getPackageName() != null && event.getClassName() != null) {
             String pkg = event.getPackageName().toString();
+            boolean watchFront = !frontAppKeys.isEmpty() || !frontAppScancodes.isEmpty();
             long now = SystemClock.elapsedRealtime();
-            if (RecentApps.isValidPackage(pkg, getPackageName())
-                    && (!pkg.equals(lastRecentsPkg) || now - lastRecentsTime >= 5000L)) {
+            boolean recordRecents = RecentApps.isValidPackage(pkg, getPackageName())
+                    && (!pkg.equals(lastRecentsPkg) || now - lastRecentsTime >= 5000L);
+            if (watchFront || recordRecents) {
                 try {
                     ComponentName window = new ComponentName(pkg, event.getClassName().toString());
                     getPackageManager().getActivityInfo(window, 0);
-                    lastRecentsPkg = pkg;
-                    lastRecentsTime = now;
-                    RecentApps.record(this, pkg, window, null);
-                } catch (PackageManager.NameNotFoundException ignored) {}
+                    if (watchFront) frontPackage = pkg;
+                    if (recordRecents) {
+                        lastRecentsPkg = pkg;
+                        lastRecentsTime = now;
+                        RecentApps.record(this, pkg, window, null);
+                    }
+                } catch (PackageManager.NameNotFoundException notAnActivity) {
+                    // a dialog, panel or overlay: the app under it is still in front
+                }
             }
         }
         // power_on_home: the firmware opened Live TV by itself at power-on, before anyone pressed a key.
@@ -467,8 +470,18 @@ public class HomeKeyService extends AccessibilityService {
     private void openHome() {
         Intent open = stockHomeStays() ? new Intent(this, MainActivity.class)
                 : new Intent(Intent.ACTION_MAIN).setPackage(getPackageName());
-        startActivity(open.addCategory(Intent.CATEGORY_HOME)
-                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED));
+        open.addCategory(Intent.CATEGORY_HOME)
+                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
+        try {
+            Config cfg = Config.load(this);
+            Bundle opts = (cfg.animations && !cfg.reducedMotion)
+                    ? ActivityOptions.makeCustomAnimation(this, R.anim.app_close_enter, R.anim.app_close_exit).toBundle()
+                    : ActivityOptions.makeCustomAnimation(this, 0, 0).toBundle();
+            startActivity(open, opts);
+            return;
+        } catch (Throwable ignored) {
+        }
+        startActivity(open);
     }
 
     /** stock_home_redirect while Android's Home is still the stock launcher (launcherx on Google TV outranks this
@@ -538,7 +551,7 @@ public class HomeKeyService extends AccessibilityService {
         Intent recents = new Intent(this, RecentAppsActivity.class)
                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
         try {
-            startActivity(recents);
+            startActivity(recents, android.app.ActivityOptions.makeCustomAnimation(this, 0, 0).toBundle());
         } catch (Exception ignored) {}
     }
 }

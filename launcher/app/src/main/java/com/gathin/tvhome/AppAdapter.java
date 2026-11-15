@@ -1,6 +1,7 @@
 package com.gathin.tvhome;
 
 import android.app.Activity;
+import android.app.ActivityOptions;
 import android.content.ActivityNotFoundException;
 import android.content.ComponentName;
 import android.content.Context;
@@ -16,7 +17,6 @@ import android.graphics.PixelFormat;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
-import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.util.DisplayMetrics;
@@ -64,6 +64,8 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         void onLibraryUp();
         /** A tile whose launch_actions entry is "input:<id>": switch to that TV input instead of opening an app. */
         void onOpenInput(String inputId);
+        default void onAppLaunching(View card) {}
+        default void onAppLaunchCancelled() {}
     }
 
     static final class Entry {
@@ -338,11 +340,16 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 fresh.add(new Entry(label, component, banner, icon));
             }
         }
+        final Map<String, Integer> favRank = new HashMap<>(favourites.size() * 2 + 1);
+        for (int i = 0, n = favourites.size(); i < n; i++) {
+            favRank.putIfAbsent(favourites.get(i), i);
+        }
         Collections.sort(fresh, (a, b) -> {
             // The owner's own order first; tiles it does not know (new installs) follow by the rule below.
             int saved = Order.compare(savedRanks, a.key, b.key);
             if (saved != 0) return saved;
-            int fa = favourites.indexOf(a.pkg), fb = favourites.indexOf(b.pkg);
+            Integer faObj = favRank.get(a.pkg), fbObj = favRank.get(b.pkg);
+            int fa = faObj != null ? faObj : -1, fb = fbObj != null ? fbObj : -1;
             if (fa >= 0 || fb >= 0) {
                 if (fa < 0) return 1;
                 if (fb < 0) return -1;
@@ -439,7 +446,9 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             live.setBounds(0, 0, targetW, targetH);
             live.draw(canvas);
             live.setBounds(saved);
-            return new android.graphics.drawable.BitmapDrawable(ctx.getResources(), bmp);
+            android.graphics.drawable.BitmapDrawable bd = new android.graphics.drawable.BitmapDrawable(ctx.getResources(), bmp);
+            bd.setFilterBitmap(true);
+            return bd;
         } catch (Throwable ignored) {
             return live;
         }
@@ -489,7 +498,7 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         }
         name.setLayoutParams(nameLp);
         // A sideways row would stretch a match_parent item across the whole screen: give it a grid column's width.
-        if (singleRow) v.getLayoutParams().width = inner / dockSize;
+        if (singleRow && inner > 0) v.getLayoutParams().width = inner / Math.max(1, dockSize);
         if (uniformTiles) {
             // tvOS-style tile: a large centred mark, no caption inside the card.
             View icon = v.findViewById(R.id.icon);
@@ -539,11 +548,16 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         h.name.setVisibility(dockKind && restNameAlpha == 0f ? View.INVISIBLE : View.VISIBLE);
         h.inDock = dockKind;
         boolean focused = h.card.isFocused();   // a rebind after reload() can hit the focused tile
+        h.card.animate().cancel();
+        h.banner.animate().cancel();
+        h.name.animate().cancel();
         h.name.setAlpha(focused ? 1f : restNameAlpha);
+        float density = h.card.getResources().getDisplayMetrics().density;
+        h.name.setTranslationY(focused ? density * 4f : (animations && !reducedMotion ? -density * 6f : 0f));
         h.card.setScaleX(focused && animations ? focusScale() : 1f);
         h.card.setScaleY(focused && animations ? focusScale() : 1f);
-        h.card.setTranslationY(focused && advancedEffects && !dockKind ? -4f * ctx.getResources().getDisplayMetrics().density : 0f);
-        h.card.setTranslationZ(focused && advancedEffects ? 8f * ctx.getResources().getDisplayMetrics().density : 0f);
+        h.card.setTranslationY(focused && advancedEffects && !dockKind ? liftTranslationY : 0f);
+        h.card.setTranslationZ(focused && advancedEffects ? liftTranslationZ : 0f);
         h.banner.setScaleX(focused && advancedEffects ? 1.035f : 1f);
         h.banner.setScaleY(focused && advancedEffects ? 1.035f : 1f);
         // A fully opaque banner covers the whole card (centerCrop), so the card's own fill under it is drawn for
@@ -579,8 +593,12 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     @SuppressWarnings("deprecation")
     void launch(Entry e, View v) {
         if (e.kind == Entry.HOME_SETTINGS) {
-            ctx.startActivity(new Intent(ctx, HomeSettingsActivity.class)
-                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+            Intent settings = new Intent(ctx, HomeSettingsActivity.class)
+                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            Bundle opts = (animations && !reducedMotion)
+                    ? ActivityOptions.makeCustomAnimation(ctx, R.anim.app_open_enter, R.anim.app_open_exit).toBundle()
+                    : ActivityOptions.makeCustomAnimation(ctx, 0, 0).toBundle();
+            ctx.startActivity(settings, opts);
             return;
         }
         Intent i = new Intent(Intent.ACTION_MAIN)
@@ -602,14 +620,30 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             if (ctx.getPackageManager().resolveActivity(byAction, 0) != null) i = byAction;
         }
         final Intent launchIntent = i;
+        if (animations && !reducedMotion && v != null && !launchController.isLaunching()) {
+            listener.onAppLaunching(v);
+        }
         launchController.requestLaunch(e, v, animations, reducedMotion, focusScale(), (entry, animated) -> {
             try {
-                ctx.startActivity(launchIntent);
+                Bundle opts;
+                if (animated) {
+                    opts = (v != null && v.getWidth() > 0 && v.getHeight() > 0)
+                            ? ActivityOptions.makeScaleUpAnimation(v, 0, 0, v.getWidth(), v.getHeight()).toBundle()
+                            : ActivityOptions.makeCustomAnimation(ctx, R.anim.app_open_enter, R.anim.app_open_exit).toBundle();
+                } else {
+                    opts = ActivityOptions.makeCustomAnimation(ctx, 0, 0).toBundle();
+                }
+                ctx.startActivity(launchIntent, opts);
                 RecentApps.record(ctx, e.pkg, e.component, e.label);
                 if (cinematic) LastOpened.record(ctx, e.pkg);
-                launchController.reset();
+                if (v != null && animated) {
+                    v.postDelayed(() -> launchController.resetIfSameView(v), 450L);
+                } else {
+                    launchController.reset();
+                }
             } catch (Exception ex) {
                 launchController.onLaunchFailed();
+                listener.onAppLaunchCancelled();
                 Toast.makeText(ctx, ctx.getString(R.string.cant_open, e.label), Toast.LENGTH_SHORT).show();
             }
         });
@@ -672,7 +706,7 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         List<String> keys = new ArrayList<>();
         for (int i = 0; i < movableCount(); i++) {
             Entry e = items.get(i);
-            if (e.kind != Entry.EMPTY) keys.add(e.component.flattenToShortString());
+            if (e.kind != Entry.EMPTY) keys.add(e.key);
         }
         return keys;
     }
@@ -691,14 +725,14 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     /** Stable key for the app at a position (its component), or null. */
     String keyAt(int position) {
-        return position >= 0 && position < items.size() ? items.get(position).component.flattenToShortString() : null;
+        return position >= 0 && position < items.size() ? items.get(position).key : null;
     }
 
     /** Position of the app with this key, or -1 when it is gone. */
     int positionOf(String key) {
         if (key == null) return -1;
         for (int i = 0; i < items.size(); i++) {
-            if (items.get(i).component.flattenToShortString().equals(key)) return i;
+            if (key.equals(items.get(i).key)) return i;
         }
         return -1;
     }
@@ -1074,11 +1108,12 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 if (listener != null) listener.onTileLongPress(pos, v);
                 return true;
             }
-            Intent i = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse("package:" + e.pkg));
+            Intent i = SystemSettings.appInfo(adapter.ctx, e.pkg);
+            if (i == null) return true;
             i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             try {
                 adapter.ctx.startActivity(i);
-            } catch (ActivityNotFoundException ignored) {
+            } catch (ActivityNotFoundException | SecurityException ignored) {
             }
             return true;
         }

@@ -73,6 +73,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.dynamicanimation.animation.DynamicAnimation;
 import androidx.dynamicanimation.animation.FloatPropertyCompat;
 import androidx.dynamicanimation.animation.SpringAnimation;
 import androidx.dynamicanimation.animation.SpringForce;
@@ -104,8 +105,6 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
 
 
     private static final int LAUNCHER_SETTINGS_REQUEST = 42;
-    /** Sent by QuickSettingsActivity: open Launcher settings from here so Home rebuilds when they close. */
-    static final String ACTION_LAUNCHER_SETTINGS = "com.gathin.tvhome.action.LAUNCHER_SETTINGS";
     /** Sent by ButtonMapper: toggle reorder mode. */
     public static final String ACTION_REORDER = "com.gathin.tvhome.action.REORDER";
     /** Sent by the "library" action word of app_keys: open the App library over Home (needs app_library). */
@@ -131,6 +130,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     /** Back on Home opens ClockActivity (config.xml, back_opens_clock). */
     private boolean backOpensClock;
     private final Runnable showIdleClock = () -> startActivity(new Intent(this, ClockActivity.class));
+    private final Runnable playPetalShowerTask = this::playPetalShower;
     private String liveTvAction;
     private String liveTvInputId;
     /** The app library is on (config.xml, app_library): only then can the tile menu take an app off Home. */
@@ -445,7 +445,6 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             clockRefresh.start();   // the wall clock was set: line the redraw up with the new minute
             View clockView = findViewById(R.id.clock);
             if (clockView instanceof LiveClockView) {
-                ((LiveClockView) clockView).updateTime();
                 ((LiveClockView) clockView).startTicking();
             }
         }
@@ -459,7 +458,6 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             updatePanel();
             View clockView = findViewById(R.id.clock);
             if (clockView instanceof LiveClockView) {
-                ((LiveClockView) clockView).updateTime();
                 ((LiveClockView) clockView).startTicking();
             }
             // The pill follows the network callbacks and each return to Home; only the festive light follows the
@@ -845,7 +843,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         btnInputs = findViewById(R.id.btnInputs);
         View btnRecents = findViewById(R.id.btnRecents);
         if (btnRecents != null) {
-            btnRecents.setOnClickListener(v -> open(new Intent(this, RecentAppsActivity.class)));
+            btnRecents.setOnClickListener(v -> openOwnedActivity(new Intent(this, RecentAppsActivity.class), v, -1));
             btnRecents.setVisibility(cfg.showRecentsPill ? View.VISIBLE : View.GONE);
         }
         View btnSettings = findViewById(R.id.btnSettings);
@@ -862,9 +860,11 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             ((TextView) btnSettings).setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_home_settings_pill, 0, 0, 0);
         }
         btnSettings.setOnClickListener(v -> {
-            if (launcherSettingsButton) startActivityForResult(
-                    new Intent(this, LauncherSettingsActivity.class), LAUNCHER_SETTINGS_REQUEST);
-            else open(systemIntent(Settings.ACTION_SETTINGS));
+            if (launcherSettingsButton) {
+                openOwnedActivity(new Intent(this, LauncherSettingsActivity.class), v, LAUNCHER_SETTINGS_REQUEST);
+            } else {
+                open(systemIntent(Settings.ACTION_SETTINGS));
+            }
         });
         btnReorder = findViewById(R.id.btnReorder);
         btnReorder.setOnClickListener(v -> toggleReorder());
@@ -895,6 +895,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             // label up to date, which the menu's Wi-Fi row shows.
             showInputsPill = false;
             btnInputs.setVisibility(View.GONE);
+            if (btnRecents != null) btnRecents.setVisibility(View.GONE);
             btnWifi.setVisibility(View.GONE);
             ((TextView) btnSettings).setText(R.string.settings);
             ((TextView) btnSettings).setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_settings, 0, 0, 0);
@@ -943,6 +944,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             return keyCode == KeyEvent.KEYCODE_DPAD_RIGHT && v.getId() == rightButton;
         };
         btnInputs.setOnKeyListener(pillKeys);
+        if (btnRecents != null) btnRecents.setOnKeyListener(pillKeys);
         btnWifi.setOnKeyListener(pillKeys);
         btnVpn.setOnKeyListener(pillKeys);
         btnSettings.setOnKeyListener(pillKeys);
@@ -951,6 +953,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         for (View button : topAppButtons) button.setOnKeyListener(pillKeys);
         if (advancedEffects) {
             List<View> pills = new ArrayList<>(Arrays.asList(btnInputs, btnWifi, btnVpn, btnReorder, btnLibraryTop, btnSettings));
+            if (btnRecents != null) pills.add(btnRecents);
             pills.addAll(topAppButtons);
             for (View button : pills) {
                 button.setOnFocusChangeListener((view, focused) -> view.animate()
@@ -997,7 +1000,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                     .build(), vpnCallback);
         }
         // Not after recreate(): the launch intent survives it and would open the settings again.
-        if (savedInstanceState == null && !openLauncherSettingsIfAsked(getIntent()) && !openLibraryIfAsked(getIntent())) {
+        if (savedInstanceState == null && !openLibraryIfAsked(getIntent())) {
             openInputsIfAsked(getIntent());
         }
     }
@@ -1067,13 +1070,6 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         return true;
     }
 
-    private boolean openLauncherSettingsIfAsked(Intent intent) {
-        if (intent == null || !ACTION_LAUNCHER_SETTINGS.equals(intent.getAction())) return false;
-        setIntent(new Intent(Intent.ACTION_MAIN));
-        startActivityForResult(new Intent(this, LauncherSettingsActivity.class), LAUNCHER_SETTINGS_REQUEST);
-        return true;
-    }
-
     private boolean openReorderIfAsked(Intent intent) {
         if (intent == null || !ACTION_REORDER.equals(intent.getAction())) return false;
         setIntent(new Intent(Intent.ACTION_MAIN));
@@ -1089,7 +1085,6 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
-        if (openLauncherSettingsIfAsked(intent)) return;
         if (openReorderIfAsked(intent)) return;
         if (openLibraryIfAsked(intent)) return;
         if (openInputsIfAsked(intent)) return;
@@ -1160,6 +1155,12 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 break;
         }
         if (openLiveTvAfterBoot()) return;
+        if (root != null) {
+            root.animate().cancel();
+            root.setScaleX(1f);
+            root.setScaleY(1f);
+            root.setAlpha(1f);
+        }
         updateGreeting();
         updatePanel();
         View clockView = findViewById(R.id.clock);
@@ -1197,7 +1198,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             LocalDate today = LocalDate.now();
             if (!reducedMotion && !today.equals(lastPetalShower)) {
                 lastPetalShower = today;
-                handler.postDelayed(this::playPetalShower, 450);
+                handler.removeCallbacks(playPetalShowerTask);
+                handler.postDelayed(playPetalShowerTask, 450);
             }
         }
     }
@@ -1370,6 +1372,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         ambient.animate().cancel();
         heroArt.animate().cancel();
         handler.removeCallbacks(minuteTick);
+        handler.removeCallbacks(playPetalShowerTask);
         handler.removeCallbacks(openWhenOnline);
         startPending = null;   // leaving Home before the network came back: the boot's app stays closed
         stopStats();
@@ -1379,7 +1382,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         cancelPendingFocusScroll();
         // Nothing of ours stays on screen over another app; an undecided prompt simply returns next time.
         if (cardPrompt != null) cardPrompt.dismiss();
-        if (appLibrary != null) appLibrary.close();
+        if (appLibrary != null) appLibrary.closeImmediate();
         if (openPopup != null) openPopup.dismiss();
         if (adapter != null) {
             adapter.launchController.onActivityPaused();
@@ -1401,6 +1404,12 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         }
         handler.removeCallbacks(clockCheck);
         stopped = true;
+        if (root != null) {
+            root.animate().cancel();
+            root.setScaleX(1f);
+            root.setScaleY(1f);
+            root.setAlpha(1f);
+        }
         tileRefresh.onStop();
     }
 
@@ -1441,6 +1450,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        handler.removeCallbacksAndMessages(null);
         RemoteKeys.release(this);
         cancelHoldOk();
         if (gameDay != null) gameDay.shutdown();
@@ -1466,8 +1476,12 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         for (int code : settingsKeycodes) {
             if (event.getKeyCode() != code) continue;
             if (event.getAction() == KeyEvent.ACTION_UP && !event.isCanceled()) {
-                open(settingsKeyPanel ? new Intent(this, QuickSettingsActivity.class)
-                        : systemIntent(Settings.ACTION_SETTINGS));
+                if (settingsKeyPanel) {
+                    openOwnedActivity(new Intent(this, QuickSettingsActivity.class),
+                            findViewById(R.id.btnSettings), -1);
+                } else {
+                    open(systemIntent(Settings.ACTION_SETTINGS));
+                }
             }
             return true;
         }
@@ -1495,6 +1509,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         if (resumed && event.getKeyCode() >= 1000 && RemoteKeys.handle(this, event, homeAppKeys.get(event.getKeyCode()),
                 homeHoldAppKeys.get(event.getKeyCode()))) return true;
         if (handleSettingsKey(event)) return true;
+        if (resumed && !reordering && openPopup == null && cardPrompt == null && appLibrary == null
+                && ButtonMapper.handleKeyEvent(this, event)) return true;
         if (holdOk(event)) return true;
         if (tileMenuEnabled && !reordering && openPopup == null && cardPrompt == null
                 && event.getKeyCode() == KeyEvent.KEYCODE_MENU) {
@@ -1832,8 +1848,12 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
 
     @Override
     public void onLibraryRequested() {
-        if (appLibrary != null) appLibrary.close();
+        if (appLibrary != null) appLibrary.closeImmediate();
         if (openPopup != null) openPopup.dismiss();
+        View libraryAnchor = getCurrentFocus();
+        if (libraryAnchor == null || libraryAnchor == grid || !libraryAnchor.isAttachedToWindow()) {
+            libraryAnchor = btnLibraryTop;
+        }
         libraryFocusPending = false;
         libraryFromTopBar = false;
         libraryFromVpnPill = false;
@@ -1857,6 +1877,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 if (libraryFocusPending && appLibrary == null && hasWindowFocus() && !isFinishing()) focusLibrary();
             });
         }, libraryExcludedApps);
+        if (libraryAnchor != null && libraryAnchor.isAttachedToWindow()) {
+            appLibrary.setMorphAnchor(libraryAnchor);
+        }
         openPopup = appLibrary.popup;
         appLibrary.show();
     }
@@ -3190,7 +3213,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     }
 
     private void playPetalShower() {
-        if (isFinishing() || isDestroyed()) return;
+        if (!resumed || isFinishing() || isDestroyed()) return;
         if (festival.isHalloween()) {
             BatFlightView bats = new BatFlightView(this);
             root.addView(bats, new FrameLayout.LayoutParams(
@@ -3384,11 +3407,26 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     private void open(Intent i) {
         i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         try {
-            if (animations && !reducedMotion) {
-                ActivityOptions opts = ActivityOptions.makeCustomAnimation(this, R.anim.app_open_enter, R.anim.app_open_exit);
-                startActivity(i, opts.toBundle());
+            ActivityOptions opts = (animations && !reducedMotion)
+                    ? ActivityOptions.makeCustomAnimation(this, R.anim.app_open_enter, R.anim.app_open_exit)
+                    : ActivityOptions.makeCustomAnimation(this, 0, 0);
+            startActivity(i, opts.toBundle());
+        } catch (ActivityNotFoundException | SecurityException e) {
+            Toast.makeText(this, R.string.not_available, Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void openOwnedActivity(Intent intent, View anchor, int requestCode) {
+        if (anchor != null && anchor.isAttachedToWindow()) {
+            float radius = Math.min(anchor.getWidth(), anchor.getHeight()) * 0.5f;
+            WindowMorph.putSource(intent, anchor, radius);
+        }
+        Bundle opts = ActivityOptions.makeCustomAnimation(this, 0, 0).toBundle();
+        try {
+            if (requestCode >= 0) {
+                startActivityForResult(intent, requestCode, opts);
             } else {
-                startActivity(i);
+                startActivity(intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK), opts);
             }
         } catch (ActivityNotFoundException | SecurityException e) {
             Toast.makeText(this, R.string.not_available, Toast.LENGTH_SHORT).show();
@@ -3677,8 +3715,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         }
 
         addSeparator(rows);
+        View settingsAnchor = underGear ? findViewById(R.id.btnSettings) : anchor;
         addInputRow(rows, popup, R.drawable.ic_home_settings_pill, getString(R.string.launcher_settings), -1,
-                () -> startActivityForResult(new Intent(this, LauncherSettingsActivity.class), LAUNCHER_SETTINGS_REQUEST));
+                () -> openOwnedActivity(new Intent(this, LauncherSettingsActivity.class),
+                        settingsAnchor, LAUNCHER_SETTINGS_REQUEST));
 
         // Fit the widest row: TVs that report a status on every port (Sony) would otherwise squeeze the names out.
         panel.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
@@ -3712,6 +3752,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
 
     /** Drop in: fade and unfold from the top edge, hanging under the anchor pill. */
     private void dropIn(PopupWindow popup, View panel, View anchor, int gravity) {
+        if (!animations) {
+            popup.showAsDropDown(anchor, 0, (int) (10 * density), gravity);
+            return;
+        }
         panel.setAlpha(0f);
         panel.setPivotY(0f);
         panel.setScaleY(0.92f);
@@ -3777,7 +3821,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         addInputRow(rows, popup, R.drawable.ic_swap_vert, getString(R.string.reorder), -1, this::toggleReorder);
         if (launcherSettingsButton) {
             addInputRow(rows, popup, R.drawable.ic_home_settings_pill, getString(R.string.launcher_settings), -1,
-                    () -> startActivityForResult(new Intent(this, LauncherSettingsActivity.class), LAUNCHER_SETTINGS_REQUEST));
+                    () -> openOwnedActivity(new Intent(this, LauncherSettingsActivity.class),
+                            anchor, LAUNCHER_SETTINGS_REQUEST));
         } else {
             addInputRow(rows, popup, R.drawable.ic_settings, getString(R.string.settings), -1,
                     () -> open(systemIntent(Settings.ACTION_SETTINGS)));
@@ -3794,16 +3839,15 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         View panel = getLayoutInflater().inflate(R.layout.popup_inputs, root, false);
         LinearLayout rows = panel.findViewById(R.id.rows);
         PopupWindow popup = glassPopup(panel, (int) (200 * density));
-        if (!launcherSettingsButton) addSettingsMenuRow(rows, popup, R.string.launcher_settings, () -> startActivityForResult(
-                new Intent(this, LauncherSettingsActivity.class), LAUNCHER_SETTINGS_REQUEST));
+        if (!launcherSettingsButton) addSettingsMenuRow(rows, popup, R.string.launcher_settings,
+                () -> openOwnedActivity(new Intent(this, LauncherSettingsActivity.class),
+                        anchor, LAUNCHER_SETTINGS_REQUEST));
         // Firmware that ships its own settings app next to the AOSP one (Xiaomi China is one): the
         // vendor app holds pages the AOSP settings has no row for, such as Account & Security with
         // the ADB switch. Offered here only while one of them is installed.
-        if (SystemSettings.vendorIntent(this) != null) {
-            addSettingsMenuRow(rows, popup, R.string.native_settings, () -> {
-                Intent vendor = SystemSettings.vendorIntent(this);
-                if (vendor != null) open(vendor);
-            });
+        Intent vendor = SystemSettings.vendorIntent(this);
+        if (vendor != null) {
+            addSettingsMenuRow(rows, popup, R.string.native_settings, () -> open(vendor));
         }
         if (moduleCards) addSettingsMenuRow(rows, popup, R.string.module_cards, this::showModuleCards);
         if (dockRow) addSettingsMenuRow(rows, popup, R.string.dock_edit, this::startDockEdit);
@@ -3823,6 +3867,16 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     @Override
     public void onOpenInput(String inputId) {
         openInput(inputId);
+    }
+
+    @Override
+    public void onAppLaunching(View card) {
+        // Real app window expands directly from the clicked tile via ActivityOptions.makeScaleUpAnimation.
+    }
+
+    @Override
+    public void onAppLaunchCancelled() {
+        // Focus scale on the tile is restored directly by AppLaunchController.
     }
 
     /**
@@ -3914,7 +3968,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
 
     @Override
     public void onTileLongPress(int position, View card) {
-        if (reordering || openPopup != null) return;
+        if (reordering || openPopup != null || card == null) return;
         String key = adapter.keyAt(position);
         String pkg = adapter.packageAt(position);
         // Empty dock slots and the Default-home tile carry the launcher's own package: no menu for them.
@@ -3942,6 +3996,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         // Some firmware has no App info page at all; a row that only toasts "can't open" helps nobody.
         Intent info = SystemSettings.appInfo(this, pkg);
         if (info != null) addSettingsMenuRow(rows, popup, R.string.library_app_info, () -> open(info));
+        if (rows.getChildCount() == 0) {
+            if (openPopup == popup) openPopup = null;
+            return;
+        }
         panel.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
         popup.setWidth(Math.max((int) (200 * density), panel.getMeasuredWidth()));
         // Dock tiles sit near the bottom of the screen: open the menu above the tile when it would not fit below.
@@ -3950,13 +4008,15 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         int gap = (int) (10 * density), height = panel.getMeasuredHeight();
         if (at[1] + card.getHeight() + gap + height <= root.getHeight()) {
             dropIn(popup, panel, card, Gravity.START);
+        } else if (!animations) {
+            popup.showAtLocation(root, Gravity.NO_GRAVITY, at[0], Math.max(0, at[1] - gap - height));
         } else {
             panel.setAlpha(0f);
             panel.setPivotY(height);
             panel.setScaleY(0.92f);
             panel.setTranslationY(8 * density);
             popup.showAtLocation(root, Gravity.NO_GRAVITY, at[0], Math.max(0, at[1] - gap - height));
-            panel.animate().alpha(1f).scaleY(1f).translationY(0f).setDuration(220)
+            panel.animate().alpha(1f).scaleY(1f).translationY(0f).setDuration(reducedMotion ? Motion.REDUCED_MS : 220)
                     .setInterpolator(new android.view.animation.DecelerateInterpolator(1.6f)).start();
         }
         rows.getChildAt(0).requestFocus();

@@ -144,6 +144,11 @@
     <string name="race_countdown_days">%1$d ימ׳ %2$d שע׳</string>
     <string name="last_opened">פתיחה אחרונה: %1$s</string>
     <string name="game_live">בשידור חי עכשיו</string>
+    <string name="wifi">Wi-Fi</string>
+    <string name="vpn">VPN</string>
+    <string name="greeting_with_name">%1$s, %2$s</string>
+    <string name="storage_gb_whole">%1$.0f ג״ב</string>
+    <string name="storage_gb_decimal">%1$.1f ג״ב</string>
     <string name="clock_format_system">מערכת</string>
     <string name="clock_format_12">12 שעות</string>
     <string name="clock_format_24">24 שעות</string>

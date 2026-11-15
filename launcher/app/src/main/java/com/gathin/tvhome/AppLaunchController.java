@@ -17,7 +17,7 @@ import android.view.animation.DecelerateInterpolator;
  */
 public final class AppLaunchController {
 
-    public static final int LAUNCH_ANIMATION_MS = 140;
+    public static final int LAUNCH_ANIMATION_MS = 45;
     public static final float LAUNCH_SCALE_MULTIPLIER = 1.045f;
     public static final long LAUNCH_TIMEOUT_MS = 2000L;
 
@@ -31,7 +31,6 @@ public final class AppLaunchController {
     private View activeView;
     private AppAdapter.Entry activeEntry;
     private float activeNormalScale = 1.0f;
-    private int originalLayerType = View.LAYER_TYPE_NONE;
 
     public boolean isLaunching() {
         if (launching && (System.currentTimeMillis() - launchStartTime) > LAUNCH_TIMEOUT_MS) {
@@ -56,7 +55,6 @@ public final class AppLaunchController {
         cancelled = false;
         activeEntry = entry;
         activeNormalScale = normalScale;
-        originalLayerType = view != null ? view.getLayerType() : View.LAYER_TYPE_NONE;
 
         // If reduced motion is requested, headless, or animations are disabled, launch immediately without delay
         if (view == null || !animations || reducedMotion) {
@@ -76,7 +74,6 @@ public final class AppLaunchController {
                 .scaleY(targetScale)
                 .setDuration(LAUNCH_ANIMATION_MS)
                 .setInterpolator(new AccelerateDecelerateInterpolator())
-                .withLayer()
                 .withEndAction(() -> {
                     if (cancelled) {
                         return;
@@ -104,7 +101,6 @@ public final class AppLaunchController {
 
         if (activeView != null) {
             activeView.animate().cancel();
-            activeView.setLayerType(originalLayerType, null);
             activeView.animate()
                     .scaleX(activeNormalScale)
                     .scaleY(activeNormalScale)
@@ -117,20 +113,34 @@ public final class AppLaunchController {
         return true;
     }
 
-    /**
-     * Watchdog recovery if the system failed to deliver an onPause or lifecycle event.
-     */
-    public void onLaunchTimeout() {
+    /** Cancels any active tile scale animation and clears launch state. */
+    private void clearActiveView(boolean cancelledState) {
         launching = false;
-        cancelled = true;
+        cancelled = cancelledState;
         if (activeView != null) {
             activeView.animate().cancel();
-            activeView.setLayerType(originalLayerType, null);
             activeView.setScaleX(activeNormalScale);
             activeView.setScaleY(activeNormalScale);
             activeView = null;
         }
         activeEntry = null;
+    }
+
+    /**
+     * Watchdog recovery if the system failed to deliver an onPause or lifecycle event.
+     */
+    public void onLaunchTimeout() {
+        clearActiveView(true);
+    }
+
+    /**
+     * Clears the launch lock only if the controller is still tracking {@code expectedView}.
+     * Avoids cancelling an unrelated launch if another launch superseded it.
+     */
+    public void resetIfSameView(View expectedView) {
+        if (activeView == expectedView) {
+            reset();
+        }
     }
 
     /**
@@ -139,63 +149,27 @@ public final class AppLaunchController {
      * without pausing the host activity.
      */
     public void reset() {
-        launching = false;
-        cancelled = false;
-        if (activeView != null) {
-            activeView.animate().cancel();
-            activeView.setLayerType(originalLayerType, null);
-            activeView.setScaleX(activeNormalScale);
-            activeView.setScaleY(activeNormalScale);
-            activeView = null;
-        }
-        activeEntry = null;
+        clearActiveView(false);
     }
 
     /**
      * Called when the activity is paused (e.g. after successful startActivity or home pressed).
      */
     public void onActivityPaused() {
-        cancelled = true;
-        launching = false;
-        if (activeView != null) {
-            activeView.animate().cancel();
-            activeView.setLayerType(originalLayerType, null);
-            activeView.setScaleX(activeNormalScale);
-            activeView.setScaleY(activeNormalScale);
-            activeView = null;
-        }
-        activeEntry = null;
+        clearActiveView(true);
     }
 
     /**
      * Called when the activity is resumed.
      */
     public void onActivityResumed() {
-        cancelled = false;
-        launching = false;
-        if (activeView != null) {
-            activeView.animate().cancel();
-            activeView.setLayerType(originalLayerType, null);
-            activeView.setScaleX(activeNormalScale);
-            activeView.setScaleY(activeNormalScale);
-            activeView = null;
-        }
-        activeEntry = null;
+        clearActiveView(false);
     }
 
     /**
      * Called if startActivity threw an exception.
      */
     public void onLaunchFailed() {
-        launching = false;
-        cancelled = true;
-        if (activeView != null) {
-            activeView.animate().cancel();
-            activeView.setLayerType(originalLayerType, null);
-            activeView.setScaleX(activeNormalScale);
-            activeView.setScaleY(activeNormalScale);
-            activeView = null;
-        }
-        activeEntry = null;
+        clearActiveView(true);
     }
 }

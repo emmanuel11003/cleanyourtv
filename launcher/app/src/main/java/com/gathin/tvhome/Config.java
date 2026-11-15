@@ -510,7 +510,7 @@ final class Config {
         float animationScale = 0.5f;
         try {
             String scaleStr = res.getString(R.string.animation_scale).trim();
-            if (!scaleStr.isEmpty()) animationScale = Float.parseFloat(scaleStr);
+            if (!scaleStr.isEmpty()) animationScale = clampAnimationScale(Float.parseFloat(scaleStr), animationScale);
         } catch (Exception ignored) {}
         int skyIntensity = res.getInteger(R.integer.sky_intensity);
         int[] settingsKeycodes = res.getIntArray(R.array.settings_key_keycodes);
@@ -630,7 +630,8 @@ final class Config {
             background = color(json, "background_color", background);
             if (json.has("animation_scale")) {
                 try {
-                    animationScale = (float) json.optDouble("animation_scale", animationScale);
+                    animationScale = clampAnimationScale((float) json.optDouble("animation_scale", animationScale),
+                            animationScale);
                 } catch (Exception ignored) {}
             }
             skyIntensity = integer(json, "sky_intensity", skyIntensity, 0, 100);
@@ -705,15 +706,22 @@ final class Config {
         }
         File wallpaper = dir != null ? new File(dir, WALLPAPER_NAME) : null;
         if (wallpaper != null && !(wallpaper.isFile() && wallpaper.length() > 0)) wallpaper = null;
-        if (wallpaper == null && ctx != null) {
+        if (ctx != null) {
             File internal = new File(ctx.getFilesDir(), WALLPAPER_NAME);
-            if (internal.isFile() && internal.length() > 0) wallpaper = internal;
-        } else if (wallpaper != null && ctx != null) {
-            File internal = new File(ctx.getFilesDir(), WALLPAPER_NAME);
-            if (!internal.equals(wallpaper) && (!internal.exists() || internal.length() != wallpaper.length())) {
-                try {
-                    java.nio.file.Files.copy(wallpaper.toPath(), internal.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
-                } catch (Exception ignored) {}
+            if (wallpaper != null) {
+                if (!internal.equals(wallpaper) && (!internal.exists()
+                        || internal.length() != wallpaper.length()
+                        || wallpaper.lastModified() > internal.lastModified())) {
+                    try {
+                        java.nio.file.Files.copy(wallpaper.toPath(), internal.toPath(),
+                                java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+                    } catch (Exception ignored) {}
+                }
+            } else if (!mounted) {
+                if (internal.isFile() && internal.length() > 0) wallpaper = internal;
+            } else if (internal.exists()) {
+                //noinspection ResultOfMethodCallIgnored
+                internal.delete();
             }
         }
         // A theme can also switch the wallpaper off while the file is still there.
@@ -800,6 +808,24 @@ final class Config {
         return races;
     }
 
+    private static final String[] ON_TV_CHOICE_KEYS = {
+            "columns", ROWS_BELOW_DOCK_KEY, "animations", "advanced_effects",
+            WALLPAPER_CHOICE_KEY, SCREENSAVER_STYLE_KEY, SCREENSAVER_BG_KEY,
+            "screensaver_enabled", "show_stats", "show_inputs_pill",
+            "show_recents_pill", "show_network_pill", DOCK_OPACITY_KEY,
+            CLOCK_FORMAT_KEY, OpenOnStart.KEY
+    };
+
+    static SharedPreferences.Editor clearOnTvChoices(SharedPreferences.Editor editor) {
+        for (String key : ON_TV_CHOICE_KEYS) editor.remove(key);
+        return editor;
+    }
+
+    static boolean hasOnTvChoices(SharedPreferences choices) {
+        for (String key : ON_TV_CHOICE_KEYS) if (choices.contains(key)) return true;
+        return false;
+    }
+
     private static void syncThemeChoices(SharedPreferences choices, File dir, File config) {
         File revision = dir == null ? null : new File(dir, THEME_REVISION_NAME);
         String token = revisionToken(revision);
@@ -809,14 +835,10 @@ final class Config {
             // Existing preferences survive an app upgrade, unless the first launch follows an
             // explicit theme push or reset by the updated tools.
             SharedPreferences.Editor editor = choices.edit();
-            if (!"absent".equals(token)) editor.remove("columns").remove("animations")
-                    .remove("advanced_effects").remove(ROWS_BELOW_DOCK_KEY).remove(WALLPAPER_CHOICE_KEY)
-                    .remove(DOCK_OPACITY_KEY).remove(CLOCK_FORMAT_KEY);
-            editor.putString(THEME_SIGNATURE_KEY, signature).commit();
+            if (!"absent".equals(token)) clearOnTvChoices(editor);
+            editor.putString(THEME_SIGNATURE_KEY, signature).apply();
         } else if (!seen.equals(signature)) {
-            choices.edit().remove("columns").remove("animations").remove("advanced_effects")
-                    .remove(ROWS_BELOW_DOCK_KEY).remove(WALLPAPER_CHOICE_KEY).remove(DOCK_OPACITY_KEY)
-                    .remove(CLOCK_FORMAT_KEY).putString(THEME_SIGNATURE_KEY, signature).commit();
+            clearOnTvChoices(choices.edit()).putString(THEME_SIGNATURE_KEY, signature).apply();
         }
     }
 
@@ -978,5 +1000,10 @@ final class Config {
             if (item instanceof String && !((String) item).trim().isEmpty()) out.add(((String) item).trim());
         }
         return out;
+    }
+
+    static float clampAnimationScale(float value, float fallback) {
+        if (!Float.isFinite(value)) return fallback;
+        return Math.max(0f, Math.min(5f, value));
     }
 }
