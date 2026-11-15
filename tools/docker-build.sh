@@ -50,7 +50,6 @@ if [ -n "${HOST_KEY_DIR:-}" ]; then
     echo "over the app already on the TV would fail with INSTALL_FAILED_UPDATE_INCOMPATIBLE (tools/docker-build.md)." >&2
     exit 1
   fi
-  KEY_ARGS=(-v "$HOST_KEY_DIR:/key")
   KEY_DIR=/key
 fi
 
@@ -70,12 +69,18 @@ case "$(uname -s)" in
   MINGW* | MSYS* | CYGWIN*)
     export MSYS_NO_PATHCONV=1
     SRC="$(cd "$ROOT" && pwd -W)"
+    if [ -n "${HOST_KEY_DIR:-}" ]; then
+      HOST_KEY_DIR="$(cd "$HOST_KEY_DIR" && pwd -W)"
+    fi
     ;;
   *)
     # The caller's uid, so the build output is not owned by root.
     USER_ARGS=(--user "$(id -u):$(id -g)")
     ;;
 esac
+if [ -n "${HOST_KEY_DIR:-}" ]; then
+  KEY_ARGS=(-v "$HOST_KEY_DIR:/key")
+fi
 # The whole repository is mounted: an add-on's gradlew may call ../../launcher/gradlew.
 docker run --rm --platform "$PLATFORM" ${USER_ARGS[@]+"${USER_ARGS[@]}"} ${KEY_ARGS[@]+"${KEY_ARGS[@]}"} \
   -v "$SRC:/repo" -v "$GRADLE_VOLUME:/gradle" -w "/repo/$PROJECT" \

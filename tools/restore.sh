@@ -63,4 +63,7 @@ export MSYS_NO_PATHCONV=1
 # it will leave alone. Without a record it warns and falls back to enabling the whole list. A refused
 # plan never reaches the TV because recovery.py prints nothing until the whole plan is built, so
 # tv.py reads an empty batch; pipefail only makes this script exit non-zero afterwards.
-"$PY" -I tools/recovery.py --commands "$LIST" "$STOCK" | "$PY" -I tools/tv.py --batch
+CMDS="$("$PY" -I tools/recovery.py --commands "$LIST" "$STOCK")" || exit $?
+if [ -n "$CMDS" ]; then
+  printf '%s\n' "$CMDS" | "$PY" -I tools/tv.py --batch
+fi

@@ -37,7 +37,7 @@ NOTES = "docs/devices"
 
 # Not documentation: the checkout's git data, the tools venv CI builds before this job runs
 # (site-packages ships its own .md files), Gradle's output and a theme's node_modules.
-SKIP = {".git", "venv", "node_modules", "build", ".gradle", "__pycache__"}
+SKIP = {".git", "venv", "node_modules", "build", ".gradle", "__pycache__", "cleanyourtv-app"}
 
 MARKDOWN_LINK = re.compile(r"\]\(([^)\s]+)(?:\s+\"[^\"]*\")?\)")
 REFERENCE_DEF = re.compile(r"^\[[^\]]+\]:\s*(\S+)", re.M)

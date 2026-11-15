@@ -40,6 +40,10 @@ def q(path):
     return "'" + path + "'"
 
 
+class _ConnectionLost(Exception):
+    """Sentinel raised after tv.lost_connection() has printed its diagnostic."""
+
+
 def main():
     args = sys.argv[1:]
     if len(args) != 2:
@@ -125,65 +129,89 @@ def main():
                          "Nothing was sent to the TV.\n")
         dev.close()
         return 2
+    transport_failed = False
+
+    def shell(command, end_progress=False, **kwargs):
+        nonlocal transport_failed
+        try:
+            return dev.shell(command, **kwargs)
+        except Exception as error:
+            lost = getattr(tv, "lost_connection", None)
+            why = lost(error, command) if callable(lost) else None
+            if why is None:
+                raise
+            transport_failed = True
+            if end_progress:
+                print(flush=True)
+            print(why, file=sys.stderr)
+            raise _ConnectionLost from error
+
     try:
-        # Only our own temporary names are cleared; the target stays until the copy is verified.
-        # `: >` creates the base64 file even for an empty upload, so `base64 -d` has an input.
-        dev.shell(f"rm -f {q(b64)} {q(part)} && : > {q(b64)}")
-        n = (len(data) + chunk - 1) // chunk
-        for i in range(n):
-            piece = base64.b64encode(data[i * chunk:(i + 1) * chunk]).decode()
-            out = dev.shell(f"echo '{piece}' >> {q(b64)} && echo ok{i}", read_timeout_s=60.0)
-            if f"ok{i}" not in out:
-                if i:
-                    print(flush=True)   # end the progress line, so the reason starts a line of its own
-                print(f"chunk {i} failed: {out.strip() or 'no output'}", file=sys.stderr)
-                dev.shell(f"rm -f {q(b64)} {q(part)}")
+        try:
+            # Only our own temporary names are cleared; the target stays until the copy is verified.
+            # `: >` creates the base64 file even for an empty upload, so `base64 -d` has an input.
+            shell(f"rm -f {q(b64)} {q(part)} && : > {q(b64)}")
+            n = (len(data) + chunk - 1) // chunk
+            for i in range(n):
+                piece = base64.b64encode(data[i * chunk:(i + 1) * chunk]).decode()
+                out = shell(f"echo '{piece}' >> {q(b64)} && echo ok{i}",
+                            end_progress=bool(i), read_timeout_s=60.0)
+                if f"ok{i}" not in out:
+                    if i:
+                        print(flush=True)   # end the progress line, so the reason starts a line of its own
+                    print(f"chunk {i} failed: {out.strip() or 'no output'}", file=sys.stderr)
+                    shell(f"rm -f {q(b64)} {q(part)}")
+                    print(f"{remote} was left as it was.", file=sys.stderr)
+                    return 1
+                print(f"\rchunk {i + 1}/{n}", end="", flush=True)
+            if n:
+                print(flush=True)
+            out = shell(f"base64 -d < {q(b64)} > {q(part)} && md5sum {q(part)}; rm -f {q(b64)}",
+                        read_timeout_s=120.0)
+            got = out.split()[0] if out.strip() else ""
+            ok = got == want
+            # A match stays on stdout, where the photo and news screensaver scripts look for "md5".
+            print("md5 remote:", got, "local:", want, "MATCH" if ok else "MISMATCH",
+                  file=sys.stdout if ok else sys.stderr)
+            if not ok:
+                shell(f"rm -f {q(part)}")
                 print(f"{remote} was left as it was.", file=sys.stderr)
                 return 1
-            print(f"\rchunk {i + 1}/{n}", end="", flush=True)
-        if n:
-            print(flush=True)
-        out = dev.shell(f"base64 -d < {q(b64)} > {q(part)} && md5sum {q(part)}; rm -f {q(b64)}",
-                        read_timeout_s=120.0)
-        got = out.split()[0] if out.strip() else ""
-        ok = got == want
-        # A match stays on stdout, where the photo and news screensaver scripts look for "md5".
-        print("md5 remote:", got, "local:", want, "MATCH" if ok else "MISMATCH",
-              file=sys.stdout if ok else sys.stderr)
-        if not ok:
-            dev.shell(f"rm -f {q(part)}")
-            print(f"{remote} was left as it was.", file=sys.stderr)
+            out = shell(f"mv -f {q(part)} {q(remote)} && echo moved", read_timeout_s=60.0)
+            if "moved" not in out:
+                # SELinux on a TCL ak30a5 (20250610) refuses rename(2) in /data/local/tmp while cp works
+                # there (#1588). Copy the verified file over the target instead and check that copy too.
+                # Unlike the move it is not atomic: a copy that stops part-way can leave the target
+                # incomplete.
+                refused = out.strip()
+                try:
+                    out = shell(f"cp -f {q(part)} {q(remote)} && md5sum {q(remote)}", read_timeout_s=120.0)
+                except BaseException as error:
+                    # A connection that drops, a read that times out or Ctrl-C while cp is writing can
+                    # leave the target cut short. Say so, then return 1 for a reported drop or re-raise.
+                    print(f"could not move the verified copy over {remote}: {refused}", file=sys.stderr)
+                    print(f"copying it over instead was interrupted. {remote} may be incomplete.",
+                          file=sys.stderr)
+                    if isinstance(error, _ConnectionLost):
+                        return 1
+                    raise
+                got = out.split()[0] if out.strip() else ""
+                if got != want:
+                    shell(f"rm -f {q(part)}")
+                    print(f"could not move the verified copy over {remote}: {refused}", file=sys.stderr)
+                    print(f"copying it over instead did not give a copy with md5 {want}: {out.strip()}. "
+                          f"{remote} may be incomplete.", file=sys.stderr)
+                    return 1
+                print(f"the move was refused ({refused}), so the file was copied: md5 {got} MATCH")
+            return 0
+        except _ConnectionLost:
             return 1
-        out = dev.shell(f"mv -f {q(part)} {q(remote)} && echo moved", read_timeout_s=60.0)
-        if "moved" not in out:
-            # SELinux on a TCL ak30a5 (20250610) refuses rename(2) in /data/local/tmp while cp works
-            # there (#1588). Copy the verified file over the target instead and check that copy too.
-            # Unlike the move it is not atomic: a copy that stops part-way can leave the target
-            # incomplete.
-            refused = out.strip()
-            try:
-                out = dev.shell(f"cp -f {q(part)} {q(remote)} && md5sum {q(remote)}", read_timeout_s=120.0)
-            except BaseException:
-                # A connection that drops, a read that times out or Ctrl-C while cp is writing can
-                # leave the target cut short. Say so, then let the transport error through.
-                print(f"could not move the verified copy over {remote}: {refused}", file=sys.stderr)
-                print(f"copying it over instead was interrupted. {remote} may be incomplete.",
-                      file=sys.stderr)
-                raise
-            got = out.split()[0] if out.strip() else ""
-            if got != want:
-                dev.shell(f"rm -f {q(part)}")
-                print(f"could not move the verified copy over {remote}: {refused}", file=sys.stderr)
-                print(f"copying it over instead did not give a copy with md5 {want}: {out.strip()}. "
-                      f"{remote} may be incomplete.", file=sys.stderr)
-                return 1
-            print(f"the move was refused ({refused}), so the file was copied: md5 {got} MATCH")
-        return 0
     finally:
-        # Exceptions (including interrupted transfers) must also clear staging. A disconnected TV
-        # may refuse cleanup; report that without hiding the original failure or deleting the target.
+        # Exceptions (including interrupted transfers) must also clear staging unless the transport
+        # already dropped, where another remote shell command would fail or block unnecessarily.
         try:
-            dev.shell(f"rm -f {q(b64)} {q(part)}")
+            if not transport_failed:
+                dev.shell(f"rm -f {q(b64)} {q(part)}")
         except Exception as error:
             print(f"could not remove temporary upload files: {error}", file=sys.stderr)
         finally:

@@ -26,7 +26,7 @@ EXTENSION = re.compile(r"\.(md|py|sh|ps1|yml|yaml|gradle|xml|json|txt|jpg|png|ja
 TEMPLATE = re.compile(r"[<>*{}$=%]")
 LINK = re.compile(r"\]\(([^)\s]+)\)")
 CODE = re.compile(r"(`+)(.+?)\1")
-SKIP_DIRS = {".git", "venv", "build", ".gradle", "__pycache__"}
+SKIP_DIRS = {".git", "venv", "build", ".gradle", "__pycache__", "cleanyourtv-app"}
 WRITTEN = {"result.json"}  # files a tool writes on a contributor's machine (tools/bench.py), not in a clone
 
 

@@ -96,8 +96,8 @@ The refactoring is structured into **4 sequential, risk-prioritized phases**. Ea
 #### 1.1 `HeroArtCache` (Bitmap Cache & Memory Management)
 - **Goal**: Prevent out-of-memory errors on 1 GB RAM TVs by replacing unbounded HashMap with bounded LRU eviction.
 - **Current Lines in `MainActivity.java`**:
-  - Field: `Map<String, Bitmap> heroArtCache` ([L175](file:///D:/emmanuel/new%20tv%20app/launcher/app/src/main/java/com/gathin/tvhome/MainActivity.java#L175))
-  - Logic: `heroArtCache` lookup, insertion, and memory trimming ([L2062–L2139](file:///D:/emmanuel/new%20tv%20app/launcher/app/src/main/java/com/gathin/tvhome/MainActivity.java#L2062-L2139), [L1393–L1405](file:///D:/emmanuel/new%20tv%20app/launcher/app/src/main/java/com/gathin/tvhome/MainActivity.java#L1393-L1405))
+  - Field: `Map<String, Bitmap> heroArtCache` ([MainActivity.java](launcher/app/src/main/java/com/gathin/tvhome/MainActivity.java) `L175`)
+  - Logic: `heroArtCache` lookup, insertion, and memory trimming ([MainActivity.java](launcher/app/src/main/java/com/gathin/tvhome/MainActivity.java) `L2062–L2139`, `L1393–L1405`)
 - **Proposed Extraction**:
   - Create package-private `HeroArtCache.java` with maximum 6–8 bitmap slots (approx. 40 KB total) and an explicit `evictAll()` on `onTrimMemory`.
 - **Affected Files**:
@@ -114,8 +114,8 @@ The refactoring is structured into **4 sequential, risk-prioritized phases**. Ea
 #### 1.2 `TvInputController` (TV Tuner Inputs & HDMI Sources)
 - **Goal**: Extract 480 LOC of `TvInputManager` callbacks, vendor source panel adapters (Coocaa), and input switcher popups.
 - **Current Lines in `MainActivity.java`**:
-  - Callback: `TvInputManager.TvInputCallback inputCallback` ([L393–L403](file:///D:/emmanuel/new%20tv%20app/launcher/app/src/main/java/com/gathin/tvhome/MainActivity.java#L393-L403))
-  - Source handling: `updateInputsButton()`, `openLiveTvAfterBoot()`, `openInput()`, `showInputs()`, `addInputRow()` ([L3248–L3720](file:///D:/emmanuel/new%20tv%20app/launcher/app/src/main/java/com/gathin/tvhome/MainActivity.java#L3248-L3720))
+  - Callback: `TvInputManager.TvInputCallback inputCallback` ([MainActivity.java](launcher/app/src/main/java/com/gathin/tvhome/MainActivity.java) `L393–L403`)
+  - Source handling: `updateInputsButton()`, `openLiveTvAfterBoot()`, `openInput()`, `showInputs()`, `addInputRow()` ([MainActivity.java](launcher/app/src/main/java/com/gathin/tvhome/MainActivity.java) `L3248–L3720`)
 - **Proposed Extraction**:
   - `TvInputController.java`: Manages `TvInputManager` registration, input list query, CEC label filtering, and input popup display.
   - Interface: `TvInputController.Listener` to inform `MainActivity` when an input is selected or Live TV launches.
@@ -135,8 +135,8 @@ The refactoring is structured into **4 sequential, risk-prioritized phases**. Ea
 #### 1.3 `NetworkStatusMonitor` (Connectivity, Wi-Fi & VPN)
 - **Goal**: Isolate network capability callbacks, signal level icon resolution, VPN badge styling, and delayed boot app launch.
 - **Current Lines in `MainActivity.java`**:
-  - Callbacks: `networkCallback` ([L368–L391](file:///D:/emmanuel/new%20tv%20app/launcher/app/src/main/java/com/gathin/tvhome/MainActivity.java#L368-L391)), `vpnCallback` ([L405–L415](file:///D:/emmanuel/new%20tv%20app/launcher/app/src/main/java/com/gathin/tvhome/MainActivity.java#L405-L415))
-  - Update logic: `updateWifiLabel()`, `updateVpnPill()`, `openWhenOnline` ([L2968–L3086](file:///D:/emmanuel/new%20tv%20app/launcher/app/src/main/java/com/gathin/tvhome/MainActivity.java#L2968-L3086), [L3178–L3240](file:///D:/emmanuel/new%20tv%20app/launcher/app/src/main/java/com/gathin/tvhome/MainActivity.java#L3178-L3240))
+  - Callbacks: `networkCallback` ([MainActivity.java](launcher/app/src/main/java/com/gathin/tvhome/MainActivity.java) `L368–L391`), `vpnCallback` ([MainActivity.java](launcher/app/src/main/java/com/gathin/tvhome/MainActivity.java) `L405–L415`)
+  - Update logic: `updateWifiLabel()`, `updateVpnPill()`, `openWhenOnline` ([MainActivity.java](launcher/app/src/main/java/com/gathin/tvhome/MainActivity.java) `L2968–L3086`, `L3178–L3240`)
 - **Proposed Extraction**:
   - `NetworkStatusMonitor.java`: Registers network request listeners with `ConnectivityManager`. Exposes state to `MainActivity` via `onNetworkStateChanged(NetworkState state)`.
 - **Affected Files**:
@@ -156,8 +156,8 @@ The refactoring is structured into **4 sequential, risk-prioritized phases**. Ea
 #### 2.1 `TopBarWidgetCoordinator` (Clocks, Lunisolar, Shamsi, Race & GameDay)
 - **Goal**: Decouple peripheral informational widgets from core launcher layout and activity lifecycle.
 - **Current Lines in `MainActivity.java`**:
-  - Minute timer: `minuteTick` ([L444–L455](file:///D:/emmanuel/new%20tv%20app/launcher/app/src/main/java/com/gathin/tvhome/MainActivity.java#L444-L455))
-  - Logic: `updateGreeting()`, `updatePanel()`, `updateRace()`, `showPager()`, `readFirstLine("/proc/meminfo")`, `formatGb()` ([L2754–L2945](file:///D:/emmanuel/new%20tv%20app/launcher/app/src/main/java/com/gathin/tvhome/MainActivity.java#L2754-L2945), [L2454–L2470](file:///D:/emmanuel/new%20tv%20app/launcher/app/src/main/java/com/gathin/tvhome/MainActivity.java#L2454-L2470))
+  - Minute timer: `minuteTick` ([MainActivity.java](launcher/app/src/main/java/com/gathin/tvhome/MainActivity.java) `L444–L455`)
+  - Logic: `updateGreeting()`, `updatePanel()`, `updateRace()`, `showPager()`, `readFirstLine("/proc/meminfo")`, `formatGb()` ([MainActivity.java](launcher/app/src/main/java/com/gathin/tvhome/MainActivity.java) `L2754–L2945`, `L2454–L2470`)
 - **Proposed Extraction**:
   - `TopBarWidgetCoordinator.java`: Holds references to the top-bar text views (`greeting`, `stats`, `shamsiDate`, `lunarDate`, `racePanel`). Manages ticker timing and updates widgets on minute broadcast.
 - **Affected Files**:
@@ -174,10 +174,10 @@ The refactoring is structured into **4 sequential, risk-prioritized phases**. Ea
 #### 2.2 `ModuleCardPromptManager` (Module Cards & Approval Dialogs)
 - **Goal**: Separate card discovery prompt dialogs and popup menu generation from Home's main activity.
 - **Current Lines in `MainActivity.java`**:
-  - Fields: `cards`, `cardPrompt`, `promptsPaused` ([L314–L320](file:///D:/emmanuel/new%20tv%20app/launcher/app/src/main/java/com/gathin/tvhome/MainActivity.java#L314-L320))
-  - Dialog & popups: `showCardPrompt()`, `showCardPromptNow()`, `decideCard()`, `showModuleCards()`, `showModuleCardsNow()` ([L3958–L4140](file:///D:/emmanuel/new%20tv%20app/launcher/app/src/main/java/com/gathin/tvhome/MainActivity.java#L3958-L4140))
+  - Fields: `cards`, `cardPrompt`, `promptsPaused` ([MainActivity.java](launcher/app/src/main/java/com/gathin/tvhome/MainActivity.java) `L314–L320`)
+  - Dialog & popups: `showCardPrompt()`, `showCardPromptNow()`, `decideCard()`, `showModuleCards()`, `showModuleCardsNow()` ([MainActivity.java](launcher/app/src/main/java/com/gathin/tvhome/MainActivity.java) `L3958–L4140`)
 - **Proposed Extraction**:
-  - `ModuleCardPromptManager.java`: Coordinates [`Cards.java`](file:///D:/emmanuel/new%20tv%20app/launcher/app/src/main/java/com/gathin/tvhome/Cards.java), builds `cardPrompt` Dialog, and renders module card popup menus.
+  - `ModuleCardPromptManager.java`: Coordinates [`Cards.java`](launcher/app/src/main/java/com/gathin/tvhome/Cards.java), builds `cardPrompt` Dialog, and renders module card popup menus.
 - **Affected Files**:
   - `launcher/app/src/main/java/com/gathin/tvhome/ModuleCardPromptManager.java` (New)
   - `launcher/app/src/main/java/com/gathin/tvhome/MainActivity.java`
@@ -195,8 +195,8 @@ The refactoring is structured into **4 sequential, risk-prioritized phases**. Ea
 #### 3.1 `DockReorderManager` (Reordering & Edit-Dock State Machine)
 - **Goal**: Extract 320 LOC of complex state machine governing tile reordering, pick-up/drop animations, and dock slot substitution.
 - **Current Lines in `MainActivity.java`**:
-  - Fields: `reordering`, `movingKey`, `orderAtStart`, `dockInSession`, `dockEditing`, `dockEditSlot` ([L337–L359](file:///D:/emmanuel/new%20tv%20app/launcher/app/src/main/java/com/gathin/tvhome/MainActivity.java#L337-L359))
-  - Logic: `toggleReorder()`, `beginReorder()`, `startDockEdit()`, `dispatchDockEdit()`, `swapIntoDock()`, `pickUp()`, `drop()`, `dimOthers()`, `endReorder()` ([L1544–L1790](file:///D:/emmanuel/new%20tv%20app/launcher/app/src/main/java/com/gathin/tvhome/MainActivity.java#L1544-L1790))
+  - Fields: `reordering`, `movingKey`, `orderAtStart`, `dockInSession`, `dockEditing`, `dockEditSlot` ([MainActivity.java](launcher/app/src/main/java/com/gathin/tvhome/MainActivity.java) `L337–L359`)
+  - Logic: `toggleReorder()`, `beginReorder()`, `startDockEdit()`, `dispatchDockEdit()`, `swapIntoDock()`, `pickUp()`, `drop()`, `dimOthers()`, `endReorder()` ([MainActivity.java](launcher/app/src/main/java/com/gathin/tvhome/MainActivity.java) `L1544–L1790`)
 - **Proposed Extraction**:
   - `DockReorderManager.java`: Owns the reordering state machine. Intercepts D-pad events during reordering and mutates the item list through `AppAdapter`.
 - **Affected Files**:
@@ -216,8 +216,8 @@ The refactoring is structured into **4 sequential, risk-prioritized phases**. Ea
 #### 3.2 `FocusHighlightEngine` (Spring Physics & Glass Highlight)
 - **Goal**: Extract AndroidX dynamic animation math, coordinate translation, and scroll synchronization.
 - **Current Lines in `MainActivity.java`**:
-  - Fields: `springX`, `springY`, `glassScrollShift`, `glassScrollShiftX`, `glassCardRect`, `tileRect`, `revealRect` ([L234–L250](file:///D:/emmanuel/new%20tv%20app/launcher/app/src/main/java/com/gathin/tvhome/MainActivity.java#L234-L250))
-  - Listeners: `FloatPropertyCompat` definitions ([L794–L815](file:///D:/emmanuel/new%20tv%20app/launcher/app/src/main/java/com/gathin/tvhome/MainActivity.java#L794-L815)), `onTileFocused` ([L1845–L2060](file:///D:/emmanuel/new%20tv%20app/launcher/app/src/main/java/com/gathin/tvhome/MainActivity.java#L1845-L2060)), `ambientAnimator` ([L2140–L2250](file:///D:/emmanuel/new%20tv%20app/launcher/app/src/main/java/com/gathin/tvhome/MainActivity.java#L2140-L2250))
+  - Fields: `springX`, `springY`, `glassScrollShift`, `glassScrollShiftX`, `glassCardRect`, `tileRect`, `revealRect` ([MainActivity.java](launcher/app/src/main/java/com/gathin/tvhome/MainActivity.java) `L234–L250`)
+  - Listeners: `FloatPropertyCompat` definitions ([MainActivity.java](launcher/app/src/main/java/com/gathin/tvhome/MainActivity.java) `L794–L815`), `onTileFocused` (`L1845–L2060`), `ambientAnimator` (`L2140–L2250`)
 - **Proposed Extraction**:
   - `FocusHighlightEngine.java`: Encapsulates `SpringAnimation` setup, tile target calculation (`fitToTile`), scroll compensation (`onScrolled`), and ambient glow fading.
 - **Affected Files**:
@@ -238,10 +238,10 @@ The refactoring is structured into **4 sequential, risk-prioritized phases**. Ea
 #### 4.1 `HomeStateHolder` (Static Persistence Cleanup)
 - **Goal**: Consolidate scattered static variables into a structured state holder to prevent cross-process leaks and activity resurrection glitches.
 - **Current Lines in `MainActivity.java`**:
-  - `static int lastFocused` ([L253](file:///D:/emmanuel/new%20tv%20app/launcher/app/src/main/java/com/gathin/tvhome/MainActivity.java#L253))
-  - `static String lastFocusedKey` ([L255](file:///D:/emmanuel/new%20tv%20app/launcher/app/src/main/java/com/gathin/tvhome/MainActivity.java#L255))
-  - `static LocalDate lastPetalShower` ([L280](file:///D:/emmanuel/new%20tv%20app/launcher/app/src/main/java/com/gathin/tvhome/MainActivity.java#L280))
-  - `static int COLUMNS` ([L115](file:///D:/emmanuel/new%20tv%20app/launcher/app/src/main/java/com/gathin/tvhome/MainActivity.java#L115))
+  - `static int lastFocused` ([MainActivity.java](launcher/app/src/main/java/com/gathin/tvhome/MainActivity.java) `L253`)
+  - `static String lastFocusedKey` ([MainActivity.java](launcher/app/src/main/java/com/gathin/tvhome/MainActivity.java) `L255`)
+  - `static LocalDate lastPetalShower` ([MainActivity.java](launcher/app/src/main/java/com/gathin/tvhome/MainActivity.java) `L280`)
+  - `static int COLUMNS` ([MainActivity.java](launcher/app/src/main/java/com/gathin/tvhome/MainActivity.java) `L115`)
 - **Proposed Extraction**:
   - Package-private `HomeStateHolder.java` storing persistent session state, ensuring clean reset points when themes or configurations change.
 - **Affected Files**:

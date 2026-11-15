@@ -26,6 +26,57 @@ if ($Theme -and $Reset) {
 }
 $ErrorActionPreference = 'Stop'
 $OutputEncoding = New-Object System.Text.UTF8Encoding $false
+$images = @()
+if (-not $Reset) {
+    if (-not $Theme) {
+        [Console]::Error.WriteLine('usage: theme.ps1 <theme folder> | -Reset')
+        exit 2
+    }
+    # Resolve the theme folder against the caller's directory before moving into tools\.
+    # A folder that is not there keeps the path as typed: Resolve-Path answers a missing path with its own error
+    # record and a script line number, where theme.sh stops at "no config.json in <typed path>" - a message about
+    # the folder the reader named, not about the cmdlet.
+    if (Test-Path -LiteralPath $Theme) { $Theme = (Resolve-Path -LiteralPath $Theme).Path }
+    $config = Join-Path $Theme 'config.json'
+    # The three refusals below send nothing, so they answer 2 like theme.sh's - not 1, the status of a push that
+    # ran and failed - and in this script's own words instead of a PowerShell error record with a script line.
+    if (-not (Test-Path -LiteralPath $config -PathType Leaf)) {
+        [Console]::Error.WriteLine("no config.json in $Theme. Nothing was sent to the TV.")
+        exit 2
+    }
+    try { $themeJson = Get-Content -LiteralPath $config -Encoding UTF8 -Raw | ConvertFrom-Json }
+    catch {
+        [Console]::Error.WriteLine("$config is not valid JSON, so there is no theme to push (themes/README.md says what the file holds). Nothing was sent to the TV.")
+        exit 2
+    }
+    # Config.read() answers "no overlay" for anything that is not a JSON object, so an array, a number or a
+    # string is a theme the launcher drops - and it replaces the theme the set had with the built-in config.
+    # Judged here, before anything is pushed, so "is on the TV" cannot mean the opposite.
+    if ($themeJson -isnot [System.Management.Automation.PSCustomObject]) {
+        [Console]::Error.WriteLine("$config is not a JSON object of theme keys, so the launcher would ignore it and the TV would go back to its built-in config (themes/README.md). Nothing was sent to the TV.")
+        exit 2
+    }
+    # Every collection name is checked before anything changes on the TV, as in theme.sh: a name refused halfway
+    # through the push left the new config.json and part of the collection behind. b64push.py refuses '..' in a path.
+    $wallpapers = Join-Path $Theme 'wallpapers'
+    if (Test-Path -LiteralPath $wallpapers -PathType Container) {
+        $images = @(Get-ChildItem -LiteralPath $wallpapers -File | Where-Object { $_.Extension -match '^\.(jpg|jpeg|png|webp)$' })
+        foreach ($image in $images) {
+            if ($image.Name -notmatch '^[A-Za-z0-9_.-]+$' -or $image.Name.Contains('..')) {
+                [Console]::Error.WriteLine("unsupported wallpaper filename: $($image.Name) (b64push.py takes letters, digits, '.', '_' and '-', with no '..' in the name). Nothing was sent to the TV.")
+                exit 2
+            }
+        }
+    }
+}
+Set-Location $PSScriptRoot
+$py = 'venv\Scripts\python.exe'
+if (-not (Test-Path -LiteralPath $py)) {
+    # As in theme.sh: the venv is on this computer, so nothing was sent and this is a run that stopped before the
+    # theme was up, not a push that ran and failed.
+    [Console]::Error.WriteLine('run: python -m venv tools\venv; tools\venv\Scripts\python.exe -m pip install -r tools\requirements.txt. Nothing was sent to the TV.')
+    exit 2
+}
 if (-not $TvHost) {
     # The same status theme.sh answers, for the same reason: a missing address is a run that never started, not
     # a theme that could not be pushed, and 1 is what the header keeps for the push that ran and failed.
@@ -33,25 +84,16 @@ if (-not $TvHost) {
     exit 2
 }
 $env:TV_HOST = $TvHost
-# Resolve the theme folder against the caller's directory before moving into tools\.
-# A folder that is not there keeps the path as typed: Resolve-Path answers a missing path with its own error
-# record and a script line number, where theme.sh stops at "no config.json in <typed path>" - a message about
-# the folder the reader named, not about the cmdlet.
-if ($Theme -and (Test-Path -LiteralPath $Theme)) { $Theme = (Resolve-Path -LiteralPath $Theme).Path }
-Set-Location $PSScriptRoot
-$py = 'venv\Scripts\python.exe'
-if (-not (Test-Path $py)) {
-    # As in theme.sh: the venv is on this computer, so nothing was sent and this is a run that stopped before the
-    # theme was up, not a push that ran and failed.
-    [Console]::Error.WriteLine('run: python -m venv tools\venv; tools\venv\Scripts\python.exe -m pip install -r tools\requirements.txt. Nothing was sent to the TV.')
-    exit 2
-}
 $pkg = 'com.gathin.tvhome'
-# Runs tools\tv.py or b64push.py and stops on a non-zero exit: 'Stop' only covers cmdlets, so a failed
-# native call would otherwise fall through to "Theme ... is on the TV".
+# Runs tools\tv.py or b64push.py and preserves its non-zero exit (such as 2 when the TV cannot be reached).
 function Invoke-Tv {
     $out = & $py -I @args
-    if ($LASTEXITCODE -ne 0) { throw "$($args[0]) $($args[1]) failed (exit code $LASTEXITCODE); the theme was not fully applied" }
+    if ($LASTEXITCODE -ne 0) {
+        $code = $LASTEXITCODE
+        $step = if ($args.Count -gt 1 -and "$($args[1])" -like '--*') { "$($args[0]) $($args[1])" } else { "$($args[0])" }
+        [Console]::Error.WriteLine("$step failed (exit code $code); the theme was not fully applied")
+        exit $code
+    }
     $out
 }
 $dir = "/sdcard/Android/data/$pkg/files"
@@ -91,46 +133,13 @@ if ($Reset) {
     Write-Host 'reset'
     exit 0
 }
-if (-not $Theme) { [Console]::Error.WriteLine('usage: theme.ps1 <theme folder> | -Reset'); exit 2 }
-$config = Join-Path $Theme 'config.json'
-# The three refusals below send nothing, so they answer 2 like theme.sh's - not 1, the status of a push that
-# ran and failed - and in this script's own words instead of a PowerShell error record with a script line.
-if (-not (Test-Path -LiteralPath $config)) {
-    [Console]::Error.WriteLine("no config.json in $Theme. Nothing was sent to the TV.")
-    exit 2
-}
-try { $themeJson = Get-Content $config -Raw | ConvertFrom-Json }
-catch {
-    [Console]::Error.WriteLine("$config is not valid JSON, so there is no theme to push (themes/README.md says what the file holds). Nothing was sent to the TV.")
-    exit 2
-}
-# Config.read() answers "no overlay" for anything that is not a JSON object, so an array, a number or a
-# string is a theme the launcher drops - and it replaces the theme the set had with the built-in config.
-# Judged here, before anything is pushed, so "is on the TV" cannot mean the opposite.
-if ($themeJson -isnot [System.Management.Automation.PSCustomObject]) {
-    [Console]::Error.WriteLine("$config is not a JSON object of theme keys, so the launcher would ignore it and the TV would go back to its built-in config (themes/README.md). Nothing was sent to the TV.")
-    exit 2
-}
-# Every collection name is checked before anything changes on the TV, as in theme.sh: a name refused halfway
-# through the push left the new config.json and part of the collection behind. b64push.py refuses '..' in a path.
-$wallpapers = Join-Path $Theme 'wallpapers'
-$images = @()
-if (Test-Path $wallpapers -PathType Container) {
-    $images = @(Get-ChildItem $wallpapers -File | Where-Object { $_.Extension -match '^\.(jpg|jpeg|png|webp)$' })
-    foreach ($image in $images) {
-        if ($image.Name -notmatch '^[A-Za-z0-9_.-]+$' -or $image.Name.Contains('..')) {
-            [Console]::Error.WriteLine("unsupported wallpaper filename: $($image.Name) (b64push.py takes letters, digits, '.', '_' and '-', with no '..' in the name). Nothing was sent to the TV.")
-            exit 2
-        }
-    }
-}
 
 # Tolerated, as in theme.sh: a TV that locks Android/data still takes the files through ThemeProvider.
 Invoke-Tv tv.py "mkdir -p $dir 2>/dev/null; true" | Out-Null
 Invoke-Tv tv.py --push $config "$tmp-config.json" | Out-Null
 Invoke-Tv tv.py (Put 'config.json')
 $wall = Join-Path $Theme 'wallpaper.jpg'
-if (Test-Path $wall) { Invoke-Tv b64push.py $wall "$tmp-wallpaper.jpg"; Invoke-Tv tv.py (Put 'wallpaper.jpg') } else { Invoke-Tv tv.py (Drop 'wallpaper.jpg') | Out-Null }
+if (Test-Path -LiteralPath $wall) { Invoke-Tv b64push.py $wall "$tmp-wallpaper.jpg"; Invoke-Tv tv.py (Put 'wallpaper.jpg') } else { Invoke-Tv tv.py (Drop 'wallpaper.jpg') | Out-Null }
 Invoke-Tv tv.py $clearWallpapers | Out-Null
 foreach ($image in $images) {
     Invoke-Tv b64push.py $image.FullName (Stage "wallpapers/$($image.Name)")
@@ -138,7 +147,7 @@ foreach ($image in $images) {
 }
 # The collection's names (wallpaper_captions); a theme without them leaves no stale names behind.
 $captions = Join-Path $Theme 'wallpapers\captions.txt'
-if (Test-Path $captions -PathType Leaf) {
+if (Test-Path -LiteralPath $captions -PathType Leaf) {
     Invoke-Tv b64push.py $captions (Stage 'wallpapers/captions.txt')
     Invoke-Tv tv.py (Put 'wallpapers/captions.txt') | Out-Null
 } else {

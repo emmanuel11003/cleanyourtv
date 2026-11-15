@@ -29,7 +29,7 @@ if ($env:HOST_KEY_DIR) {
     # As in the shell twin: docker bind-mounts an absolute path that is there, and nothing else - a relative one
     # it reads as a volume name, and a missing one it creates empty - so /key would hold no key and the build
     # would make a new one. See "The signing key" in tools/docker-build.md.
-    if (-not [System.IO.Path]::IsPathRooted($env:HOST_KEY_DIR)) {
+    if (-not [System.IO.Path]::IsPathRooted($env:HOST_KEY_DIR) -or $env:HOST_KEY_DIR -notmatch '^([A-Za-z]:[\\/]|\\\\)') {
         throw "HOST_KEY_DIR=$($env:HOST_KEY_DIR) is not an absolute path: Docker reads a relative one as a volume name, and the build would make a new debug key. Pass the folder your native build uses, usually the .android folder in your home directory ('~/.android' in quotes is not expanded)."
     }
     if (-not (Test-Path -LiteralPath $env:HOST_KEY_DIR -PathType Container)) {

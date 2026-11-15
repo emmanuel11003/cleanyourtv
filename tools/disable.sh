@@ -8,8 +8,9 @@ LIST="${1:?usage: disable.sh <debloat list>}"
 # Resolve the list against the caller's directory before moving into the repo. Git Bash's pwd says
 # /c/Users/..., which the Windows Python cannot open with MSYS_NO_PATHCONV=1 set; pwd -W gives
 # C:/Users/..., the same path (and so the same record) as the PowerShell scripts.
-LIST_DIR="$(cd "$(dirname "$LIST")" && { pwd -W 2>/dev/null || pwd; })"
-LIST="$LIST_DIR/$(basename "$LIST")"
+if LIST_DIR="$(cd "$(dirname "$LIST")" 2>/dev/null && { pwd -W 2>/dev/null || pwd; })"; then
+  LIST="$LIST_DIR/$(basename "$LIST")"
+fi
 cd "$(dirname "$0")/.."
 # The safety overrides are read from the environment. `FORCE_HOME=1 tools/disable.sh ...` lasts one
 # command, but an exported value stays set for the shell and reaches child processes (check.py --fix).
@@ -38,7 +39,7 @@ export MSYS_NO_PATHCONV=1
 # so a list whose entries are all commented out (what CONTRIBUTING asks for while one is untested)
 # read exactly like a run that died halfway.
 PKGS=$(LC_ALL=C awk 'NR==1{sub(/^\357\273\277/,"")} {sub(/\r$/,""); print}' "$LIST" \
-  | grep -vE '^\s*(#|$)' | sed -E 's/[[:space:]]+#.*$//' | awk '{print $1}' || true)
+  | grep -vE '^\s*(#|$)' | sed -E 's/#.*$//' | awk '{print $1}' || true)
 BAD=$(printf '%s\n' "$PKGS" | grep -vE '^[A-Za-z_][A-Za-z0-9_]*(\.[A-Za-z0-9_]+)+$' || true)
 if [ -n "$BAD" ]; then
   { echo "refusing $LIST: not a package name:"; printf '%s\n' "$BAD" | sed 's/^/  /'; } >&2

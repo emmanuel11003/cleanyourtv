@@ -46,7 +46,7 @@ USAGE = ("usage: check.py <debloat list> [launcher package]        report the dr
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import recovery  # noqa: E402  (needs the tools/ directory on the path first)
 
-# Same three special cases as disable.sh: these answer HOME but they are not launchers, so Home
+# Same four special cases as disable.sh: these answer HOME but they are not launchers, so Home
 # landing on one of them is the crash loop the Home guard exists to prevent, not a working Home.
 NOT_LAUNCHERS = {"com.google.android.tungsten.setupwraith", "com.android.tv.settings",
                  "com.android.settings", "com.android.provision"}
@@ -259,7 +259,7 @@ def safety_checks(dev, names):
                                       "it)"))
     if not os.environ.get("HANDLERS_ALLOW") and any(n not in {k for k, _ in skipped} for n in names):
         inputs, settings = handler_apps(dev)
-        if not settings and not inputs:
+        if not settings:
             # A working query always has some app answering android.settings.SETTINGS; an empty
             # answer means the firmware has no `cmd`, and the guard below would pass in silence.
             print("  could not check which listed packages open the TV's inputs and Settings: the "

@@ -168,7 +168,7 @@ if [ -d "$THEME/wallpapers" ]; then
   done
 fi
 
-tv "mkdir -p $DIR" >/dev/null 2>&1 || true
+tv "mkdir -p $DIR 2>/dev/null; true" >/dev/null
 tv --push "$THEME/config.json" "$TMP-config.json" >/dev/null
 tv "$(put config.json)"
 if [ -f "$THEME/wallpaper.jpg" ]; then

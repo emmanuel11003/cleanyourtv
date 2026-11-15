@@ -62,7 +62,7 @@ def unknown(text, flags):
 
 def pages():
     found = [path for path in ROOT.rglob("*.md")
-             if ".git" not in path.parts and "venv" not in path.parts]
+             if ".git" not in path.parts and "venv" not in path.parts and "cleanyourtv-app" not in path.parts]
     return sorted(found)
 
 

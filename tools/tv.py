@@ -126,6 +126,25 @@ for _stream in (sys.stdout, sys.stderr):
     except (AttributeError, ValueError):
         pass
 
+_adb_device = sys.modules.get("adb_shell.adb_device")
+if _adb_device and hasattr(_adb_device, "get_files_to_push"):
+    _orig_get_files_to_push = _adb_device.get_files_to_push
+
+    def _get_files_to_push(local_path, device_path):
+        is_dir, local_paths, device_paths = _orig_get_files_to_push(local_path, device_path)
+        if not is_dir:
+            return is_dir, local_paths, device_paths
+        prefix = "" if device_path == "/" else device_path.rstrip("/")
+        # adb_shell 0.4.4 returns bare os.listdir() names without joining local_path.
+        pairs = []
+        for entry in local_paths:
+            full = entry if os.path.dirname(entry) else os.path.join(local_path, entry)
+            if not os.path.isdir(full):
+                pairs.append((full, f"{prefix}/{os.path.basename(full)}"))
+        return True, [p[0] for p in pairs], [p[1] for p in pairs]
+
+    _adb_device.get_files_to_push = _get_files_to_push
+
 def split_host_port(endpoint):
     """Split host:port or [ipv6]:port into (host, port_or_none)."""
     if endpoint.startswith("["):
@@ -412,6 +431,22 @@ def lost_connection(e, command, position=None):
             f"packages a debloat batch disabled). See docs/TROUBLESHOOTING.md#connecting.")
 
 
+class _ConnectionLost(Exception):
+    """Sentinel raised after lost_connection() has printed its diagnostic."""
+
+
+def _shell_or_report(dev, command, position=None, **kwargs):
+    """Run a shell command on `dev`, translating transport drops via lost_connection()."""
+    try:
+        return dev.shell(command, **kwargs)
+    except Exception as e:
+        why = lost_connection(e, command, position)
+        if why is None:
+            raise
+        print(why, file=sys.stderr)
+        raise _ConnectionLost from e
+
+
 # screencap writes the PNG on the TV and we pull the file afterwards: adb_shell's shell() decodes
 # what comes back as text, which corrupts an image, and `exec-out screencap -p` returns a broken
 # PNG on some MediaTek sets (docs/TROUBLESHOOTING.md). /data/local/tmp is writable from shell.
@@ -524,21 +559,20 @@ def screenshot_target(local):
     if not local.strip():
         usage_error(f"--screenshot's file is blank ({local!r}): name the file to save to, such as "
                     f"shots/01-home.png")
-    if os.path.isdir(local):
-        path_error(f"{local} is a folder, and --screenshot saves the PNG to a file: give a file name, such "
-                   f"as {os.path.join(local, '01-home.png')}. Nothing was captured.")
-    if local.endswith(("/", os.sep)):
-        path_error(f"{local} ends with a separator, so it names a folder, and --screenshot saves the PNG "
-                   f"to a file: give a file name such as {os.path.join(local, '01-home.png')}. "
-                   f"Nothing was captured.")
     if os.path.basename(local) in (".", ".."):
         # `--screenshot newshots/.` names that folder itself (and `newshots/..` its parent), and the folder
-        # is not there yet: os.path.isdir() answers no, the check above sees a dot rather than a separator,
-        # and os.path.abspath() drops the tail, so the parent was made, `screencap` ran on the TV, and the
-        # pull's open() of the destination - a path with no such folder - was the first thing to fail.
+        # is not there yet: check the dot before os.path.isdir() because Windows resolves `..` in paths to an
+        # existing parent directory, and os.path.abspath() drops the tail on both platforms.
         path_error(f"{local} ends in {os.path.basename(local)!r}, which names a folder rather than a file, "
                    f"and --screenshot saves the PNG to a file: give the file a name such as "
                    f"{os.path.join(local, '01-home.png')}. Nothing was captured.")
+    if os.path.isdir(local):
+        path_error(f"{local} is a folder, and --screenshot saves the PNG to a file: give a file name, such "
+                   f"as {os.path.join(local, '01-home.png')}. Nothing was captured.")
+    if local.endswith(("/", os.sep)) or (os.altsep and local.endswith(os.altsep)):
+        path_error(f"{local} ends with a separator, so it names a folder, and --screenshot saves the PNG "
+                   f"to a file: give a file name such as {os.path.join(local, '01-home.png')}. "
+                   f"Nothing was captured.")
     folder = os.path.dirname(os.path.abspath(local))
     if os.path.exists(folder) and not os.path.isdir(folder):
         path_error(f"{folder} is a file, not a folder: --screenshot cannot save {local} inside it. "
@@ -623,35 +657,42 @@ def screenshot(dev, local, keys=(), wait=0.0):
 
     A picture the TV does not send is pull()'s failure, not an empty screenshot: it answers in words,
     exit 1, and the file that was already there is left as it was."""
-    for i, key in enumerate(keys):
-        if i:
-            time.sleep(KEY_GAP_S)
-        dev.shell(f"input keyevent {keyevent(key)}")
-    if wait:
-        time.sleep(wait)
-    # The exit status tells a capture that failed (no file to pull) from one that came back empty: with
-    # Netflix in front a TCL C755 exits 1 and leaves a 0-byte file, which is the empty case below.
-    said = dev.shell(f"rm -f {SHOT_REMOTE}; screencap -p {SHOT_REMOTE}; echo rc=$?", read_timeout_s=120.0)
-    rc = next((int(line.strip()[3:]) for line in said.splitlines() if re.fullmatch(r"rc=-?\d+", line.strip())), None)
-    if rc not in (None, 0, 1):
-        other = " ".join(line.strip() for line in said.splitlines() if line.strip() and not line.strip().startswith("rc="))
-        dev.shell(f"rm -f {SHOT_REMOTE}", read_timeout_s=60.0)
-        print(f"screencap failed on the TV (exit status {rc}): {other or 'no output'}", file=sys.stderr)
+    try:
+        for i, key in enumerate(keys):
+            if i:
+                time.sleep(KEY_GAP_S)
+            _shell_or_report(dev, f"input keyevent {keyevent(key)}")
+        if wait:
+            time.sleep(wait)
+        # The exit status tells a capture that failed (no file to pull) from one that came back empty: with
+        # Netflix in front a TCL C755 exits 1 and leaves a 0-byte file, which is the empty case below.
+        said = _shell_or_report(dev, f"rm -f {SHOT_REMOTE}; screencap -p {SHOT_REMOTE}; echo rc=$?",
+                                read_timeout_s=120.0)
+        rc = next((int(line.strip()[3:]) for line in said.splitlines() if re.fullmatch(r"rc=-?\d+", line.strip())), None)
+        if rc not in (None, 0, 1):
+            other = " ".join(line.strip() for line in said.splitlines() if line.strip() and not line.strip().startswith("rc="))
+            try:
+                dev.shell(f"rm -f {SHOT_REMOTE}", read_timeout_s=60.0)
+            except Exception:
+                pass
+            print(f"screencap failed on the TV (exit status {rc}): {other or 'no output'}", file=sys.stderr)
+            return 1
+        # The pull is the other half of a capture, and it fails the way --pull's does: adb_shell opens the
+        # local path before it asks the TV, so a dropped connection emptied the picture that was already
+        # there - the one the reader was about to compare against - and ended in a traceback out of a
+        # command PROMPT.md, AGENTS.md and CONTRIBUTING.md all hand out. pull() answers that, and answers
+        # it before this run says anything about a picture it did not get.
+        if pull(dev, SHOT_REMOTE, local, announce=False) != 0:
+            # What usually failed is the transport, so the capture nobody will read is worth one attempt
+            # only, and that attempt cannot raise on top of the failure the pull just reported.
+            try:
+                dev.shell(f"rm -f {SHOT_REMOTE}", read_timeout_s=60.0)
+            except Exception:
+                pass
+            return 1
+        _shell_or_report(dev, f"rm -f {SHOT_REMOTE}", read_timeout_s=60.0)   # leave nothing behind on the TV
+    except _ConnectionLost:
         return 1
-    # The pull is the other half of a capture, and it fails the way --pull's does: adb_shell opens the
-    # local path before it asks the TV, so a dropped connection emptied the picture that was already
-    # there - the one the reader was about to compare against - and ended in a traceback out of a
-    # command PROMPT.md, AGENTS.md and CONTRIBUTING.md all hand out. pull() answers that, and answers
-    # it before this run says anything about a picture it did not get.
-    if pull(dev, SHOT_REMOTE, local, announce=False) != 0:
-        # What usually failed is the transport, so the capture nobody will read is worth one attempt
-        # only, and that attempt cannot raise on top of the failure the pull just reported.
-        try:
-            dev.shell(f"rm -f {SHOT_REMOTE}", read_timeout_s=60.0)
-        except Exception:
-            pass
-        return 1
-    dev.shell(f"rm -f {SHOT_REMOTE}", read_timeout_s=60.0)   # leave nothing behind on the TV
     size = os.path.getsize(local) if os.path.exists(local) else 0
     if size == 0:
         # 0 bytes means the input, not the connection: Live TV and HDMI captures come back empty on
@@ -769,52 +810,43 @@ def main():
         print("Reboot request accepted; wait for the TV to restart before reconnecting.")
         return 0
     status = 0
-    if not args or args == ["--probe"]:
-        for p in ("ro.product.model", "ro.product.device", "ro.build.version.release",
-                  "ro.build.version.sdk", "ro.build.display.id", "ro.product.manufacturer",
-                  "ro.adb.secure", "service.adb.tcp.port"):
-            print(f"{p} = {dev.shell(f'getprop {p}').strip()}")
-    elif args[0] == "--screenshot":
-        local, keys, wait = screenshot_args(args[1:])
-        status = screenshot(dev, local, keys, wait)
-    elif args[0] == "--push" and len(args) == 3:
-        status = push(dev, args[1], args[2])
-    elif args[0] == "--pull" and len(args) == 3:
-        status = pull(dev, args[1], args[2])
-    elif args[0] == "--batch":
-        # one shell command per stdin line, each run separately on the same connection.
-        # utf-8-sig drops the BOM Windows PowerShell may prepend to piped stdin.
-        sys.stdin.reconfigure(encoding="utf-8-sig")
-        sent = 0
-        for line in sys.stdin:
-            line = line.strip()
-            if not line or line.startswith("#"):
-                continue
-            sent += 1
-            try:
-                out = dev.shell(line, read_timeout_s=120.0)
-            except Exception as e:
-                why = lost_connection(e, line, sent)
-                if why is None:
-                    raise
-                print(why, file=sys.stderr)
-                return 1
-            sys.stdout.write(f"$ {line}\n{out}")
-            if out and not out.endswith("\n"):
-                sys.stdout.write("\n")
-            sys.stdout.flush()
-    else:
-        line = " ".join(args)
-        try:
-            out = dev.shell(line, read_timeout_s=120.0)
-        except Exception as e:
-            why = lost_connection(e, line)
-            if why is None:
-                raise
-            print(why, file=sys.stderr)
-            return 1
-        sys.stdout.write(out)
-    dev.close()
+    try:
+        if not args or args == ["--probe"]:
+            for p in ("ro.product.model", "ro.product.device", "ro.build.version.release",
+                      "ro.build.version.sdk", "ro.build.display.id", "ro.product.manufacturer",
+                      "ro.adb.secure", "service.adb.tcp.port"):
+                val = _shell_or_report(dev, f"getprop {p}").strip()
+                print(f"{p} = {val}")
+        elif args[0] == "--screenshot":
+            local, keys, wait = screenshot_args(args[1:])
+            status = screenshot(dev, local, keys, wait)
+        elif args[0] == "--push" and len(args) == 3:
+            status = push(dev, args[1], args[2])
+        elif args[0] == "--pull" and len(args) == 3:
+            status = pull(dev, args[1], args[2])
+        elif args[0] == "--batch":
+            # one shell command per stdin line, each run separately on the same connection.
+            # utf-8-sig drops the BOM Windows PowerShell may prepend to piped stdin.
+            sys.stdin.reconfigure(encoding="utf-8-sig")
+            sent = 0
+            for line in sys.stdin:
+                line = line.strip()
+                if not line or line.startswith("#"):
+                    continue
+                sent += 1
+                out = _shell_or_report(dev, line, sent, read_timeout_s=120.0)
+                sys.stdout.write(f"$ {line}\n{out}")
+                if out and not out.endswith("\n"):
+                    sys.stdout.write("\n")
+                sys.stdout.flush()
+        else:
+            line = " ".join(args)
+            out = _shell_or_report(dev, line, read_timeout_s=120.0)
+            sys.stdout.write(out)
+    except _ConnectionLost:
+        return 1
+    finally:
+        dev.close()
     return status
 
 

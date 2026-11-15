@@ -25,7 +25,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 
-SKIP = {".git", "venv", "node_modules", "build", ".gradle", "__pycache__"}
+SKIP = {".git", "venv", "node_modules", "build", ".gradle", "__pycache__", "cleanyourtv-app"}
 
 # What the file's first bytes have to be. A GIF has two accepted headers; WebP is RIFF....WEBP.
 MAGIC = {
