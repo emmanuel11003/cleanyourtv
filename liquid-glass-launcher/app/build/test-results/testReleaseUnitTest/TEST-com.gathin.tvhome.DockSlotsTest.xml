@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.gathin.tvhome.DockSlotsTest" tests="14" skipped="0" failures="0" errors="0" timestamp="2026-11-13T11:55:42" hostname="POOMATTATHIL" time="0.003">
+  <properties/>
+  <testcase name="dockRowIsTheFirstColumnsTilesOrEveryTileOfASingleRow" classname="com.gathin.tvhome.DockSlotsTest" time="0.001"/>
+  <testcase name="aFullDockNeedsNoEmptySlot" classname="com.gathin.tvhome.DockSlotsTest" time="0.0"/>
+  <testcase name="anAppCarriedIntoTheDockStaysThere" classname="com.gathin.tvhome.DockSlotsTest" time="0.0"/>
+  <testcase name="threeDockAppsInFourColumnsLeaveOneSlotEmpty" classname="com.gathin.tvhome.DockSlotsTest" time="0.0"/>
+  <testcase name="fillDockKeepsTheOldBehaviour" classname="com.gathin.tvhome.DockSlotsTest" time="0.0"/>
+  <testcase name="noInstalledDockAppFillsTheFirstRow" classname="com.gathin.tvhome.DockSlotsTest" time="0.0"/>
+  <testcase name="fewerTilesThanDockSlotsStillPutTheDockFirst" classname="com.gathin.tvhome.DockSlotsTest" time="0.0"/>
+  <testcase name="focusOnAnEmptySlotGoesToTheLastDockApp" classname="com.gathin.tvhome.DockSlotsTest" time="0.0"/>
+  <testcase name="aSlidInGridAppAheadOfADockAppMovesBehindTheDock" classname="com.gathin.tvhome.DockSlotsTest" time="0.0"/>
+  <testcase name="aDockAppPushedPastTheDockLeavesIt" classname="com.gathin.tvhome.DockSlotsTest" time="0.0"/>
+  <testcase name="anAppChosenForTheFreePlaceItAlreadySitsInJoinsTheDock" classname="com.gathin.tvhome.DockSlotsTest" time="0.0"/>
+  <testcase name="aGridAppThatOnlySlidIntoAFreeSlotGoesBackToTheGrid" classname="com.gathin.tvhome.DockSlotsTest" time="0.0"/>
+  <testcase name="nothingAfterTheDockNeedsNoEmptySlot" classname="com.gathin.tvhome.DockSlotsTest" time="0.0"/>
+  <testcase name="focusOnATileStaysPut" classname="com.gathin.tvhome.DockSlotsTest" time="0.0"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

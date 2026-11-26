@@ -26,8 +26,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 /** Displays and rotates a theme's local wallpaper images while Home is visible. */
 final class WallpaperPlayer {
@@ -38,7 +36,6 @@ final class WallpaperPlayer {
     private final long interval;
     private final String order;
     private final SharedPreferences preferences;
-    private final ExecutorService decoder = Executors.newSingleThreadExecutor();
     private final Random random = new Random();
     private final int width;
     /** config wallpaper_true_color: ARGB_8888 instead of RGB_565. */
@@ -135,10 +132,12 @@ final class WallpaperPlayer {
 
     void stop() {
         active = false;
+        if (caption != null) caption.animate().cancel();
     }
 
     /** Drops the wallpaper texture when Home is hidden and Android asks the process to free memory. */
     void releaseForMemoryPressure() {
+        if (caption != null) caption.animate().cancel();
         if (current == null) return;
         image.setImageDrawable(null);
         // The renderer may still have a queued frame that references this hardware bitmap. Drop our references and
@@ -162,7 +161,7 @@ final class WallpaperPlayer {
     void close() {
         active = false;
         closed = true;
-        decoder.shutdownNow();
+        if (caption != null) caption.animate().cancel();
     }
 
     void update() {
@@ -178,7 +177,7 @@ final class WallpaperPlayer {
         if (selected == null || selected.getName().equals(displayed)) return;
         File next = selected;
         loading = true;
-        decoder.execute(() -> {
+        LauncherExecutors.io().execute(() -> {
             Bitmap bitmap = decode(next);
             root.post(() -> {
                 loading = false;
@@ -211,7 +210,7 @@ final class WallpaperPlayer {
         float dp = context.getResources().getDisplayMetrics().density;
         TextView text = new TextView(context);
         text.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
-        text.setTextColor(0xD9FFFFFF);
+        text.setTextColor(0xFFFFFFFF);
         text.setShadowLayer(6 * dp, 0, dp, 0xCC000000);
         text.setSingleLine(true);
         text.setEllipsize(TextUtils.TruncateAt.END);

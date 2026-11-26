@@ -1,0 +1,457 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="app_banners">
+    </string-array>
+    <string-array name="app_keys" translatable="false">
+        <item>172:com.cltv.hybrid</item>
+        <item>KEYCODE_GUIDE:com.cltv.hybrid</item>
+        <item>front:172:guide:com.cltv.hybrid</item>
+        <item>front:KEYCODE_GUIDE:guide:com.cltv.hybrid</item>
+        <item>297:com.google.android.youtube.tv</item>
+        <item>KEYCODE_FEATURED_APP_1:com.google.android.youtube.tv</item>
+        <item>298:com.netflix.ninja</item>
+        <item>KEYCODE_FEATURED_APP_2:com.netflix.ninja</item>
+        <item>299:com.amazon.amazonvideo.livingroom</item>
+        <item>KEYCODE_FEATURED_APP_3:com.amazon.amazonvideo.livingroom</item>
+        <item>300:in.startv.hotstar</item>
+        <item>KEYCODE_FEATURED_APP_4:in.startv.hotstar</item>
+    </string-array>
+    <string-array name="app_labels">
+    </string-array>
+    <string-array name="dock_apps">
+        <item>org.smarttube.stable</item>
+        <item>com.google.android.youtube.tv</item>
+        <item>in.startv.hotstar</item>
+        <item>com.sonyliv</item>
+        <item>com.android.vending</item>
+    </string-array>
+    <string-array name="hidden_apps">
+        <item>com.mediatek.wwtv.tvcenter</item>
+        <item>com.mitv.gallery</item>
+    </string-array>
+    <string-array name="icon_tiles" translatable="false">
+    </string-array>
+    <integer-array name="input_key_keycodes">
+    </integer-array>
+    <string-array name="input_sources" translatable="false">
+    </string-array>
+    <string-array name="launch_actions">
+    </string-array>
+    <string-array name="library_apps" translatable="false">
+    </string-array>
+    <string-array name="library_excluded_apps" translatable="false">
+    </string-array>
+    <string-array name="lunar_branches">
+        <item>Rat</item><item>Ox</item><item>Tiger</item><item>Rabbit</item><item>Dragon</item><item>Snake</item>
+        <item>Horse</item><item>Goat</item><item>Monkey</item><item>Rooster</item><item>Dog</item><item>Pig</item>
+    </string-array>
+    <string-array name="lunar_stems">
+        <item>Jia</item><item>Yi</item><item>Bing</item><item>Ding</item><item>Wu</item>
+        <item>Ji</item><item>Geng</item><item>Xin</item><item>Ren</item><item>Gui</item>
+    </string-array>
+    <string-array name="settings_fallback_components" translatable="false">
+        <item>com.xiaomi.mitv.settings/com.xiaomi.mitv.settings.entry.MainActivity</item>
+        <item>com.tcl.settings/com.tcl.settings.ui.MainActivity</item>
+        <item>com.amazon.tv.launcher/com.amazon.tv.launcher.ui.MainSettingsActivity</item>
+    </string-array>
+    <integer-array name="settings_key_keycodes">
+        <item>80</item>
+        <item>83</item>
+    </integer-array>
+    <integer-array name="settings_key_scancodes">
+    </integer-array>
+    <string-array name="top_bar_apps" translatable="false">
+    </string-array>
+    <bool name="advanced_effects">true</bool>
+    <bool name="always_show_names">false</bool>
+    <bool name="ambient_glow">true</bool>
+    <bool name="animations">true</bool>
+    <bool name="app_glow">true</bool>
+    <bool name="app_library">false</bool>
+    <bool name="app_library_selection">false</bool>
+    <bool name="back_opens_clock">false</bool>
+    <bool name="boot_to_live_tv">false</bool>
+    <bool name="cinematic_dots">true</bool>
+    <bool name="cinematic_home">true</bool>
+    <bool name="cinematic_white_focus">false</bool>
+    <bool name="clock_glow">true</bool>
+    <bool name="clock_wallpaper">false</bool>
+    <bool name="consume_volume_keys">false</bool>
+    <bool name="coocaa_sources">false</bool>
+    <bool name="date_below_clock">false</bool>
+    <bool name="date_single_line">true</bool>
+    <bool name="dock_band">true</bool>
+    <bool name="dock_band_all">false</bool>
+    <bool name="dock_even_padding">true</bool>
+    <bool name="dock_frost">false</bool>
+    <bool name="dock_glass">true</bool>
+    <bool name="dock_row">true</bool>
+    <bool name="dock_title">true</bool>
+    <bool name="fade_rows">false</bool>
+    <bool name="fill_dock">true</bool>
+    <bool name="focus_outline">false</bool>
+    <bool name="focus_overshoot">false</bool>
+    <bool name="gamepad_passthrough">false</bool>
+    <bool name="glow_snap">false</bool>
+    <bool name="handle_view_inputs">false</bool>
+    <bool name="header_white">false</bool>
+    <bool name="home_ignore_channel_keys">false</bool>
+    <bool name="home_long_press_home">false</bool>
+    <bool name="icon_only_buttons">true</bool>
+    <bool name="icon_only_inputs">true</bool>
+    <bool name="icon_only_vpn">false</bool>
+    <bool name="inputs_cec_state_only">false</bool>
+    <bool name="inputs_connected_only">false</bool>
+    <bool name="key_filter">true</bool>
+    <bool name="launcher_settings_button">false</bool>
+    <bool name="library_button">false</bool>
+    <bool name="library_ok_opens">false</bool>
+    <bool name="liquid_glass">true</bool>
+    <bool name="lunar_date">false</bool>
+    <bool name="module_cards">true</bool>
+    <bool name="open_on_start_choice">false</bool>
+    <bool name="open_on_start_on_wake">false</bool>
+    <bool name="power_on_home">false</bool>
+    <bool name="power_on_home_always">false</bool>
+    <bool name="reduced_motion">false</bool>
+    <bool name="reorder_button">false</bool>
+    <bool name="restore_key_services">true</bool>
+    <bool name="rtl_app_grid">false</bool>
+    <bool name="rtl_menu_bar">false</bool>
+    <bool name="settings_key_panel">true</bool>
+    <bool name="shamsi_date">false</bool>
+    <bool name="show_greeting">true</bool>
+    <bool name="show_home_settings_shortcut">false</bool>
+    <bool name="show_inputs_pill">true</bool>
+    <bool name="show_library_pill">true</bool>
+    <bool name="show_network_pill">true</bool>
+    <bool name="show_recents_pill">false</bool>
+    <bool name="show_stats">true</bool>
+    <bool name="single_row">false</bool>
+    <bool name="tile_menu">true</bool>
+    <bool name="top_menu">false</bool>
+    <bool name="uniform_tiles">false</bool>
+    <bool name="vpn_pill">false</bool>
+    <bool name="wallpaper_captions">false</bool>
+    <bool name="wallpaper_true_color">false</bool>
+    <bool name="wifi_status_color">true</bool>
+    <bool name="wifi_status_warnings">false</bool>
+    <integer name="cinematic_art">50</integer>
+    <integer name="cinematic_scrim">0</integer>
+    <integer name="clock_wallpaper_dim">50</integer>
+    <integer name="columns">5</integer>
+    <integer name="dock_opacity">30</integer>
+    <integer name="home_idle_clock_minutes">5</integer>
+    <integer name="open_on_start_network_wait">0</integer>
+    <integer name="rows_below_dock">0</integer>
+    <integer name="sky_intensity">0</integer>
+    <integer name="wifi_label_width">0</integer>
+    <plurals name="library_app_count">
+        <item quantity="one">%1$d app</item>
+        <item quantity="other">%1$d apps</item>
+    </plurals>
+    <string name="advanced_effects">Advanced effects</string>
+    <string name="advanced_effects_state">Advanced effects: %1$s</string>
+    <string name="advanced_effects_summary" translatable="false">Tile lift, icon zoom, and smooth transitions</string>
+    <string name="advanced_effects_warning">Adds a lifted tile, icon zoom and smooth colour transitions. May increase memory use; the actual difference depends on your TV.</string>
+    <string name="all_settings" translatable="false">All settings</string>
+    <string name="animation_scale" translatable="false">0.5</string>
+    <string name="animations" translatable="false">Animations</string>
+    <string name="animations_state">Animations: %1$s</string>
+    <string name="animations_summary" translatable="false">Dynamic spring motion physics</string>
+    <string name="app_library">App library</string>
+    <string name="app_name">Liquid Glass</string>
+    <string name="background_color" translatable="false">#070A14</string>
+    <string name="button_mapper" translatable="false">Button Mapper</string>
+    <string name="button_mapper_action_inputs" translatable="false">TV Inputs</string>
+    <string name="button_mapper_action_library" translatable="false">App Library</string>
+    <string name="button_mapper_action_quick_settings" translatable="false">Quick Settings</string>
+    <string name="button_mapper_action_recents" translatable="false">Recent Apps</string>
+    <string name="button_mapper_action_reorder" translatable="false">Rearrange Apps</string>
+    <string name="button_mapper_action_screensaver" translatable="false">Screensaver / Clock</string>
+    <string name="button_mapper_action_tv_settings" translatable="false">TV Settings</string>
+    <string name="button_mapper_clear_all" translatable="false">Clear All Mappings</string>
+    <string name="button_mapper_clear_all_confirm" translatable="false">Remove all custom remote button mappings?</string>
+    <string name="button_mapper_key_cannot_remap" translatable="false">This navigation button cannot be remapped.</string>
+    <string name="button_mapper_launch_app" translatable="false">Launch App…</string>
+    <string name="button_mapper_learn" translatable="false">Detect Remote Button…</string>
+    <string name="button_mapper_learn_prompt" translatable="false">Press any button on your TV remote to customize it.\n\nPress Back to cancel.</string>
+    <string name="button_mapper_mapped" translatable="false">%1$d buttons customized</string>
+    <string name="button_mapper_reset" translatable="false">Default (Unmapped)</string>
+    <string name="button_mapper_summary" translatable="false">Customize remote buttons to launch apps or actions</string>
+    <string name="cant_open">Can\'t open %1$s</string>
+    <string name="card_app_name">App: %1$s</string>
+    <string name="card_keep_hidden">Keep hidden</string>
+    <string name="card_not_saved">Couldn\'t save the choice</string>
+    <string name="card_prompt_body">%1$s can show a card on your home screen. Keeping it hidden leaves the app\'s normal tile as it is.</string>
+    <string name="card_prompt_hint">You can change this later: hold OK on Settings, then choose Module cards.</string>
+    <string name="card_prompt_identity">%1$s, key %2$s</string>
+    <string name="card_prompt_names">The card is named \'%1$s\'. The app is \'%2$s\'.</string>
+    <string name="card_prompt_relabelled">%1$s changed the name of its card since you decided. Decide again for it.</string>
+    <string name="card_prompt_resigned">%1$s was updated with a different signing key, so your earlier answer no longer applies. Decide again for its card.</string>
+    <string name="card_prompt_title">New card from %1$s</string>
+    <string name="card_show">Show card</string>
+    <string name="card_state_hidden">Hidden</string>
+    <string name="card_state_new">New</string>
+    <string name="card_state_new_key">New key</string>
+    <string name="card_state_new_label">New name</string>
+    <string name="card_state_over_limit">Shown, over the limit of 8</string>
+    <string name="card_state_shown">Shown</string>
+    <string name="choose_input">Inputs</string>
+    <string name="choose_wallpaper" translatable="false">Change Wallpaper…</string>
+    <string name="clock_format" translatable="false">system</string>
+    <string name="clock_format_12">12-hour</string>
+    <string name="clock_format_24">24-hour</string>
+    <string name="clock_format_system">System</string>
+    <string name="columns_label">Apps per row</string>
+    <string name="connected">Connected</string>
+    <string name="date_format">EEEE  d MMMM</string>
+    <string name="date_format_home" translatable="false">@string/date_format</string>
+    <string name="dock_edit">Edit dock</string>
+    <string name="dock_edit_hint">Choose the dock place to change and press OK. Back to finish.</string>
+    <string name="dock_edit_pick_app">Now choose the app to put there and press OK. Back to choose another place.</string>
+    <string name="dock_edit_pick_place">Choose the dock place for this app and press OK. Back to cancel.</string>
+    <string name="dock_opacity_label">Dock band opacity</string>
+    <string name="dream_name">Liquid Glass Clock</string>
+    <string name="enable">Enable</string>
+    <string name="ethernet">Ethernet</string>
+    <string name="festival_diwali_greeting">Happy Diwali</string>
+    <string name="festival_dussehra_greeting">Happy Dussehra</string>
+    <string name="festival_halloween_greeting">Happy Halloween</string>
+    <string name="follow_theme">Follow theme (reset on-TV choices)</string>
+    <string name="follow_theme_hint">Uses the current theme or built-in layout and motion settings. Pushing or resetting a theme also clears your on-TV choices.</string>
+    <string name="font_body" translatable="false">@font/outfit</string>
+    <string name="font_extralight" translatable="false">@font/outfit_extralight</string>
+    <string name="font_light" translatable="false">@font/outfit_light</string>
+    <string name="font_medium" translatable="false">@font/outfit_medium</string>
+    <string name="font_regular" translatable="false">@font/outfit_regular</string>
+    <string name="game_day" translatable="false"/>
+    <string name="game_live">Live now</string>
+    <string name="glass_style" translatable="false">glass</string>
+    <string name="glow_style" translatable="false">horizon</string>
+    <string name="good_afternoon">Good afternoon</string>
+    <string name="good_evening">Good evening</string>
+    <string name="good_forenoon">Good late morning</string>
+    <string name="good_morning">Good morning</string>
+    <string name="good_night">Good night</string>
+    <string name="greeting_name" translatable="false"/>
+    <string name="greeting_with_name">%1$s, %2$s</string>
+    <string name="home_key_description">Makes the remote\'s Home button open this launcher.</string>
+    <string name="home_key_name">Liquid Glass Home button</string>
+    <string name="home_settings">Choose default home</string>
+    <string name="home_settings_help">Select your original home to stop using Liquid Glass as Home, or Liquid Glass to switch back. The original launcher must be enabled and your TV must provide a home picker; use the restore script first if it was disabled.</string>
+    <string name="input_action" translatable="false"/>
+    <string name="input_key_service_description">Opens the input switcher when the remote\'s Input button is pressed.</string>
+    <string name="input_uri_scheme" translatable="false"/>
+    <string name="inputs">Inputs</string>
+    <string name="inputs_pill_label" translatable="false">Inputs Pill</string>
+    <string name="inputs_pill_summary" translatable="false">Inputs dropdown button in top bar</string>
+    <string name="last_opened">last used %1$s</string>
+    <string name="latitude" translatable="false"/>
+    <string name="launcher_settings">Launcher settings</string>
+    <string name="library_add_home">Add to Home</string>
+    <string name="library_app_info">App info</string>
+    <string name="library_empty">No launchable apps found</string>
+    <string name="library_hint_add">Press to add to Home · Hold for options</string>
+    <string name="library_hint_open">Press to open · Hold for options</string>
+    <string name="library_on_home">On Home</string>
+    <string name="library_open">Open</string>
+    <string name="library_recent">New · Add to Home</string>
+    <string name="library_remove_shortcut">Remove from Home</string>
+    <string name="library_save_failed">Could not save the shortcut</string>
+    <string name="liquid_glass_label" translatable="false">Liquid Glass</string>
+    <string name="liquid_glass_summary" translatable="false">Frosted glass cards, ambient backdrop, and smooth focus motion</string>
+    <string name="live_tv">Live TV</string>
+    <string name="live_tv_action" translatable="false"/>
+    <string name="live_tv_input_id" translatable="false"/>
+    <string name="live_tv_package" translatable="false">com.cltv.hybrid</string>
+    <string name="locale" translatable="false"/>
+    <string name="longitude" translatable="false"/>
+    <string name="lunar_date_format">Lunar %1$d/%2$s · %3$s</string>
+    <string name="lunar_month_leap">%1$d (leap)</string>
+    <string name="lunar_year">Year of the %2$s</string>
+    <string name="module_cards">Module cards</string>
+    <string name="more_inputs">More inputs</string>
+    <string name="native_settings">Native settings</string>
+    <string name="network_pill_label" translatable="false">Network Pill</string>
+    <string name="network_pill_summary" translatable="false">Wi-Fi and Ethernet status button in top bar</string>
+    <string name="no_inputs">No inputs found</string>
+    <string name="no_module_cards">No module cards installed</string>
+    <string name="not_available">Not available on this TV</string>
+    <string name="not_connected">No device</string>
+    <string name="notifications_addon_help" translatable="false">Notifications require the Notification Center add-on</string>
+    <string name="off">Off</string>
+    <string name="offline">Offline</string>
+    <string name="on">On</string>
+    <string name="open_on_start_label">Open on start</string>
+    <string name="open_on_start_state">Open on start: %1$s</string>
+    <string name="power_menu">Restart…</string>
+    <string name="quick_apps">Apps</string>
+    <string name="quick_apps_hint">Re-enable</string>
+    <string name="quick_network">Network</string>
+    <string name="quick_picture">Display</string>
+    <string name="quick_settings_footer" translatable="false">Press Back to close</string>
+    <string name="race_countdown_days">%1$dd %2$dh</string>
+    <string name="race_countdown_hours">%1$dh %2$dm</string>
+    <string name="race_countdown_minutes">%1$d min</string>
+    <string name="race_finished">Chequered flag</string>
+    <string name="race_kicker">Round %1$d · %2$s · %3$s</string>
+    <string name="race_kicker_no_place">Round %1$d · %2$s</string>
+    <string name="race_lights_out">Lights out in %1$s</string>
+    <string name="race_live">%1$s · live</string>
+    <string name="race_next">%1$s in %2$s</string>
+    <string name="race_practice_1">Practice 1</string>
+    <string name="race_practice_1_short">FP1</string>
+    <string name="race_practice_2">Practice 2</string>
+    <string name="race_practice_2_short">FP2</string>
+    <string name="race_practice_3">Practice 3</string>
+    <string name="race_practice_3_short">FP3</string>
+    <string name="race_qualifying">Qualifying</string>
+    <string name="race_qualifying_short">QUALI</string>
+    <string name="race_race">Race</string>
+    <string name="race_race_short">RACE</string>
+    <string name="race_sprint">Sprint</string>
+    <string name="race_sprint_qualifying">Sprint qualifying</string>
+    <string name="race_sprint_qualifying_short">SQ</string>
+    <string name="race_sprint_short">SPRINT</string>
+    <string name="recent_apps_subtitle" translatable="false">Switch between recent apps or manage tasks</string>
+    <string name="recent_apps_title" translatable="false">Recent Apps</string>
+    <string name="recents" translatable="false">Recents</string>
+    <string name="recents_action_app_info" translatable="false">App Info</string>
+    <string name="recents_action_dismiss" translatable="false">Dismiss Task</string>
+    <string name="recents_action_force_stop" translatable="false">Force Stop App</string>
+    <string name="recents_action_open" translatable="false">Switch to App</string>
+    <string name="recents_dismissed_toast" translatable="false">%1$s dismissed from recents. The app may still be running in the background.</string>
+    <string name="recents_empty_message" translatable="false">Apps opened from Liquid Glass will appear here for quick switching.</string>
+    <string name="recents_empty_return" translatable="false">Return Home</string>
+    <string name="recents_empty_title" translatable="false">No Recent Apps</string>
+    <string name="recents_force_stop_requires_auth" translatable="false">Direct force stop requires elevated privileges (e.g. Shizuku/ADB). Use App Info instead.</string>
+    <string name="recents_pill_label" translatable="false">Recent Apps Pill</string>
+    <string name="recents_pill_summary" translatable="false">Show recent apps switcher in top bar</string>
+    <string name="reorder">Reorder apps</string>
+    <string name="reorder_apps" translatable="false">Rearrange Apps</string>
+    <string name="reorder_apps_summary" translatable="false">Change the order of apps on your home screen.</string>
+    <string name="reorder_hint">OK picks up an app, arrows move it, Back places it. Back again to finish.</string>
+    <string name="reorder_not_saved">Couldn\'t save the new order</string>
+    <string name="rows_below_dock_label">Rows below dock</string>
+    <string name="screensaver_bg_black" translatable="false">Solid black (OLED)</string>
+    <string name="screensaver_bg_glow" translatable="false">Ambient color glow</string>
+    <string name="screensaver_bg_wallpaper" translatable="false">Theme / Custom wallpaper</string>
+    <string name="screensaver_calendar_label" translatable="false">Screensaver Calendar</string>
+    <string name="screensaver_calendar_summary" translatable="false">Full month calendar with today highlighted</string>
+    <string name="screensaver_label" translatable="false">Screensaver</string>
+    <string name="screensaver_state" translatable="false">Screensaver: %1$s</string>
+    <string name="screensaver_style_calendar" translatable="false">Clock &amp; Month Calendar</string>
+    <string name="screensaver_style_clock" translatable="false">Clock only</string>
+    <string name="screensaver_summary" translatable="false">Shows clock when TV is left idle on Home</string>
+    <string name="settings">Settings</string>
+    <string name="shamsi_month_aban">Aban</string>
+    <string name="shamsi_month_azar">Azar</string>
+    <string name="shamsi_month_bahman">Bahman</string>
+    <string name="shamsi_month_dey">Dey</string>
+    <string name="shamsi_month_esfand">Esfand</string>
+    <string name="shamsi_month_farvardin">Farvardin</string>
+    <string name="shamsi_month_khordad">Khordad</string>
+    <string name="shamsi_month_mehr">Mehr</string>
+    <string name="shamsi_month_mordad">Mordad</string>
+    <string name="shamsi_month_ordibehesht">Ordibehesht</string>
+    <string name="shamsi_month_shahrivar">Shahrivar</string>
+    <string name="shamsi_month_tir">Tir</string>
+    <string name="sleep_timer_left" translatable="false">Sleep in %1$d min</string>
+    <string name="sleep_timer_no_helper" translatable="false">The TV will sleep in %1$d min. Turn on the Liquid Glass accessibility helper so it can switch the TV off; until then the screensaver starts.</string>
+    <string name="sleep_timer_off" translatable="false">Sleep timer off</string>
+    <string name="sleep_timer_set" translatable="false">The TV will sleep in %1$d min</string>
+    <string name="source_panel_action" translatable="false"/>
+    <string name="source_panel_extra" translatable="false"/>
+    <string name="source_panel_service" translatable="false"/>
+    <string name="standby">Standby</string>
+    <string name="stats_cpu">CPU %1$d%%</string>
+    <string name="stats_label" translatable="false">Top Bar Stats</string>
+    <string name="stats_memory">Memory %1$d / %2$d MB</string>
+    <string name="stats_storage">Storage %1$s free</string>
+    <string name="stats_summary" translatable="false">Memory and storage usage line under clock</string>
+    <string name="stock_home_redirect" translatable="false"/>
+    <string name="storage_gb_decimal">%1$.1f GB</string>
+    <string name="storage_gb_whole">%1$.0f GB</string>
+    <string name="switch_off_badge" translatable="false">OFF</string>
+    <string name="switch_on_badge" translatable="false">ON</string>
+    <string name="tile_add_to_dock">Add to dock</string>
+    <string name="tile_bluetooth" translatable="false">Bluetooth</string>
+    <string name="tile_display" translatable="false">Display</string>
+    <string name="tile_inputs" translatable="false">Inputs</string>
+    <string name="tile_move">Move</string>
+    <string name="tile_notifications" translatable="false">Notifications</string>
+    <string name="tile_replace_in_dock">Replace with another app</string>
+    <string name="tile_screensaver" translatable="false">Screensaver</string>
+    <string name="tile_sleep_timer" translatable="false">Sleep timer</string>
+    <string name="tile_sound" translatable="false">Sound</string>
+    <string name="tile_wifi" translatable="false">Wi-Fi</string>
+    <string name="tv_settings">TV system settings</string>
+    <string name="vpn">VPN</string>
+    <string name="vpn_app" translatable="false"/>
+    <string name="vpn_off">VPN off</string>
+    <string name="wallpaper_applied">Wallpaper changed</string>
+    <string name="wallpaper_custom_browse" translatable="false">Pick image from storage…</string>
+    <string name="wallpaper_label">Wallpaper</string>
+    <string name="wallpaper_moods" translatable="false"/>
+    <string name="wallpaper_none">None (Solid black)</string>
+    <string name="wallpaper_state">Wallpaper: %1$s</string>
+    <string name="wallpaper_theme_default">Theme default</string>
+    <string name="wifi">Wi-Fi</string>
+    <style name="Animation.TvHome.AppTransition" parent="@android:style/Animation.Activity">
+        <item name="android:activityOpenEnterAnimation">@anim/app_open_enter</item>
+        <item name="android:activityOpenExitAnimation">@anim/app_open_exit</item>
+        <item name="android:activityCloseEnterAnimation">@anim/app_close_enter</item>
+        <item name="android:activityCloseExitAnimation">@anim/app_close_exit</item>
+    </style>
+    <style name="SettingsColumnChoice" parent="SettingsRow">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:layout_marginEnd">10dp</item>
+        <item name="android:gravity">center</item>
+    </style>
+    <style name="SettingsRow">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">52dp</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:paddingStart">18dp</item>
+        <item name="android:paddingEnd">18dp</item>
+        <item name="android:background">@drawable/settings_choice_bg</item>
+        <item name="android:textColor">#FFFFFFFF</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:focusable">true</item>
+        <item name="android:clickable">true</item>
+    </style>
+    <style name="Theme.TvHome" parent="android:Theme.Material.NoActionBar.Fullscreen">
+        <item name="android:windowBackground">@android:color/black</item>
+        <item name="android:colorBackground">@android:color/black</item>
+        <item name="android:windowAnimationStyle">@null</item>
+    </style>
+    <style name="Theme.TvHome.Translucent" parent="@android:style/Theme.Translucent.NoTitleBar.Fullscreen">
+        <item name="android:windowAnimationStyle">@style/Animation.TvHome.AppTransition</item>
+    </style>
+    <style name="TopButton" parent="TopButtonBase"/>
+    <style name="TopButtonBase">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">42dp</item>
+        <item name="android:layout_marginStart">10dp</item>
+        <item name="android:paddingStart">16dp</item>
+        <item name="android:paddingEnd">20dp</item>
+        <item name="android:gravity">center</item>
+        <item name="android:background">@drawable/pill_bg</item>
+        <item name="android:textColor">@drawable/pill_text</item>
+        <item name="android:textSize">15sp</item>
+        <item name="android:fontFamily">@string/font_medium</item>
+        <item name="android:letterSpacing">0.01</item>
+        <item name="android:drawablePadding">9dp</item>
+        <item name="android:drawableTint">@drawable/pill_text</item>
+        <item name="android:focusable">true</item>
+        <item name="android:clickable">true</item>
+    </style>
+    <style name="TopButtonIcon" parent="TopButtonBase">
+        <item name="android:layout_width">42dp</item>
+        <item name="android:paddingStart">10dp</item>
+        <item name="android:paddingEnd">10dp</item>
+        <item name="android:drawablePadding">0dp</item>
+    </style>
+</resources>

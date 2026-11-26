@@ -1,19 +1,25 @@
 package com.gathin.tvhome;
 
-import android.animation.ArgbEvaluator;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.ColorFilter;
+import android.graphics.Paint;
+import android.graphics.PixelFormat;
+import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
-import android.graphics.drawable.GradientDrawable;
-import android.graphics.drawable.LayerDrawable;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.DisplayMetrics;
 import android.view.View;
+import android.view.animation.DecelerateInterpolator;
+
+import androidx.dynamicanimation.animation.DynamicAnimation;
+import androidx.dynamicanimation.animation.SpringAnimation;
+import androidx.dynamicanimation.animation.SpringForce;
 import android.widget.ImageView;
 
 import java.io.File;
@@ -47,18 +53,42 @@ final class ClockScene {
     private final ImageView ambient;
     private final MonthCalendarView calendar;
     private final View calendarDivider;
-    private final GradientDrawable glow;
-    private final ArgbEvaluator colorMix = new ArgbEvaluator();
-    private final int[] glowColors = new int[3];
+    private final DitheredRadialGlowDrawable glow;
+    private SpringAnimation enterSx, enterSy, enterTy;
     private boolean started;
     private final Runnable startEnter = new Runnable() {
         @Override
         public void run() {
             if (!started) return;
             placeClock();
-            content.animate().alpha(1f).setDuration(1200).start();
+            float targetY = content.getY();
+            float density = content.getResources().getDisplayMetrics().density;
+            cancelEnterSprings();
+            content.setScaleX(0.95f);
+            content.setScaleY(0.95f);
+            content.setY(targetY + 18f * density);
+            content.animate()
+                    .alpha(1f)
+                    .setDuration(240)
+                    .setInterpolator(new DecelerateInterpolator())
+                    .start();
+            enterSx = new SpringAnimation(content, DynamicAnimation.SCALE_X, 1f)
+                    .setSpring(new SpringForce(1f).setStiffness(420f).setDampingRatio(0.84f));
+            enterSy = new SpringAnimation(content, DynamicAnimation.SCALE_Y, 1f)
+                    .setSpring(new SpringForce(1f).setStiffness(420f).setDampingRatio(0.84f));
+            enterTy = new SpringAnimation(content, DynamicAnimation.Y, targetY)
+                    .setSpring(new SpringForce(targetY).setStiffness(420f).setDampingRatio(0.84f));
+            enterSx.start();
+            enterSy.start();
+            enterTy.start();
         }
     };
+
+    private void cancelEnterSprings() {
+        if (enterSx != null) { enterSx.cancel(); enterSx = null; }
+        if (enterSy != null) { enterSy.cancel(); enterSy = null; }
+        if (enterTy != null) { enterTy.cancel(); enterTy = null; }
+    }
     private int colorIndex;
     private int glowColor;
     /** clock_wallpaper or clock_glow false: something else (a picture, or plain black) replaced the coloured glow. */
@@ -97,11 +127,8 @@ final class ClockScene {
         ambient = root.findViewById(R.id.dreamAmbient);
         calendar = root.findViewById(R.id.dreamCalendar);
         calendarDivider = root.findViewById(R.id.dreamCalendarDivider);
-        glow = new GradientDrawable();
-        glow.setGradientType(GradientDrawable.RADIAL_GRADIENT);
+        glow = new DitheredRadialGlowDrawable();
         ambient.setBackground(glow);
-        ambient.addOnLayoutChangeListener((v, l, t, r, b, ol, ot, or, ob) ->
-                glow.setGradientRadius((r - l) * 0.55f));
         colorIndex = random.nextInt(PALETTE.length);
         setGlow(PALETTE[colorIndex]);
     }
@@ -120,10 +147,12 @@ final class ClockScene {
     void stop() {
         started = false;
         content.removeCallbacks(startEnter);
+        cancelEnterSprings();
         handler.removeCallbacksAndMessages(null);   // the tick and any glow steps still queued
         clockRefresh.stop();
         content.animate().cancel();
         wallpaperGeneration++;   // a decode still running must not attach its picture to a stopped scene
+        glow.release();
     }
 
     /**
@@ -157,88 +186,112 @@ final class ClockScene {
             return;
         }
 
-        Config cfg;
-        try {
-            cfg = Config.load(ctx);
-        } catch (RuntimeException e) {
-            return;
-        }
-        boolean wantWallpaper = "wallpaper".equals(bgChoice) || (bgChoice == null && cfg.clockWallpaper);
-        if (!wantWallpaper) {
-            // clock_glow false: plain black behind the clock (OLED); the clock itself still moves every minute.
-            if (!cfg.clockGlow) {
-                wallpaperShown = true;   // also stops the glow's colour cycle
-                ambient.setBackground(null);
+        final Context appCtx = ctx.getApplicationContext();
+        final int generation = ++wallpaperGeneration;
+        LauncherExecutors.io().execute(() -> {
+            final Config cfg;
+            try {
+                cfg = Config.load(appCtx);
+            } catch (RuntimeException e) {
+                return;
             }
-            return;
-        }
-        List<File> availableWallpapers = cfg.wallpapers;
-        if (availableWallpapers.isEmpty()) {
-            availableWallpapers = new ArrayList<>();
-            for (File root : new File[]{Config.dir(ctx), ctx.getFilesDir()}) {
-                if (root == null) continue;
-                File custom = new File(root, "custom_wallpaper.jpg");
-                if (custom.isFile() && custom.length() > 0) availableWallpapers.add(custom);
-                File single = new File(root, Config.WALLPAPER_NAME);
-                if (single.isFile() && single.length() > 0 && !availableWallpapers.contains(single)) {
-                    availableWallpapers.add(single);
-                }
-                for (File img : WallpaperRotation.images(new File(root, "wallpapers"))) {
-                    if (!availableWallpapers.contains(img)) availableWallpapers.add(img);
+            boolean wantWallpaper = "wallpaper".equals(bgChoice) || (bgChoice == null && cfg.clockWallpaper);
+            if (!wantWallpaper) {
+                handler.post(() -> {
+                    if (generation != wallpaperGeneration) return;
+                    // clock_glow false: plain black behind the clock (OLED); the clock itself still moves every minute.
+                    if (!cfg.clockGlow) {
+                        wallpaperShown = true;   // also stops the glow's colour cycle
+                        ambient.setBackground(null);
+                    }
+                });
+                return;
+            }
+            String customScreensaver = choices.getString(Config.SCREENSAVER_WALLPAPER_KEY, null);
+            if (customScreensaver != null && !customScreensaver.isEmpty()) {
+                File ssFile = new File(customScreensaver);
+                if (ssFile.isFile() && ssFile.length() > 0) {
+                    handler.post(() -> {
+                        if (generation != wallpaperGeneration) return;
+                        rotation = java.util.Collections.emptyList();
+                        wallpaperFile = ssFile;
+                        rotationMs = 0L;
+                        wallpaperShade = (cfg.clockWallpaperDim * 255 / 100) << 24;
+                        wallpaperRes = appCtx.getResources();
+                        ambient.setBackground(null);
+                        if (started && !wallpaperShown) loadWallpaper();
+                    });
+                    return;
                 }
             }
-        }
-        // What Home plays, and Config puts the single wallpaper in it when a theme has no collection.
-        // Reading cfg.wallpaper first held the screensaver on wallpaper.jpg while Home rotated.
-        if (availableWallpapers.isEmpty()) {
-            wallpaperFile = null;
-        } else {
-            // Start on the picture Home is showing. WallpaperPlayer records it under the same
-            // preferences and the screensaver runs in the same process, so this is just a read.
-            rotation = new ArrayList<>(availableWallpapers);
-            String shown = ctx.getSharedPreferences("wallpaper_rotation", Context.MODE_PRIVATE)
+            List<File> availableWallpapers = cfg.wallpapers;
+            if (availableWallpapers.isEmpty()) {
+                availableWallpapers = new ArrayList<>();
+                for (File root : new File[]{Config.dir(appCtx), appCtx.getFilesDir()}) {
+                    if (root == null) continue;
+                    File custom = new File(root, "custom_wallpaper.jpg");
+                    if (custom.isFile() && custom.length() > 0) availableWallpapers.add(custom);
+                    File single = new File(root, Config.WALLPAPER_NAME);
+                    if (single.isFile() && single.length() > 0 && !availableWallpapers.contains(single)) {
+                        availableWallpapers.add(single);
+                    }
+                    for (File img : WallpaperRotation.images(new File(root, "wallpapers"))) {
+                        if (!availableWallpapers.contains(img)) availableWallpapers.add(img);
+                    }
+                }
+            }
+            final List<File> resolvedWallpapers = availableWallpapers;
+            final String shown = appCtx.getSharedPreferences("wallpaper_rotation", Context.MODE_PRIVATE)
                     .getString("image", "");
-            File current = WallpaperRotation.find(rotation, shown);
-            wallpaperFile = current != null ? current : rotation.get(0);
-            // Home only rotates while it is visible, so the screensaver carries the rotation on
-            // itself; without this it holds one picture for as long as it is up.
-            rotationMs = cfg.wallpaperRotationMinutes * 60_000L;
-            order = cfg.wallpaperOrder;
-            moods = cfg.wallpaperMoods;
-            latitude = moods.isEmpty() ? "" : ctx.getString(R.string.latitude);
-            longitude = moods.isEmpty() ? "" : ctx.getString(R.string.longitude);
-        }
-        wallpaperShade = (cfg.clockWallpaperDim * 255 / 100) << 24;
-        wallpaperRes = ctx.getResources();
+            handler.post(() -> {
+                if (generation != wallpaperGeneration) return;
+                if (resolvedWallpapers.isEmpty()) {
+                    wallpaperFile = null;
+                } else {
+                    rotation = new ArrayList<>(resolvedWallpapers);
+                    File current = WallpaperRotation.find(rotation, shown);
+                    wallpaperFile = current != null ? current : rotation.get(0);
+                    rotationMs = cfg.wallpaperRotationMinutes * 60_000L;
+                    order = cfg.wallpaperOrder;
+                    moods = cfg.wallpaperMoods;
+                    latitude = moods.isEmpty() ? "" : appCtx.getString(R.string.latitude);
+                    longitude = moods.isEmpty() ? "" : appCtx.getString(R.string.longitude);
+                }
+                wallpaperShade = (cfg.clockWallpaperDim * 255 / 100) << 24;
+                wallpaperRes = appCtx.getResources();
+                if (started && !wallpaperShown && wallpaperFile != null) loadWallpaper();
+            });
+        });
     }
 
     private void loadWallpaper() {
         File file = wallpaperFile;
         int shade = wallpaperShade;
         Resources res = wallpaperRes;
+        if (file == null || res == null) return;
         DisplayMetrics dm = res.getDisplayMetrics();
         int w = dm.widthPixels, h = dm.heightPixels;
         int generation = ++wallpaperGeneration;
-        new Thread(() -> {
-            Bitmap bmp = decode(file, w, h);
+        LauncherExecutors.io().execute(() -> {
+            Bitmap bmp = decode(file, w, h, shade);
             if (bmp == null) return;
             handler.post(() -> {
                 if (generation != wallpaperGeneration || wallpaperShown) {
-                    bmp.recycle();   // stopped meanwhile (or already shown): this picture was never attached
+                    if (bmp.getConfig() != Bitmap.Config.HARDWARE && !bmp.isRecycled()) {
+                        bmp.recycle();   // stopped meanwhile (or already shown): this picture was never attached
+                    }
                     return;
                 }
                 wallpaperShown = true;
-                // As the image, not the background: a background is stretched to the view, so a picture of
-                // another shape than the screen would be distorted. centerCrop scales and crops it like Home.
+                // Shade is baked into the GPU texture off-thread: single draw pass, zero overdraw.
                 ambient.setBackground(null);
-                ambient.setImageDrawable(new LayerDrawable(new Drawable[]{
-                        new BitmapDrawable(res, bmp), new ColorDrawable(shade)}));
+                ambient.setImageDrawable(new BitmapDrawable(res, bmp));
             });
-        }, "clock-wallpaper").start();
+        });
     }
 
-    /** WallpaperPlayer's decode: sampled and scaled down to cover the screen, never bigger than 4K. */
-    private static Bitmap decode(File file, int screenW, int screenH) {
+    /** WallpaperPlayer's decode: sampled, shaded, and uploaded to GPU memory off-thread. */
+    private static Bitmap decode(File file, int screenW, int screenH, int shade) {
         try {
             BitmapFactory.Options options = new BitmapFactory.Options();
             options.inJustDecodeBounds = true;
@@ -256,7 +309,16 @@ final class ClockScene {
                 options.inTargetDensity = scale[1];
             }
             options.inPreferredConfig = Bitmap.Config.RGB_565;
-            return BitmapFactory.decodeFile(file.getPath(), options);
+            options.inMutable = shade != 0;
+            Bitmap decoded = BitmapFactory.decodeFile(file.getPath(), options);
+            if (decoded == null) return null;
+            if (shade != 0) new Canvas(decoded).drawColor(shade);
+            Bitmap gpu = decoded.copy(Bitmap.Config.HARDWARE, false);
+            if (gpu != null) {
+                decoded.recycle();
+                return gpu;
+            }
+            return decoded;
         } catch (Exception | OutOfMemoryError failure) {
             return null;
         }
@@ -287,9 +349,10 @@ final class ClockScene {
     }
 
     private void moveClock() {
-        content.animate().alpha(0f).setDuration(900).withLayer().withEndAction(() -> {
+        content.animate().alpha(0f).setDuration(900).withEndAction(() -> {
+            if (!started) return;
             placeClock();
-            content.animate().alpha(1f).setDuration(1200).withLayer().start();
+            content.animate().alpha(1f).setDuration(1200).start();
         }).start();
     }
 
@@ -303,7 +366,7 @@ final class ClockScene {
         content.setX(x);
         content.setY(y);
         if (parent.getWidth() > 0 && parent.getHeight() > 0) {
-            glow.setGradientCenter((x + content.getWidth() / 2f) / parent.getWidth(),
+            glow.setCenter((x + content.getWidth() / 2f) / parent.getWidth(),
                     (y + content.getHeight() / 2f) / parent.getHeight());
         }
     }
@@ -315,17 +378,134 @@ final class ClockScene {
         int to = PALETTE[colorIndex];
         for (int i = 1; i <= GLOW_STEPS; i++) {
             float f = (float) i / GLOW_STEPS;
-            int stepColor = (int) colorMix.evaluate(f, from, to);
+            int stepColor = MainActivity.lerpColor(from, to, f);
             handler.postDelayed(() -> setGlow(stepColor), i * GLOW_STEP_MS);
         }
     }
 
     private void setGlow(int color) {
         glowColor = color;
-        int c = color & 0x00FFFFFF;
-        glowColors[0] = 0x40000000 | c;
-        glowColors[1] = 0x14000000 | c;
-        glowColors[2] = 0x00000000 | c;
-        glow.setColors(glowColors);
+        glow.setColor(color);
+    }
+
+    /**
+     * 4x4 Bayer ordered-dithered radial ambient glow on pure black (240x135 opaque ARGB_8888 texture).
+     * Eliminates 8-bit concentric banding rings visible in Skia's undithered dark GradientDrawable
+     * while reducing full-screen GPU fragment cost to a single bilinear-sampled quad.
+     */
+    static final class DitheredRadialGlowDrawable extends Drawable {
+        static final int TEX_W = 240;
+        static final int TEX_H = 135;
+        private static final float ASPECT = (float) TEX_H / TEX_W;
+        private static final float INV_RADIUS = 1f / 0.55f;
+        private static final int[] BAYER_4X4 = {
+                 0,  8,  2, 10,
+                12,  4, 14,  6,
+                 3, 11,  1,  9,
+                15,  7, 13,  5
+        };
+
+        private final Paint paint = new Paint(Paint.FILTER_BITMAP_FLAG | Paint.DITHER_FLAG);
+        private int[] pixels;
+        private Bitmap bitmap;
+        private int rgb = 0x2B5CFF;
+        private float centerX = 0.5f;
+        private float centerY = 0.5f;
+        private boolean dirty = true;
+
+        void setColor(int argb) {
+            int next = argb & 0x00FFFFFF;
+            if (next == rgb && bitmap != null && !dirty) return;
+            rgb = next;
+            dirty = true;
+            invalidateSelf();
+        }
+
+        void setCenter(float cx, float cy) {
+            if (Math.abs(cx - centerX) < 0.002f && Math.abs(cy - centerY) < 0.002f && !dirty) return;
+            centerX = cx;
+            centerY = cy;
+            dirty = true;
+            invalidateSelf();
+        }
+
+        void release() {
+            if (bitmap != null && !bitmap.isRecycled()) bitmap.recycle();
+            bitmap = null;
+            pixels = null;
+            dirty = true;
+        }
+
+        static void renderPixels(int[] out, int w, int h, int rgb, float cx, float cy) {
+            float baseR = (rgb >> 16) & 0xFF;
+            float baseG = (rgb >> 8) & 0xFF;
+            float baseB = rgb & 0xFF;
+            float invW = 1f / w;
+            float invH = 1f / h;
+            for (int y = 0; y < h; y++) {
+                float dy = ((y + 0.5f) * invH - cy) * ASPECT;
+                float dy2 = dy * dy;
+                int rowOff = y * w;
+                int bayerRow = (y & 3) << 2;
+                for (int x = 0; x < w; x++) {
+                    float dx = (x + 0.5f) * invW - cx;
+                    float dist = (float) Math.sqrt(dx * dx + dy2) * INV_RADIUS;
+                    if (dist >= 1f) {
+                        out[rowOff + x] = 0xFF000000;
+                        continue;
+                    }
+                    float u = 1f - dist;
+                    float f = 0.255f * u * u * (1.35f - 0.35f * u);
+                    float dither = (BAYER_4X4[bayerRow | (x & 3)] + 0.5f) * (1f / 16f) - 0.5f;
+                    int r = clampChannel((int) (baseR * f + dither + 0.5f));
+                    int g = clampChannel((int) (baseG * f + dither + 0.5f));
+                    int b = clampChannel((int) (baseB * f + dither + 0.5f));
+                    out[rowOff + x] = 0xFF000000 | (r << 16) | (g << 8) | b;
+                }
+            }
+        }
+
+        private static int clampChannel(int v) {
+            return v < 0 ? 0 : Math.min(255, v);
+        }
+
+        private void ensureBitmap() {
+            if (!dirty && bitmap != null && !bitmap.isRecycled()) return;
+            if (pixels == null) pixels = new int[TEX_W * TEX_H];
+            if (bitmap == null || bitmap.isRecycled()) {
+                bitmap = Bitmap.createBitmap(TEX_W, TEX_H, Bitmap.Config.ARGB_8888);
+                bitmap.setHasAlpha(false);
+            }
+            renderPixels(pixels, TEX_W, TEX_H, rgb, centerX, centerY);
+            bitmap.setPixels(pixels, 0, TEX_W, 0, 0, TEX_W, TEX_H);
+            dirty = false;
+        }
+
+        @Override
+        public void draw(Canvas canvas) {
+            Rect bounds = getBounds();
+            if (bounds.isEmpty()) return;
+            ensureBitmap();
+            if (bitmap != null && !bitmap.isRecycled()) {
+                canvas.drawBitmap(bitmap, null, bounds, paint);
+            }
+        }
+
+        @Override
+        public void setAlpha(int alpha) {
+            paint.setAlpha(alpha);
+            invalidateSelf();
+        }
+
+        @Override
+        public void setColorFilter(ColorFilter colorFilter) {
+            paint.setColorFilter(colorFilter);
+            invalidateSelf();
+        }
+
+        @Override
+        public int getOpacity() {
+            return PixelFormat.OPAQUE;
+        }
     }
 }

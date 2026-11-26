@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.gathin.tvhome.WallpaperRotationTest" tests="9" skipped="0" failures="0" errors="0" timestamp="2026-11-13T11:55:42" hostname="POOMATTATHIL" time="0.013">
+  <properties/>
+  <testcase name="findMatchesByName" classname="com.gathin.tvhome.WallpaperRotationTest" time="0.001"/>
+  <testcase name="anOnTvPickReplacesTheRotation" classname="com.gathin.tvhome.WallpaperRotationTest" time="0.0"/>
+  <testcase name="imagesKeepsPicturesOnlySortedByName" classname="com.gathin.tvhome.WallpaperRotationTest" time="0.009"/>
+  <testcase name="pickUsesTheRequestedOrder" classname="com.gathin.tvhome.WallpaperRotationTest" time="0.001"/>
+  <testcase name="dueOnlyWithRotationOnAndTheIntervalPassed" classname="com.gathin.tvhome.WallpaperRotationTest" time="0.0"/>
+  <testcase name="pickAvoidsThePreviousPictureWhenThereIsAnother" classname="com.gathin.tvhome.WallpaperRotationTest" time="0.001"/>
+  <testcase name="findsTheFirstPictureWhenThePreviousOneIsGone" classname="com.gathin.tvhome.WallpaperRotationTest" time="0.0"/>
+  <testcase name="homeRebuildsWhenTheSettingsRevisionMoved" classname="com.gathin.tvhome.WallpaperRotationTest" time="0.0"/>
+  <testcase name="sequentialAdvancesInSortedOrderAndWraps" classname="com.gathin.tvhome.WallpaperRotationTest" time="0.0"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

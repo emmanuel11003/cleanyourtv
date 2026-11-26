@@ -9,6 +9,11 @@
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <!-- On-demand local LAN Wi-Fi server for built-in Wallpaper & Backup Sync (0% idle network activity). -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
+    <uses-permission android:name="android.permission.KILL_BACKGROUND_PROCESSES" />
     <!-- Needed since Android 10 to read the Wi-Fi network name for the network pill. Never requested at
          runtime: build-and-install grants it with pm grant, so lint's Android 12 "ask for COARSE with
          FINE" rule does not apply here. -->
@@ -25,9 +30,15 @@
          this permission (protection level normal, so it is granted at install). Ignored on other TVs. -->
     <uses-permission android:name="yandex.tv.permission.ACCESS_TV_SOURCE" />
 
+    <!-- Local-only permission for the Wallpaper Sync companion add-on (no network in launcher). -->
+    <permission
+        android:name="${applicationId}.permission.WALLPAPER_SYNC"
+        android:protectionLevel="signature" />
+
     <!-- Android 11+ package visibility: lets the launcher list the TV apps it shows as tiles, and the
          apps that declare a module card (docs/specs/card.md). -->
     <queries>
+        <package android:name="com.emmanuel.wallpapersync" />
         <!-- The standard settings handlers, so package visibility doesn't hide them and send the pills to a vendor fallback by mistake. -->
         <intent>
             <action android:name="android.settings.SETTINGS" />
@@ -131,7 +142,7 @@
             android:exported="true"
             android:taskAffinity=""
             android:excludeFromRecents="true"
-            android:theme="@style/Theme.TvHome.Translucent.Morph">
+            android:theme="@style/Theme.TvHome">
             <intent-filter>
                 <action android:name="com.gathin.tvhome.action.SETTINGS" />
                 <category android:name="android.intent.category.DEFAULT" />
@@ -164,7 +175,7 @@
             android:launchMode="singleTop"
             android:excludeFromRecents="true"
             android:noHistory="true"
-            android:theme="@style/Theme.TvHome.Translucent.Morph">
+            android:theme="@android:style/Theme.Translucent.NoTitleBar.Fullscreen">
             <intent-filter>
                 <action android:name="android.app.action.OPEN_NOTIFICATION_HANDLER_PANEL" />
                 <action android:name="android.app.action.TOGGLE_NOTIFICATION_HANDLER_PANEL" />
@@ -172,19 +183,29 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-        <!-- Apple TV-style Recent Apps / Multitasking Switcher carousel. -->
         <activity
-            android:name=".RecentAppsActivity"
-            android:exported="true"
+            android:name=".NotificationPanelActivity"
+            android:exported="false"
             android:taskAffinity=""
             android:launchMode="singleTop"
             android:excludeFromRecents="true"
-            android:theme="@style/Theme.TvHome.Translucent.Morph">
+            android:noHistory="true"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar.Fullscreen" />
+        <activity
+            android:name=".WallpaperSyncActivity"
+            android:exported="true"
+            android:taskAffinity=""
+            android:excludeFromRecents="true"
+            android:theme="@style/Theme.TvHome">
             <intent-filter>
-                <action android:name="com.gathin.tvhome.action.RECENTS" />
+                <action android:name="com.gathin.tvhome.action.WALLPAPER_SYNC" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
+        <service
+            android:name=".WallpaperSyncService"
+            android:exported="false"
+            android:foregroundServiceType="dataSync" />
         <activity
             android:name=".HomeSettingsActivity"
             android:exported="false"
@@ -261,6 +282,13 @@
             android:authorities="${applicationId}.theme"
             android:exported="true"
             android:permission="android.permission.WRITE_SECURE_SETTINGS" />
+
+        <!-- Local-only wallpaper bridge for the Wallpaper Sync companion add-on. -->
+        <provider
+            android:name=".WallpaperBridgeProvider"
+            android:authorities="${applicationId}.wallpaper_bridge"
+            android:exported="true"
+            android:permission="${applicationId}.permission.WALLPAPER_SYNC" />
 
         <!-- The remote's Input button (KEYCODE_TV or KEYCODE_TV_INPUT) opens the input switcher, and input_key_keycodes and
          app_keys (config.xml or a theme) bring back other remote buttons; see InputKeyService. -->

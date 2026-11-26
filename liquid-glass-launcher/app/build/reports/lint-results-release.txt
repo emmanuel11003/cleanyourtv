@@ -1,0 +1,1022 @@
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\java\com\gathin\tvhome\Config.java:833: Warning: Consider using apply() instead; commit writes its data to persistent storage immediately, whereas apply will handle it in the background [ApplySharedPref]
+            editor.putString(THEME_SIGNATURE_KEY, signature).commit();
+                                                             ~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\java\com\gathin\tvhome\Config.java:837: Warning: Consider using apply() instead; commit writes its data to persistent storage immediately, whereas apply will handle it in the background [ApplySharedPref]
+                    .remove(CLOCK_FORMAT_KEY).putString(THEME_SIGNATURE_KEY, signature).commit();
+                                                                                        ~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\java\com\gathin\tvhome\GuardKeep.java:44: Warning: Consider using apply() instead; commit writes its data to persistent storage immediately, whereas apply will handle it in the background [ApplySharedPref]
+        context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit().putBoolean(KEY_OFF, off).commit();
+                                                                                                  ~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\java\com\gathin\tvhome\LauncherSettingsActivity.java:376: Warning: Consider using apply() instead; commit writes its data to persistent storage immediately, whereas apply will handle it in the background [ApplySharedPref]
+                    .commit();
+                     ~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\java\com\gathin\tvhome\OpenOnStart.java:39: Warning: Consider using apply() instead; commit writes its data to persistent storage immediately, whereas apply will handle it in the background [ApplySharedPref]
+        ctx.getSharedPreferences(BOOT_PREFS, Context.MODE_PRIVATE).edit().putInt(BOOT_KEY, boot(ctx)).commit();
+                                                                                                      ~~~~~~~~
+
+   Explanation for issues of type "ApplySharedPref":
+   Consider using apply() instead of commit on shared preferences. Whereas
+   commit blocks and writes its data to persistent storage immediately, apply
+   will handle it in the background.
+
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\layout\dream_clock.xml:93: Warning: The id "dreamCalendarDivider" in layout "dream_clock" is missing from the following layout configurations: layout-iw (present in layout) [InconsistentLayout]
+            android:id="@+id/dreamCalendarDivider"
+            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\layout\dream_clock.xml:101: Warning: The id "dreamCalendar" in layout "dream_clock" is missing from the following layout configurations: layout-iw (present in layout) [InconsistentLayout]
+            android:id="@+id/dreamCalendar"
+            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+   Explanation for issues of type "InconsistentLayout":
+   This check ensures that a layout resource which is defined in multiple
+   resource folders, specifies the same set of widgets.
+
+   This finds cases where you have accidentally forgotten to add a widget to
+   all variations of the layout, which could result in a runtime crash for
+   some resource configurations when a findViewById() fails.
+
+   There are cases where this is intentional. For example, you may have a
+   dedicated large tablet layout which adds some extra widgets that are not
+   present in the phone version of the layout. As long as the code accessing
+   the layout resource is careful to handle this properly, it is valid. In
+   that case, you can suppress this lint check for the given extra or missing
+   views, or the whole layout
+
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\java\com\gathin\tvhome\RemoteKeys.java:339: Warning: Field requires API level 28 (current min is 26): android.accessibilityservice.AccessibilityService#GLOBAL_ACTION_LOCK_SCREEN [InlinedApi]
+            case "sleep": return sdk >= 28 ? AccessibilityService.GLOBAL_ACTION_LOCK_SCREEN : 0;
+                                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+   Explanation for issues of type "InlinedApi":
+   This check scans through all the Android API field references in the
+   application and flags certain constants, such as static final integers and
+   Strings, which were introduced in later versions. These will actually be
+   copied into the class files rather than being referenced, which means that
+   the value is available even when running on older devices. In some cases
+   that's fine, and in other cases it can result in a runtime crash or
+   incorrect behavior. It depends on the context, so consider the code
+   carefully and decide whether it's safe and can be suppressed or whether the
+   code needs to be guarded.
+
+   If you really want to use this API and don't need to support older devices
+   just set the minSdkVersion in your build.gradle or AndroidManifest.xml
+   files.
+
+   If your code is deliberately accessing newer APIs, and you have ensured
+   (e.g. with conditional execution) that this code will only ever be called
+   on a supported platform, then you can annotate your class or method with
+   the @TargetApi annotation specifying the local minimum SDK to apply, such
+   as @TargetApi(11), such that this check considers 11 rather than your
+   manifest file's minimum SDK as the required API level.
+
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:98: Warning: Attribute localeConfig is only used in API level 33 and higher (current min is 26) [UnusedAttribute]
+        android:localeConfig="@xml/locales_config">
+        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+   Explanation for issues of type "UnusedAttribute":
+   This check finds attributes set in XML files that were introduced in a
+   version newer than the oldest version targeted by your application (with
+   the minSdkVersion attribute).
+
+   This is not an error; the application will simply ignore the attribute.
+   However, if the attribute is important to the appearance or functionality
+   of your application, you should consider finding an alternative way to
+   achieve the same result with only available attributes, and then you can
+   optionally create a copy of the layout in a layout-vNN folder which will be
+   used on API NN or higher where you can take advantage of the newer
+   attribute.
+
+   Note: This check does not only apply to attributes. For example, some tags
+   can be unused too, such as the new <tag> element in layouts introduced in
+   API 21.
+
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\java\com\gathin\tvhome\LauncherLocale.java:33: Warning: Found dynamic locale changes, but did not find corresponding Play Core library calls for downloading languages and splitting by language is not disabled in the bundle configuration [AppBundleLocaleChanges]
+        c.setLocale(locale);
+        ~~~~~~~~~~~~~~~~~~~
+
+   Explanation for issues of type "AppBundleLocaleChanges":
+   When changing locales at runtime (e.g. to provide an in-app language
+   switcher), the Android App Bundle must be configured to not split by locale
+   or the Play Core library must be used to download additional locales at
+   runtime.
+
+   https://developer.android.com/guide/app-bundle/configure-base#handling_language_changes
+
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\java\com\gathin\tvhome\AppLaunchActivity.java:11: Warning: The application should not provide its own launch screen [CustomSplashScreen]
+public class AppLaunchActivity extends Activity {
+             ~~~~~~~~~~~~~~~~~
+
+   Explanation for issues of type "CustomSplashScreen":
+   Starting in Android 12 (API 31+), the application's Launch Screen is
+   provided by the system and the application should not create its own,
+   otherwise the user will see two splashscreens. Please check the
+   SplashScreen class to check how the Splash Screen can be controlled and
+   customized.
+
+   https://developer.android.com/guide/topics/ui/splash-screen
+
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:108: Warning: Should not restrict activity to fixed orientation. This may not be suitable for different form factors, causing the app to be letterboxed. [DiscouragedApi]
+            android:screenOrientation="landscape">
+            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:133: Warning: Should not restrict activity to fixed orientation. This may not be suitable for different form factors, causing the app to be letterboxed. [DiscouragedApi]
+            android:screenOrientation="landscape">
+            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\java\com\gathin\tvhome\AppAdapter.java:393: Warning: Use of this function is discouraged because resource reflection makes it harder to perform build optimizations and compile-time verification of code. It is much more efficient to retrieve resources by identifier (e.g. R.foo.bar) than by name (e.g. getIdentifier("bar", "foo", null)). [DiscouragedApi]
+        int id = ctx.getResources().getIdentifier(name, "drawable", ctx.getPackageName());
+                                    ~~~~~~~~~~~~~
+
+   Explanation for issues of type "DiscouragedApi":
+   Discouraged APIs are allowed and are not deprecated, but they may be unfit
+   for common use (e.g. due to slow performance or subtle behavior).
+
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\values-b+es+419\strings.xml:39: Warning: For locale "es" (Spanish) the following quantity should also be defined: many [MissingQuantity]
+    <plurals name="library_app_count">
+    ^
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\values-ca\strings.xml:61: Warning: For locale "ca" (Catalan) the following quantity should also be defined: many [MissingQuantity]
+    <plurals name="library_app_count">
+    ^
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\values-es\strings.xml:66: Warning: For locale "es" (Spanish) the following quantity should also be defined: many [MissingQuantity]
+    <plurals name="library_app_count">
+    ^
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\values-fr\strings.xml:87: Warning: For locale "fr" (French) the following quantity should also be defined: many (e.g. "1000000 de jours") [MissingQuantity]
+    <plurals name="library_app_count">
+    ^
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\values-it\strings.xml:97: Warning: For locale "it" (Italian) the following quantity should also be defined: many [MissingQuantity]
+    <plurals name="library_app_count">
+    ^
+
+   Explanation for issues of type "MissingQuantity":
+   Different languages have different rules for grammatical agreement with
+   quantity. In English, for example, the quantity 1 is a special case. We
+   write "1 book", but for any other quantity we'd write "n books". This
+   distinction between singular and plural is very common, but other languages
+   make finer distinctions.
+
+   This lint check looks at each translation of a <plural> and makes sure that
+   all the quantity strings considered by the given language are provided by
+   this translation.
+
+   For example, an English translation must provide a string for
+   quantity="one". Similarly, a Czech translation must provide a string for
+   quantity="few".
+
+   https://developer.android.com/guide/topics/resources/string-resource.html#Plurals
+
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\values\strings.xml:3: Information: "app_name" is not translated in "de" (German), "it" (Italian), "nl" (Dutch) [MissingTranslation]
+    <string name="app_name">Liquid Glass</string>
+            ~~~~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\values\strings.xml:5: Information: "wifi" is not translated in "ast" (Asturian; Bable; Leonese; Asturleonese), "fi" (Finnish), "ru" (Russian), "pt" (Portuguese), "fr" (French), "uk" (Ukrainian), "ca" (Catalan), "sr" (Serbian), "sv" (Swedish), "ko" (Korean), "in" (Indonesian), "uz" (Uzbek), "it" (Italian), "es" (Spanish), "iw" (Hebrew), "cs" (Czech), "vi" (Vietnamese), "nb" (Norwegian Bokmål), "th" (Thai), "pl" (Polish), "da" (Danish), "tr" (Turkish) [MissingTranslation]
+    <string name="wifi">Wi-Fi</string>
+            ~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\values\strings.xml:9: Information: "standby" is not translated in "de" (German), "it" (Italian), "da" (Danish) [MissingTranslation]
+    <string name="standby">Standby</string>
+            ~~~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\values\strings.xml:11: Information: "live_tv" is not translated in "de" (German) [MissingTranslation]
+    <string name="live_tv">Live TV</string>
+            ~~~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\values\strings.xml:17: Information: "good_forenoon" is not translated in "de" (German), "fi" (Finnish), "ru" (Russian), "pt" (Portuguese), "bn" (Bangla), "fr" (French), "uk" (Ukrainian), "ca" (Catalan), "sr" (Serbian), "ko" (Korean), "in" (Indonesian), "uz" (Uzbek), "zh" (Chinese), "cs" (Czech), "ar" (Arabic), "vi" (Vietnamese), "nb" (Norwegian Bokmål), "th" (Thai), "pl" (Polish), "nl" (Dutch), "tr" (Turkish) [MissingTranslation]
+    <string name="good_forenoon">Good late morning</string>
+            ~~~~~~~~~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\values\strings.xml:19: Information: "festival_dussehra_greeting" is not translated in "de" (German), "fi" (Finnish), "bn" (Bangla), "fr" (French), "ca" (Catalan), "sr" (Serbian), "in" (Indonesian), "uz" (Uzbek), "cs" (Czech), "ar" (Arabic), "nb" (Norwegian Bokmål), "th" (Thai), "pl" (Polish), "nl" (Dutch), "tr" (Turkish) [MissingTranslation]
+    <string name="festival_dussehra_greeting">Happy Dussehra</string>
+            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\values\strings.xml:20: Information: "festival_diwali_greeting" is not translated in "de" (German), "fi" (Finnish), "bn" (Bangla), "fr" (French), "ca" (Catalan), "sr" (Serbian), "in" (Indonesian), "uz" (Uzbek), "cs" (Czech), "ar" (Arabic), "nb" (Norwegian Bokmål), "th" (Thai), "pl" (Polish), "nl" (Dutch), "tr" (Turkish) [MissingTranslation]
+    <string name="festival_diwali_greeting">Happy Diwali</string>
+            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\values\strings.xml:21: Information: "festival_halloween_greeting" is not translated in "de" (German), "ast" (Asturian; Bable; Leonese; Asturleonese), "fi" (Finnish), "bn" (Bangla), "fr" (French), "ca" (Catalan), "sr" (Serbian), "in" (Indonesian), "uz" (Uzbek), "cs" (Czech), "ar" (Arabic), "nb" (Norwegian Bokmål), "th" (Thai), "pl" (Polish), "nl" (Dutch), "tr" (Turkish) [MissingTranslation]
+    <string name="festival_halloween_greeting">Happy Halloween</string>
+            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\values\strings.xml:22: Information: "ethernet" is not translated in "ast" (Asturian; Bable; Leonese; Asturleonese), "fi" (Finnish), "ru" (Russian), "pt" (Portuguese), "fr" (French), "uk" (Ukrainian), "ca" (Catalan), "sr" (Serbian), "sv" (Swedish), "in" (Indonesian), "uz" (Uzbek), "it" (Italian), "es" (Spanish), "cs" (Czech), "vi" (Vietnamese), "nb" (Norwegian Bokmål), "pl" (Polish), "da" (Danish), "nl" (Dutch), "tr" (Turkish) [MissingTranslation]
+    <string name="ethernet">Ethernet</string>
+            ~~~~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\values\strings.xml:23: Information: "offline" is not translated in "de" (German), "it" (Italian), "da" (Danish), "nl" (Dutch) [MissingTranslation]
+    <string name="offline">Offline</string>
+            ~~~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\values\strings.xml:26: Information: "date_format" is not translated in "ca" (Catalan), "in" (Indonesian), "ar" (Arabic), "th" (Thai), "pl" (Polish) [MissingTranslation]
+    <string name="date_format">EEEE  d MMMM</string>
+            ~~~~~~~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\values\strings.xml:29: Information: "shamsi_month_farvardin" is not translated in "de" (German), "ast" (Asturian; Bable; Leonese; Asturleonese), "fi" (Finnish), "pt" (Portuguese), "bn" (Bangla), "fr" (French), "ca" (Catalan), "sr" (Serbian), "sv" (Swedish), "in" (Indonesian), "uz" (Uzbek), "it" (Italian), "cs" (Czech), "ar" (Arabic), "vi" (Vietnamese), "nb" (Norwegian Bokmål), "th" (Thai), "pl" (Polish), "da" (Danish), "nl" (Dutch), "tr" (Turkish) [MissingTranslation]
+    <string name="shamsi_month_farvardin">Farvardin</string>
+            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\values\strings.xml:30: Information: "shamsi_month_ordibehesht" is not translated in "de" (German), "ast" (Asturian; Bable; Leonese; Asturleonese), "fi" (Finnish), "pt" (Portuguese), "bn" (Bangla), "fr" (French), "ca" (Catalan), "sr" (Serbian), "sv" (Swedish), "in" (Indonesian), "uz" (Uzbek), "it" (Italian), "es" (Spanish), "cs" (Czech), "ar" (Arabic), "vi" (Vietnamese), "nb" (Norwegian Bokmål), "th" (Thai), "pl" (Polish), "da" (Danish), "nl" (Dutch), "tr" (Turkish) [MissingTranslation]
+    <string name="shamsi_month_ordibehesht">Ordibehesht</string>
+            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\values\strings.xml:31: Information: "shamsi_month_khordad" is not translated in "de" (German), "ast" (Asturian; Bable; Leonese; Asturleonese), "fi" (Finnish), "pt" (Portuguese), "bn" (Bangla), "fr" (French), "ca" (Catalan), "sr" (Serbian), "sv" (Swedish), "in" (Indonesian), "uz" (Uzbek), "it" (Italian), "cs" (Czech), "ar" (Arabic), "vi" (Vietnamese), "nb" (Norwegian Bokmål), "th" (Thai), "pl" (Polish), "da" (Danish), "nl" (Dutch), "tr" (Turkish) [MissingTranslation]
+    <string name="shamsi_month_khordad">Khordad</string>
+            ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\values\strings.xml:32: Information: "shamsi_month_tir" is not translated in "de" (German), "ast" (Asturian; Bable; Leonese; Asturleonese), "fi" (Finnish), "pt" (Portuguese), "bn" (Bangla), "fr" (French), "ca" (Catalan), "sr" (Serbian), "sv" (Swedish), "in" (Indonesian), "uz" (Uzbek), "it" (Italian), "es" (Spanish), "cs" (Czech), "ar" (Arabic), "vi" (Vietnamese), "nb" (Norwegian Bokmål), "th" (Thai), "pl" (Polish), "da" (Danish), "nl" (Dutch), "tr" (Turkish) [MissingTranslation]
+    <string name="shamsi_month_tir">Tir</string>
+            ~~~~~~~~~~~~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\values\strings.xml:33: Information: "shamsi_month_mordad" is not translated in "de" (German), "ast" (Asturian; Bable; Leonese; Asturleonese), "fi" (Finnish), "pt" (Portuguese), "bn" (Bangla), "fr" (French), "ca" (Catalan), "sr" (Serbian), "sv" (Swedish), "in" (Indonesian), "uz" (Uzbek), "it" (Italian), "es" (Spanish), "cs" (Czech), "ar" (Arabic), "vi" (Vietnamese), "nb" (Norwegian Bokmål), "th" (Thai), "pl" (Polish), "da" (Danish), "nl" (Dutch), "tr" (Turkish) [MissingTranslation]
+    <string name="shamsi_month_mordad">Mordad</string>
+            ~~~~~~~~~~~~~~~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\values\strings.xml:34: Information: "shamsi_month_shahrivar" is not translated in "de" (German), "ast" (Asturian; Bable; Leonese; Asturleonese), "fi" (Finnish), "pt" (Portuguese), "bn" (Bangla), "fr" (French), "ca" (Catalan), "sr" (Serbian), "sv" (Swedish), "in" (Indonesian), "uz" (Uzbek), "it" (Italian), "es" (Spanish), "cs" (Czech), "ar" (Arabic), "vi" (Vietnamese), "nb" (Norwegian Bokmål), "th" (Thai), "pl" (Polish), "da" (Danish), "nl" (Dutch), "tr" (Turkish) [MissingTranslation]
+    <string name="shamsi_month_shahrivar">Shahrivar</string>
+            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\values\strings.xml:35: Information: "shamsi_month_mehr" is not translated in "de" (German), "ast" (Asturian; Bable; Leonese; Asturleonese), "fi" (Finnish), "pt" (Portuguese), "bn" (Bangla), "fr" (French), "ca" (Catalan), "sr" (Serbian), "sv" (Swedish), "in" (Indonesian), "uz" (Uzbek), "it" (Italian), "es" (Spanish), "cs" (Czech), "ar" (Arabic), "vi" (Vietnamese), "nb" (Norwegian Bokmål), "th" (Thai), "pl" (Polish), "da" (Danish), "nl" (Dutch), "tr" (Turkish) [MissingTranslation]
+    <string name="shamsi_month_mehr">Mehr</string>
+            ~~~~~~~~~~~~~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\values\strings.xml:36: Information: "shamsi_month_aban" is not translated in "de" (German), "ast" (Asturian; Bable; Leonese; Asturleonese), "fi" (Finnish), "pt" (Portuguese), "bn" (Bangla), "fr" (French), "ca" (Catalan), "sr" (Serbian), "sv" (Swedish), "in" (Indonesian), "uz" (Uzbek), "it" (Italian), "cs" (Czech), "ar" (Arabic), "vi" (Vietnamese), "nb" (Norwegian Bokmål), "th" (Thai), "pl" (Polish), "da" (Danish), "nl" (Dutch), "tr" (Turkish) [MissingTranslation]
+    <string name="shamsi_month_aban">Aban</string>
+            ~~~~~~~~~~~~~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\values\strings.xml:37: Information: "shamsi_month_azar" is not translated in "de" (German), "ast" (Asturian; Bable; Leonese; Asturleonese), "fi" (Finnish), "pt" (Portuguese), "bn" (Bangla), "fr" (French), "ca" (Catalan), "sr" (Serbian), "sv" (Swedish), "in" (Indonesian), "uz" (Uzbek), "it" (Italian), "es" (Spanish), "cs" (Czech), "ar" (Arabic), "vi" (Vietnamese), "nb" (Norwegian Bokmål), "th" (Thai), "pl" (Polish), "da" (Danish), "nl" (Dutch), "tr" (Turkish) [MissingTranslation]
+    <string name="shamsi_month_azar">Azar</string>
+            ~~~~~~~~~~~~~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\values\strings.xml:38: Information: "shamsi_month_dey" is not translated in "de" (German), "ast" (Asturian; Bable; Leonese; Asturleonese), "fi" (Finnish), "pt" (Portuguese), "bn" (Bangla), "fr" (French), "ca" (Catalan), "sr" (Serbian), "sv" (Swedish), "in" (Indonesian), "uz" (Uzbek), "it" (Italian), "es" (Spanish), "cs" (Czech), "ar" (Arabic), "vi" (Vietnamese), "nb" (Norwegian Bokmål), "th" (Thai), "pl" (Polish), "da" (Danish), "nl" (Dutch), "tr" (Turkish) [MissingTranslation]
+    <string name="shamsi_month_dey">Dey</string>
+            ~~~~~~~~~~~~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\values\strings.xml:39: Information: "shamsi_month_bahman" is not translated in "de" (German), "ast" (Asturian; Bable; Leonese; Asturleonese), "fi" (Finnish), "pt" (Portuguese), "bn" (Bangla), "fr" (French), "ca" (Catalan), "sr" (Serbian), "sv" (Swedish), "in" (Indonesian), "uz" (Uzbek), "it" (Italian), "cs" (Czech), "ar" (Arabic), "vi" (Vietnamese), "nb" (Norwegian Bokmål), "th" (Thai), "pl" (Polish), "da" (Danish), "nl" (Dutch), "tr" (Turkish) [MissingTranslation]
+    <string name="shamsi_month_bahman">Bahman</string>
+            ~~~~~~~~~~~~~~~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\values\strings.xml:40: Information: "shamsi_month_esfand" is not translated in "de" (German), "ast" (Asturian; Bable; Leonese; Asturleonese), "fi" (Finnish), "pt" (Portuguese), "bn" (Bangla), "fr" (French), "ca" (Catalan), "sr" (Serbian), "sv" (Swedish), "in" (Indonesian), "uz" (Uzbek), "it" (Italian), "es" (Spanish), "cs" (Czech), "ar" (Arabic), "vi" (Vietnamese), "nb" (Norwegian Bokmål), "th" (Thai), "pl" (Polish), "da" (Danish), "nl" (Dutch), "tr" (Turkish) [MissingTranslation]
+    <string name="shamsi_month_esfand">Esfand</string>
+            ~~~~~~~~~~~~~~~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\values\strings.xml:41: Information: "stats_cpu" is not translated in "de" (German), "ast" (Asturian; Bable; Leonese; Asturleonese), "ru" (Russian), "pt" (Portuguese), "fr" (French), "uk" (Ukrainian), "ca" (Catalan), "sr" (Serbian), "ko" (Korean), "in" (Indonesian), "it" (Italian), "es" (Spanish), "zh" (Chinese), "cs" (Czech), "ar" (Arabic), "vi" (Vietnamese), "th" (Thai), "pl" (Polish), "da" (Danish), "nl" (Dutch), "tr" (Turkish) [MissingTranslation]
+    <string name="stats_cpu">CPU %1$d%%</string>
+            ~~~~~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\values\strings.xml:44: Information: "storage_gb_whole" is not translated in "de" (German), "ast" (Asturian; Bable; Leonese; Asturleonese), "fi" (Finnish), "pt" (Portuguese), "bn" (Bangla), "fr" (French), "ca" (Catalan), "sr" (Serbian), "sv" (Swedish), "ko" (Korean), "in" (Indonesian), "uz" (Uzbek), "it" (Italian), "es" (Spanish), "iw" (Hebrew), "zh" (Chinese), "cs" (Czech), "ar" (Arabic), "vi" (Vietnamese), "nb" (Norwegian Bokmål), "th" (Thai), "pl" (Polish), "da" (Danish), "nl" (Dutch), "tr" (Turkish) [MissingTranslation]
+    <string name="storage_gb_whole">%1$.0f GB</string>
+            ~~~~~~~~~~~~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\values\strings.xml:45: Information: "storage_gb_decimal" is not translated in "de" (German), "ast" (Asturian; Bable; Leonese; Asturleonese), "fi" (Finnish), "pt" (Portuguese), "bn" (Bangla), "fr" (French), "ca" (Catalan), "sr" (Serbian), "sv" (Swedish), "ko" (Korean), "in" (Indonesian), "uz" (Uzbek), "it" (Italian), "es" (Spanish), "iw" (Hebrew), "zh" (Chinese), "cs" (Czech), "ar" (Arabic), "vi" (Vietnamese), "nb" (Norwegian Bokmål), "th" (Thai), "pl" (Polish), "da" (Danish), "nl" (Dutch), "tr" (Turkish) [MissingTranslation]
+    <string name="storage_gb_decimal">%1$.1f GB</string>
+            ~~~~~~~~~~~~~~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\values\strings.xml:47: Information: "vpn" is not translated in "de" (German), "ast" (Asturian; Bable; Leonese; Asturleonese), "fi" (Finnish), "ru" (Russian), "pt" (Portuguese), "bn" (Bangla), "fr" (French), "uk" (Ukrainian), "ca" (Catalan), "sr" (Serbian), "sv" (Swedish), "ko" (Korean), "in" (Indonesian), "uz" (Uzbek), "it" (Italian), "es" (Spanish), "iw" (Hebrew), "zh" (Chinese), "cs" (Czech), "ar" (Arabic), "vi" (Vietnamese), "nb" (Norwegian Bokmål), "th" (Thai), "pl" (Polish), "da" (Danish), "nl" (Dutch), "tr" (Turkish) [MissingTranslation]
+    <string name="vpn">VPN</string>
+            ~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\values\strings.xml:48: Information: "vpn_off" is not translated in "de" (German) or "th" (Thai) [MissingTranslation]
+    <string name="vpn_off">VPN off</string>
+            ~~~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\values\strings.xml:49: Information: "home_settings" is not translated in "de" (German) or "th" (Thai) [MissingTranslation]
+    <string name="home_settings">Choose default home</string>
+            ~~~~~~~~~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\values\strings.xml:50: Information: "home_settings_help" is not translated in "de" (German), "th" (Thai), "da" (Danish) [MissingTranslation]
+    <string name="home_settings_help">Select your original home to stop using Liquid Glass as Home, or Liquid Glass to switch back. The original launcher must be enabled and your TV must provide a home picker; use the restore script first if it was disabled.</string>
+            ~~~~~~~~~~~~~~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\values\strings.xml:54: Information: "rows_below_dock_label" is not translated in "de" (German), "bn" (Bangla), "fr" (French), "sr" (Serbian), "ar" (Arabic), "th" (Thai), "pl" (Polish), "tr" (Turkish) [MissingTranslation]
+    <string name="rows_below_dock_label">Rows below dock</string>
+            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\values\strings.xml:55: Information: "dock_opacity_label" is not translated in "uk" (Ukrainian) [MissingTranslation]
+    <string name="dock_opacity_label">Dock band opacity</string>
+            ~~~~~~~~~~~~~~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\values\strings.xml:56: Information: "wallpaper_label" is not translated in "de" (German), "bn" (Bangla), "fr" (French), "sr" (Serbian), "in" (Indonesian), "ar" (Arabic), "th" (Thai), "pl" (Polish), "tr" (Turkish) [MissingTranslation]
+    <string name="wallpaper_label">Wallpaper</string>
+            ~~~~~~~~~~~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\values\strings.xml:57: Information: "wallpaper_state" is not translated in "de" (German), "bn" (Bangla), "fr" (French), "sr" (Serbian), "in" (Indonesian), "ar" (Arabic), "th" (Thai), "pl" (Polish), "tr" (Turkish) [MissingTranslation]
+    <string name="wallpaper_state">Wallpaper: %1$s</string>
+            ~~~~~~~~~~~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\values\strings.xml:58: Information: "wallpaper_none" is not translated in "de" (German), "bn" (Bangla), "fr" (French), "sr" (Serbian), "ar" (Arabic), "th" (Thai), "pl" (Polish), "tr" (Turkish) [MissingTranslation]
+    <string name="wallpaper_none">None (Solid black)</string>
+            ~~~~~~~~~~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\values\strings.xml:59: Information: "wallpaper_applied" is not translated in "de" (German), "bn" (Bangla), "fr" (French), "sr" (Serbian), "ar" (Arabic), "th" (Thai), "pl" (Polish), "tr" (Turkish) [MissingTranslation]
+    <string name="wallpaper_applied">Wallpaper changed</string>
+            ~~~~~~~~~~~~~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\values\strings.xml:60: Information: "wallpaper_theme_default" is not translated in "de" (German), "bn" (Bangla), "fr" (French), "sr" (Serbian), "ar" (Arabic), "th" (Thai), "pl" (Polish), "tr" (Turkish) [MissingTranslation]
+    <string name="wallpaper_theme_default">Theme default</string>
+            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\values\strings.xml:86: Information: "open_on_start_label" is not translated in "da" (Danish) [MissingTranslation]
+    <string name="open_on_start_label">Open on start</string>
+            ~~~~~~~~~~~~~~~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\values\strings.xml:87: Information: "open_on_start_state" is not translated in "da" (Danish) [MissingTranslation]
+    <string name="open_on_start_state">Open on start: %1$s</string>
+            ~~~~~~~~~~~~~~~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\values\strings.xml:88: Information: "advanced_effects_warning" is not translated in "da" (Danish) [MissingTranslation]
+    <string name="advanced_effects_warning">Adds a lifted tile, icon zoom and smooth colour transitions. May increase memory use; the actual difference depends on your TV.</string>
+            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\values\strings.xml:90: Information: "follow_theme_hint" is not translated in "da" (Danish) [MissingTranslation]
+    <string name="follow_theme_hint">Uses the current theme or built-in layout and motion settings. Pushing or resetting a theme also clears your on-TV choices.</string>
+            ~~~~~~~~~~~~~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\values\strings.xml:92: Information: "quick_picture" is not translated in "de" (German), "fr" (French), "sr" (Serbian), "ar" (Arabic), "th" (Thai), "pl" (Polish), "tr" (Turkish) [MissingTranslation]
+    <string name="quick_picture">Display</string>
+            ~~~~~~~~~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\values\strings.xml:93: Information: "quick_network" is not translated in "de" (German), "fr" (French), "sr" (Serbian), "ar" (Arabic), "th" (Thai), "pl" (Polish), "tr" (Turkish) [MissingTranslation]
+    <string name="quick_network">Network</string>
+            ~~~~~~~~~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\values\strings.xml:94: Information: "quick_apps" is not translated in "de" (German), "pt" (Portuguese), "fr" (French), "sr" (Serbian), "ar" (Arabic), "th" (Thai), "pl" (Polish), "da" (Danish), "nl" (Dutch), "tr" (Turkish) [MissingTranslation]
+    <string name="quick_apps">Apps</string>
+            ~~~~~~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\values\strings.xml:95: Information: "quick_apps_hint" is not translated in "de" (German), "fr" (French), "sr" (Serbian), "ar" (Arabic), "th" (Thai), "pl" (Polish), "tr" (Turkish) [MissingTranslation]
+    <string name="quick_apps_hint">Re-enable</string>
+            ~~~~~~~~~~~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\values\strings.xml:99: Information: "input_key_service_description" is not translated in "th" (Thai) or "da" (Danish) [MissingTranslation]
+    <string name="input_key_service_description">Opens the input switcher when the remote\'s Input button is pressed.</string>
+            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\values\strings.xml:100: Information: "home_key_name" is not translated in "de" (German) or "th" (Thai) [MissingTranslation]
+    <string name="home_key_name">Liquid Glass Home button</string>
+            ~~~~~~~~~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\values\strings.xml:101: Information: "home_key_description" is not translated in "de" (German) or "th" (Thai) [MissingTranslation]
+    <string name="home_key_description">Makes the remote\'s Home button open this launcher.</string>
+            ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\values\strings.xml:102: Information: "card_prompt_title" is not translated in "de" (German), "sr" (Serbian), "th" (Thai), "da" (Danish) [MissingTranslation]
+    <string name="card_prompt_title">New card from %1$s</string>
+            ~~~~~~~~~~~~~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\values\strings.xml:103: Information: "card_prompt_body" is not translated in "de" (German), "sr" (Serbian), "th" (Thai), "da" (Danish) [MissingTranslation]
+    <string name="card_prompt_body">%1$s can show a card on your home screen. Keeping it hidden leaves the app\'s normal tile as it is.</string>
+            ~~~~~~~~~~~~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\values\strings.xml:104: Information: "card_prompt_names" is not translated in "de" (German), "sr" (Serbian), "th" (Thai), "da" (Danish) [MissingTranslation]
+    <string name="card_prompt_names">The card is named \'%1$s\'. The app is \'%2$s\'.</string>
+            ~~~~~~~~~~~~~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\values\strings.xml:105: Information: "card_prompt_resigned" is not translated in "de" (German), "sr" (Serbian), "th" (Thai), "da" (Danish) [MissingTranslation]
+    <string name="card_prompt_resigned">%1$s was updated with a different signing key, so your earlier answer no longer applies. Decide again for its card.</string>
+            ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\values\strings.xml:106: Information: "card_prompt_relabelled" is not translated in "de" (German), "sr" (Serbian), "th" (Thai), "da" (Danish) [MissingTranslation]
+    <string name="card_prompt_relabelled">%1$s changed the name of its card since you decided. Decide again for it.</string>
+            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\values\strings.xml:107: Information: "card_prompt_hint" is not translated in "de" (German), "sr" (Serbian), "th" (Thai), "da" (Danish) [MissingTranslation]
+    <string name="card_prompt_hint">You can change this later: hold OK on Settings, then choose Module cards.</string>
+            ~~~~~~~~~~~~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\values\strings.xml:108: Information: "card_prompt_identity" is not translated in "de" (German), "sr" (Serbian), "th" (Thai), "da" (Danish) [MissingTranslation]
+    <string name="card_prompt_identity">%1$s, key %2$s</string>
+            ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\values\strings.xml:109: Information: "card_keep_hidden" is not translated in "de" (German), "sr" (Serbian), "th" (Thai) [MissingTranslation]
+    <string name="card_keep_hidden">Keep hidden</string>
+            ~~~~~~~~~~~~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\values\strings.xml:110: Information: "card_show" is not translated in "de" (German), "sr" (Serbian), "th" (Thai) [MissingTranslation]
+    <string name="card_show">Show card</string>
+            ~~~~~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\values\strings.xml:111: Information: "card_not_saved" is not translated in "de" (German), "sr" (Serbian), "th" (Thai), "da" (Danish) [MissingTranslation]
+    <string name="card_not_saved">Couldn\'t save the choice</string>
+            ~~~~~~~~~~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\values\strings.xml:112: Information: "module_cards" is not translated in "de" (German), "sr" (Serbian), "th" (Thai) [MissingTranslation]
+    <string name="module_cards">Module cards</string>
+            ~~~~~~~~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\values\strings.xml:113: Information: "no_module_cards" is not translated in "de" (German), "sr" (Serbian), "th" (Thai) [MissingTranslation]
+    <string name="no_module_cards">No module cards installed</string>
+            ~~~~~~~~~~~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\values\strings.xml:114: Information: "card_app_name" is not translated in "de" (German), "pt" (Portuguese), "sr" (Serbian), "sv" (Swedish), "it" (Italian), "nb" (Norwegian Bokmål), "th" (Thai), "da" (Danish), "nl" (Dutch) [MissingTranslation]
+    <string name="card_app_name">App: %1$s</string>
+            ~~~~~~~~~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\values\strings.xml:115: Information: "card_state_shown" is not translated in "de" (German), "sr" (Serbian), "th" (Thai) [MissingTranslation]
+    <string name="card_state_shown">Shown</string>
+            ~~~~~~~~~~~~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\values\strings.xml:116: Information: "card_state_over_limit" is not translated in "de" (German), "sr" (Serbian), "th" (Thai), "da" (Danish) [MissingTranslation]
+    <string name="card_state_over_limit">Shown, over the limit of 8</string>
+            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\values\strings.xml:117: Information: "card_state_hidden" is not translated in "de" (German), "sr" (Serbian), "th" (Thai) [MissingTranslation]
+    <string name="card_state_hidden">Hidden</string>
+            ~~~~~~~~~~~~~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\values\strings.xml:118: Information: "card_state_new" is not translated in "de" (German), "sr" (Serbian), "th" (Thai) [MissingTranslation]
+    <string name="card_state_new">New</string>
+            ~~~~~~~~~~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\values\strings.xml:119: Information: "card_state_new_key" is not translated in "de" (German), "sr" (Serbian), "th" (Thai), "da" (Danish) [MissingTranslation]
+    <string name="card_state_new_key">New key</string>
+            ~~~~~~~~~~~~~~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\values\strings.xml:120: Information: "card_state_new_label" is not translated in "de" (German), "sr" (Serbian), "th" (Thai), "da" (Danish) [MissingTranslation]
+    <string name="card_state_new_label">New name</string>
+            ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\values\strings.xml:124: Information: "dock_edit_hint" is not translated in "da" (Danish) [MissingTranslation]
+    <string name="dock_edit_hint">Choose the dock place to change and press OK. Back to finish.</string>
+            ~~~~~~~~~~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\values\strings.xml:125: Information: "dock_edit_pick_app" is not translated in "da" (Danish) [MissingTranslation]
+    <string name="dock_edit_pick_app">Now choose the app to put there and press OK. Back to choose another place.</string>
+            ~~~~~~~~~~~~~~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\values\strings.xml:128: Information: "dock_edit_pick_place" is not translated in "da" (Danish) [MissingTranslation]
+    <string name="dock_edit_pick_place">Choose the dock place for this app and press OK. Back to cancel.</string>
+            ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\values\strings.xml:133: Information: "reorder_hint" is not translated in "da" (Danish) [MissingTranslation]
+    <string name="reorder_hint">OK picks up an app, arrows move it, Back places it. Back again to finish.</string>
+            ~~~~~~~~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\values\strings.xml:134: Information: "reorder_not_saved" is not translated in "da" (Danish) [MissingTranslation]
+    <string name="reorder_not_saved">Couldn\'t save the new order</string>
+            ~~~~~~~~~~~~~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\values\strings.xml:142: Information: "library_save_failed" is not translated in "da" (Danish) [MissingTranslation]
+    <string name="library_save_failed">Could not save the shortcut</string>
+            ~~~~~~~~~~~~~~~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\values\strings.xml:151: Information: "greeting_with_name" is not translated in "de" (German), "ast" (Asturian; Bable; Leonese; Asturleonese), "fi" (Finnish), "ru" (Russian), "pt" (Portuguese), "bn" (Bangla), "fr" (French), "uk" (Ukrainian), "ca" (Catalan), "sr" (Serbian), "sv" (Swedish), "ko" (Korean), "in" (Indonesian), "uz" (Uzbek), "it" (Italian), "es" (Spanish), "iw" (Hebrew), "cs" (Czech), "vi" (Vietnamese), "nb" (Norwegian Bokmål), "pl" (Polish), "da" (Danish), "nl" (Dutch), "tr" (Turkish) [MissingTranslation]
+    <string name="greeting_with_name">%1$s, %2$s</string>
+            ~~~~~~~~~~~~~~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\values\strings.xml:154: Information: "race_kicker" is not translated in "de" (German), "bn" (Bangla), "fr" (French), "sr" (Serbian), "cs" (Czech), "ar" (Arabic), "th" (Thai), "pl" (Polish), "da" (Danish), "tr" (Turkish) [MissingTranslation]
+    <string name="race_kicker">Round %1$d · %2$s · %3$s</string>
+            ~~~~~~~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\values\strings.xml:155: Information: "race_kicker_no_place" is not translated in "de" (German), "bn" (Bangla), "fr" (French), "sr" (Serbian), "cs" (Czech), "ar" (Arabic), "th" (Thai), "pl" (Polish), "da" (Danish), "tr" (Turkish) [MissingTranslation]
+    <string name="race_kicker_no_place">Round %1$d · %2$s</string>
+            ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\values\strings.xml:156: Information: "race_next" is not translated in "de" (German), "bn" (Bangla), "fr" (French), "sr" (Serbian), "cs" (Czech), "ar" (Arabic), "th" (Thai), "pl" (Polish), "da" (Danish), "tr" (Turkish) [MissingTranslation]
+    <string name="race_next">%1$s in %2$s</string>
+            ~~~~~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\values\strings.xml:157: Information: "race_lights_out" is not translated in "de" (German), "bn" (Bangla), "fr" (French), "sr" (Serbian), "cs" (Czech), "ar" (Arabic), "th" (Thai), "pl" (Polish), "da" (Danish), "tr" (Turkish) [MissingTranslation]
+    <string name="race_lights_out">Lights out in %1$s</string>
+            ~~~~~~~~~~~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\values\strings.xml:158: Information: "race_live" is not translated in "de" (German), "bn" (Bangla), "fr" (French), "sr" (Serbian), "cs" (Czech), "ar" (Arabic), "th" (Thai), "pl" (Polish), "da" (Danish), "nl" (Dutch), "tr" (Turkish) [MissingTranslation]
+    <string name="race_live">%1$s · live</string>
+            ~~~~~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\values\strings.xml:159: Information: "race_finished" is not translated in "de" (German), "bn" (Bangla), "fr" (French), "sr" (Serbian), "cs" (Czech), "ar" (Arabic), "th" (Thai), "pl" (Polish), "tr" (Turkish) [MissingTranslation]
+    <string name="race_finished">Chequered flag</string>
+            ~~~~~~~~~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\values\strings.xml:160: Information: "race_practice_1" is not translated in "de" (German), "fi" (Finnish), "bn" (Bangla), "fr" (French), "ca" (Catalan), "sr" (Serbian), "in" (Indonesian), "uz" (Uzbek), "cs" (Czech), "ar" (Arabic), "nb" (Norwegian Bokmål), "th" (Thai), "pl" (Polish), "nl" (Dutch), "tr" (Turkish) [MissingTranslation]
+    <string name="race_practice_1">Practice 1</string>
+            ~~~~~~~~~~~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\values\strings.xml:161: Information: "race_practice_2" is not translated in "de" (German), "fi" (Finnish), "bn" (Bangla), "fr" (French), "ca" (Catalan), "sr" (Serbian), "in" (Indonesian), "uz" (Uzbek), "cs" (Czech), "ar" (Arabic), "nb" (Norwegian Bokmål), "th" (Thai), "pl" (Polish), "nl" (Dutch), "tr" (Turkish) [MissingTranslation]
+    <string name="race_practice_2">Practice 2</string>
+            ~~~~~~~~~~~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\values\strings.xml:162: Information: "race_practice_3" is not translated in "de" (German), "fi" (Finnish), "bn" (Bangla), "fr" (French), "ca" (Catalan), "sr" (Serbian), "in" (Indonesian), "uz" (Uzbek), "cs" (Czech), "ar" (Arabic), "nb" (Norwegian Bokmål), "th" (Thai), "pl" (Polish), "nl" (Dutch), "tr" (Turkish) [MissingTranslation]
+    <string name="race_practice_3">Practice 3</string>
+            ~~~~~~~~~~~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\values\strings.xml:163: Information: "race_sprint_qualifying" is not translated in "de" (German), "fi" (Finnish), "bn" (Bangla), "fr" (French), "ca" (Catalan), "sr" (Serbian), "in" (Indonesian), "uz" (Uzbek), "cs" (Czech), "ar" (Arabic), "nb" (Norwegian Bokmål), "th" (Thai), "pl" (Polish), "nl" (Dutch), "tr" (Turkish) [MissingTranslation]
+    <string name="race_sprint_qualifying">Sprint qualifying</string>
+            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\values\strings.xml:164: Information: "race_sprint" is not translated in "de" (German), "ast" (Asturian; Bable; Leonese; Asturleonese), "fi" (Finnish), "pt" (Portuguese), "bn" (Bangla), "fr" (French), "ca" (Catalan), "sr" (Serbian), "sv" (Swedish), "in" (Indonesian), "uz" (Uzbek), "it" (Italian), "es" (Spanish), "cs" (Czech), "ar" (Arabic), "vi" (Vietnamese), "nb" (Norwegian Bokmål), "th" (Thai), "pl" (Polish), "da" (Danish), "nl" (Dutch), "tr" (Turkish) [MissingTranslation]
+    <string name="race_sprint">Sprint</string>
+            ~~~~~~~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\values\strings.xml:165: Information: "race_qualifying" is not translated in "de" (German), "fi" (Finnish), "bn" (Bangla), "fr" (French), "ca" (Catalan), "sr" (Serbian), "in" (Indonesian), "uz" (Uzbek), "cs" (Czech), "ar" (Arabic), "nb" (Norwegian Bokmål), "th" (Thai), "pl" (Polish), "nl" (Dutch), "tr" (Turkish) [MissingTranslation]
+    <string name="race_qualifying">Qualifying</string>
+            ~~~~~~~~~~~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\values\strings.xml:166: Information: "race_race" is not translated in "de" (German), "fi" (Finnish), "bn" (Bangla), "fr" (French), "ca" (Catalan), "sr" (Serbian), "in" (Indonesian), "uz" (Uzbek), "cs" (Czech), "ar" (Arabic), "nb" (Norwegian Bokmål), "th" (Thai), "pl" (Polish), "nl" (Dutch), "tr" (Turkish) [MissingTranslation]
+    <string name="race_race">Race</string>
+            ~~~~~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\values\strings.xml:167: Information: "race_practice_1_short" is not translated in "de" (German), "ast" (Asturian; Bable; Leonese; Asturleonese), "fi" (Finnish), "bn" (Bangla), "fr" (French), "ca" (Catalan), "sr" (Serbian), "sv" (Swedish), "ko" (Korean), "in" (Indonesian), "uz" (Uzbek), "cs" (Czech), "ar" (Arabic), "vi" (Vietnamese), "nb" (Norwegian Bokmål), "th" (Thai), "pl" (Polish), "da" (Danish), "nl" (Dutch), "tr" (Turkish) [MissingTranslation]
+    <string name="race_practice_1_short">FP1</string>
+            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\values\strings.xml:168: Information: "race_practice_2_short" is not translated in "de" (German), "ast" (Asturian; Bable; Leonese; Asturleonese), "fi" (Finnish), "bn" (Bangla), "fr" (French), "ca" (Catalan), "sr" (Serbian), "sv" (Swedish), "ko" (Korean), "in" (Indonesian), "uz" (Uzbek), "cs" (Czech), "ar" (Arabic), "vi" (Vietnamese), "nb" (Norwegian Bokmål), "th" (Thai), "pl" (Polish), "da" (Danish), "nl" (Dutch), "tr" (Turkish) [MissingTranslation]
+    <string name="race_practice_2_short">FP2</string>
+            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\values\strings.xml:169: Information: "race_practice_3_short" is not translated in "de" (German), "ast" (Asturian; Bable; Leonese; Asturleonese), "fi" (Finnish), "bn" (Bangla), "fr" (French), "ca" (Catalan), "sr" (Serbian), "sv" (Swedish), "ko" (Korean), "in" (Indonesian), "uz" (Uzbek), "cs" (Czech), "ar" (Arabic), "vi" (Vietnamese), "nb" (Norwegian Bokmål), "th" (Thai), "pl" (Polish), "da" (Danish), "nl" (Dutch), "tr" (Turkish) [MissingTranslation]
+    <string name="race_practice_3_short">FP3</string>
+            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\values\strings.xml:170: Information: "race_sprint_qualifying_short" is not translated in "de" (German), "ast" (Asturian; Bable; Leonese; Asturleonese), "fi" (Finnish), "bn" (Bangla), "fr" (French), "ca" (Catalan), "sr" (Serbian), "sv" (Swedish), "ko" (Korean), "in" (Indonesian), "uz" (Uzbek), "it" (Italian), "cs" (Czech), "ar" (Arabic), "vi" (Vietnamese), "nb" (Norwegian Bokmål), "th" (Thai), "pl" (Polish), "da" (Danish), "nl" (Dutch), "tr" (Turkish) [MissingTranslation]
+    <string name="race_sprint_qualifying_short">SQ</string>
+            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\values\strings.xml:171: Information: "race_sprint_short" is not translated in "de" (German), "ast" (Asturian; Bable; Leonese; Asturleonese), "fi" (Finnish), "pt" (Portuguese), "bn" (Bangla), "fr" (French), "ca" (Catalan), "sr" (Serbian), "sv" (Swedish), "in" (Indonesian), "uz" (Uzbek), "it" (Italian), "es" (Spanish), "cs" (Czech), "ar" (Arabic), "vi" (Vietnamese), "nb" (Norwegian Bokmål), "th" (Thai), "pl" (Polish), "da" (Danish), "nl" (Dutch), "tr" (Turkish) [MissingTranslation]
+    <string name="race_sprint_short">SPRINT</string>
+            ~~~~~~~~~~~~~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\values\strings.xml:172: Information: "race_qualifying_short" is not translated in "de" (German), "ast" (Asturian; Bable; Leonese; Asturleonese), "fi" (Finnish), "bn" (Bangla), "fr" (French), "ca" (Catalan), "sr" (Serbian), "sv" (Swedish), "in" (Indonesian), "uz" (Uzbek), "it" (Italian), "cs" (Czech), "ar" (Arabic), "vi" (Vietnamese), "nb" (Norwegian Bokmål), "th" (Thai), "pl" (Polish), "da" (Danish), "nl" (Dutch), "tr" (Turkish) [MissingTranslation]
+    <string name="race_qualifying_short">QUALI</string>
+            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\values\strings.xml:173: Information: "race_race_short" is not translated in "de" (German), "fi" (Finnish), "bn" (Bangla), "fr" (French), "ca" (Catalan), "sr" (Serbian), "sv" (Swedish), "in" (Indonesian), "uz" (Uzbek), "cs" (Czech), "ar" (Arabic), "vi" (Vietnamese), "nb" (Norwegian Bokmål), "th" (Thai), "pl" (Polish), "da" (Danish), "nl" (Dutch), "tr" (Turkish) [MissingTranslation]
+    <string name="race_race_short">RACE</string>
+            ~~~~~~~~~~~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\values\strings.xml:174: Information: "race_countdown_minutes" is not translated in "de" (German), "ast" (Asturian; Bable; Leonese; Asturleonese), "fi" (Finnish), "pt" (Portuguese), "bn" (Bangla), "fr" (French), "ca" (Catalan), "sr" (Serbian), "sv" (Swedish), "in" (Indonesian), "uz" (Uzbek), "it" (Italian), "es" (Spanish), "cs" (Czech), "ar" (Arabic), "nb" (Norwegian Bokmål), "th" (Thai), "pl" (Polish), "da" (Danish), "nl" (Dutch), "tr" (Turkish) [MissingTranslation]
+    <string name="race_countdown_minutes">%1$d min</string>
+            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\values\strings.xml:175: Information: "race_countdown_hours" is not translated in "de" (German), "ast" (Asturian; Bable; Leonese; Asturleonese), "fi" (Finnish), "bn" (Bangla), "fr" (French), "ca" (Catalan), "sr" (Serbian), "sv" (Swedish), "in" (Indonesian), "uz" (Uzbek), "it" (Italian), "es" (Spanish), "cs" (Czech), "ar" (Arabic), "nb" (Norwegian Bokmål), "th" (Thai), "pl" (Polish), "nl" (Dutch), "tr" (Turkish) [MissingTranslation]
+    <string name="race_countdown_hours">%1$dh %2$dm</string>
+            ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\values\strings.xml:176: Information: "race_countdown_days" is not translated in "de" (German), "ast" (Asturian; Bable; Leonese; Asturleonese), "fi" (Finnish), "pt" (Portuguese), "bn" (Bangla), "fr" (French), "ca" (Catalan), "sr" (Serbian), "sv" (Swedish), "in" (Indonesian), "uz" (Uzbek), "es" (Spanish), "cs" (Czech), "ar" (Arabic), "nb" (Norwegian Bokmål), "th" (Thai), "pl" (Polish), "nl" (Dutch), "tr" (Turkish) [MissingTranslation]
+    <string name="race_countdown_days">%1$dd %2$dh</string>
+            ~~~~~~~~~~~~~~~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\values\strings.xml:179: Information: "last_opened" is not translated in "de" (German), "bn" (Bangla), "sr" (Serbian), "ar" (Arabic), "th" (Thai), "pl" (Polish), "tr" (Turkish) [MissingTranslation]
+    <string name="last_opened">last used %1$s</string>
+            ~~~~~~~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\values\strings.xml:182: Information: "clock_format_system" is not translated in "de" (German), "ast" (Asturian; Bable; Leonese; Asturleonese), "sv" (Swedish), "nb" (Norwegian Bokmål), "da" (Danish) [MissingTranslation]
+    <string name="clock_format_system">System</string>
+            ~~~~~~~~~~~~~~~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\values\strings.xml:183: Information: "clock_format_12" is not translated in "ast" (Asturian; Bable; Leonese; Asturleonese) [MissingTranslation]
+    <string name="clock_format_12">12-hour</string>
+            ~~~~~~~~~~~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\values\strings.xml:184: Information: "clock_format_24" is not translated in "ast" (Asturian; Bable; Leonese; Asturleonese) [MissingTranslation]
+    <string name="clock_format_24">24-hour</string>
+            ~~~~~~~~~~~~~~~~~~~~~~
+
+   Explanation for issues of type "MissingTranslation":
+   If an application has more than one locale, then all the strings declared
+   in one language should also be translated in all other languages.
+
+   If the string should not be translated, you can add the attribute
+   translatable="false" on the <string> element, or you can define all your
+   non-translatable strings in a resource file called donottranslate.xml. Or,
+   you can ignore the issue with a tools:ignore="MissingTranslation"
+   attribute.
+
+   You can tell lint (and other tools) which language is the default language
+   in your res/values/ folder by specifying tools:locale="languageCode" for
+   the root <resources> element in your resource file. (The tools prefix
+   refers to the namespace declaration http://schemas.android.com/tools.)
+
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\values-b+es+419\strings.xml:48: Warning: Did you mean "PL!" instead of "PL1"? [Typos]
+    <string name="race_practice_1_short">PL1</string>
+                                         ^
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\values-it\strings.xml:113: Warning: Did you mean "PL!" instead of "PL1"? [Typos]
+    <string name="race_practice_1_short">PL1</string>
+                                         ^
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\values-pt\strings.xml:118: Warning: Did you mean "TL!" instead of "TL1"? [Typos]
+    <string name="race_practice_1_short">TL1</string>
+                                         ^
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\values\strings.xml:167: Warning: Did you mean "FP!" instead of "FP1"? [Typos]
+    <string name="race_practice_1_short">FP1</string>
+                                         ^
+
+   Explanation for issues of type "Typos":
+   This check looks through the string definitions, and if it finds any words
+   that look like likely misspellings, they are flagged.
+
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\values-vi\fonts.xml:4: Warning: The resource string "font_body" is marked as translatable="false", but is translated to "vi" (Vietnamese) here [Untranslatable]
+    <string name="font_body" translatable="false">sans-serif</string>
+                             ~~~~~~~~~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\values-vi\fonts.xml:5: Warning: The resource string "font_regular" is marked as translatable="false", but is translated to "vi" (Vietnamese) here [Untranslatable]
+    <string name="font_regular" translatable="false">sans-serif</string>
+                                ~~~~~~~~~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\values-vi\fonts.xml:6: Warning: The resource string "font_light" is marked as translatable="false", but is translated to "vi" (Vietnamese) here [Untranslatable]
+    <string name="font_light" translatable="false">sans-serif-light</string>
+                              ~~~~~~~~~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\values-vi\fonts.xml:7: Warning: The resource string "font_extralight" is marked as translatable="false", but is translated to "vi" (Vietnamese) here [Untranslatable]
+    <string name="font_extralight" translatable="false">sans-serif-thin</string>
+                                   ~~~~~~~~~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\values-vi\fonts.xml:8: Warning: The resource string "font_medium" is marked as translatable="false", but is translated to "vi" (Vietnamese) here [Untranslatable]
+    <string name="font_medium" translatable="false">sans-serif-medium</string>
+                               ~~~~~~~~~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\values-de\strings.xml:20: Warning: The resource string "date_format_home" has been marked as translatable="false" elsewhere (usually in the values folder), but is translated to "de" (German) here [Untranslatable]
+    <string name="date_format_home">EEEE\nd. MMMM</string>
+            ~~~~~~~~~~~~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\values-es\strings.xml:24: Warning: The resource string "date_format_home" has been marked as translatable="false" elsewhere (usually in the values folder), but is translated to "es" (Spanish) here [Untranslatable]
+    <string name="date_format_home">EEEE\nd \'de\' MMMM</string>
+            ~~~~~~~~~~~~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\values-pt\strings.xml:24: Warning: The resource string "date_format_home" has been marked as translatable="false" elsewhere (usually in the values folder), but is translated to "pt" (Portuguese) here [Untranslatable]
+    <string name="date_format_home">EEEE\nd \'de\' MMMM</string>
+            ~~~~~~~~~~~~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\values-ru\strings.xml:24: Warning: The resource string "date_format_home" has been marked as translatable="false" elsewhere (usually in the values folder), but is translated to "ru" (Russian) here [Untranslatable]
+    <string name="date_format_home">EEEE\nd MMMM</string>
+            ~~~~~~~~~~~~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\values-uk\strings.xml:24: Warning: The resource string "date_format_home" has been marked as translatable="false" elsewhere (usually in the values folder), but is translated to "uk" (Ukrainian) here [Untranslatable]
+    <string name="date_format_home">EEEE\nd MMMM</string>
+            ~~~~~~~~~~~~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\values-zh-rCN\strings.xml:53: Warning: The resource string "date_format_home" has been marked as translatable="false" elsewhere (usually in the values folder), but is translated to "zh" (Chinese) here [Untranslatable]
+    <string name="date_format_home">M月d日 EEEE</string>
+            ~~~~~~~~~~~~~~~~~~~~~~~
+
+   Explanation for issues of type "Untranslatable":
+   Strings can be marked with translatable=false to indicate that they are not
+   intended to be translated, but are present in the resource file for other
+   purposes (for example for non-display strings that should vary by some
+   other configuration qualifier such as screen size or API level).
+
+   There are cases where translators accidentally translate these strings
+   anyway, and lint will flag these occurrences with this lint check.
+
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\values\strings.xml:206: Warning: Formatting %d followed by words ("buttons"): This should probably be a plural rather than a string [PluralsCandidate]
+    <string name="button_mapper_mapped" translatable="false">%1$d buttons customized</string>
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+   Explanation for issues of type "PluralsCandidate":
+   This lint check looks for potential errors in internationalization where
+   you have translated a message which involves a quantity and it looks like
+   other parts of the string may need grammatical changes.
+
+   For example, rather than something like this:
+     <string name="try_again">Try again in %d seconds.</string>
+   you should be using a plural:
+      <plurals name="try_again">
+           <item quantity="one">Try again in %d second</item>
+           <item quantity="other">Try again in %d seconds</item>
+       </plurals>
+   This will ensure that in other languages the right set of translations are
+   provided for the different quantity classes.
+
+   (This check depends on some heuristics, so it may not accurately determine
+   whether a string really should be a quantity. You can use tools:ignore to
+   filter out false positives.
+
+   https://developer.android.com/guide/topics/resources/string-resource.html#Plurals
+
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\values\lunar.xml:7: Warning: Formatting string 'lunar_year' is not referencing numbered arguments [1] [StringFormatCount]
+    <string name="lunar_year">Year of the %2$s</string>
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\values\lunar.xml:7: Warning: Formatting string 'lunar_year' is not referencing numbered arguments [1] [StringFormatCount]
+    <string name="lunar_year">Year of the %2$s</string>
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\values\lunar.xml:7: Warning: Formatting string 'lunar_year' is not referencing numbered arguments [1] [StringFormatCount]
+    <string name="lunar_year">Year of the %2$s</string>
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\values\lunar.xml:7: Warning: Formatting string 'lunar_year' is not referencing numbered arguments [1] [StringFormatCount]
+    <string name="lunar_year">Year of the %2$s</string>
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\values\lunar.xml:7: Warning: Formatting string 'lunar_year' is not referencing numbered arguments [1] [StringFormatCount]
+    <string name="lunar_year">Year of the %2$s</string>
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+   Explanation for issues of type "StringFormatCount":
+   When a formatted string takes arguments, it usually needs to reference the
+   same arguments in all translations (or all arguments if there are no
+   translations.
+
+   There are cases where this is not the case, so this issue is a warning
+   rather than an error by default. However, this usually happens when a
+   language is not translated or updated correctly.
+
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\values-in\strings.xml:94: Warning: For language "in" (Indonesian) the following quantities are not relevant: one [UnusedQuantity]
+    <plurals name="library_app_count">
+    ^
+
+   Explanation for issues of type "UnusedQuantity":
+   Android defines a number of different quantity strings, such as zero, one,
+   few and many. However, many languages do not distinguish grammatically
+   between all these different quantities.
+
+   This lint check looks at the quantity strings defined for each translation
+   and flags any quantity strings that are unused (because the language does
+   not make that quantity distinction, and Android will therefore not look it
+   up).
+
+   For example, in Chinese, only the other quantity is used, so even if you
+   provide translations for zero and one, these strings will not be returned
+   when getQuantityString() is called, even with 0 or 1.
+
+   https://developer.android.com/guide/topics/resources/string-resource.html#Plurals
+
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:97: Warning: The attribute android:allowBackup is deprecated from Android 12 and higher and may be removed in future versions. Consider adding the attribute android:dataExtractionRules specifying an @xml resource which configures cloud backups and device transfers on Android 12 and higher. [DataExtractionRules]
+        android:allowBackup="false"
+                             ~~~~~
+
+   Explanation for issues of type "DataExtractionRules":
+   Before Android 12, the attributes android:allowBackup and
+   android:fullBackupContent were used to configure all forms of backup,
+   including cloud backups, device-to-device transfers and adb backup.
+
+   In Android 12 and higher, these attributes have been deprecated and will
+   only apply to cloud backups. You should instead use the attribute
+   android:dataExtractionRules, specifying an @xml resource that configures
+   which files to back up, for cloud backups and for device-to-device
+   transfers, separately. If your minSdkVersion supports older versions,
+   you'll still want to specify an android:fullBackupContent resource if the
+   default behavior is not right for your app.
+
+   https://developer.android.com/about/versions/12/backup-restore#xml-changes
+   https://goo.gle/DataExtractionRules
+
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\java\com\gathin\tvhome\AppAdapter.java:376: Warning: It will always be more efficient to use more specific change events if you can. Rely on notifyDataSetChanged as a last resort. [NotifyDataSetChanged]
+        notifyDataSetChanged();
+        ~~~~~~~~~~~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\java\com\gathin\tvhome\AppAdapter.java:455: Warning: It will always be more efficient to use more specific change events if you can. Rely on notifyDataSetChanged as a last resort. [NotifyDataSetChanged]
+        notifyDataSetChanged();
+        ~~~~~~~~~~~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\java\com\gathin\tvhome\RecentAppsActivity.java:338: Warning: It will always be more efficient to use more specific change events if you can. Rely on notifyDataSetChanged as a last resort. [NotifyDataSetChanged]
+            notifyDataSetChanged();
+            ~~~~~~~~~~~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\java\com\gathin\tvhome\RecentAppsActivity.java:351: Warning: It will always be more efficient to use more specific change events if you can. Rely on notifyDataSetChanged as a last resort. [NotifyDataSetChanged]
+            notifyDataSetChanged();
+            ~~~~~~~~~~~~~~~~~~~~~~
+
+   Explanation for issues of type "NotifyDataSetChanged":
+   The RecyclerView adapter's onNotifyDataSetChanged method does not specify
+   what about the data set has changed, forcing any observers to assume that
+   all existing items and structure may no longer be valid. `LayoutManager`s
+   will be forced to fully rebind and relayout all visible views.
+
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\drawable\ic_settings.xml:6: Warning: Very long vector path (904 characters), which is bad for performance. Considering reducing precision, removing minor details or rasterizing vector. [VectorPath]
+        android:pathData="M19.14,12.94c0.04,-0.3 0.06,-0.61 0.06,-0.94c0,-0.32 -0.02,-0.64 -0.07,-0.94l2.03,-1.58c0.18,-0.14 0.23,-0.41 0.12,-0.61l-1.92,-3.32c-0.12,-0.22 -0.37,-0.29 -0.59,-0.22l-2.39,0.96c-0.5,-0.38 -1.03,-0.7 -1.62,-0.94L14.4,2.81c-0.04,-0.24 -0.24,-0.41 -0.48,-0.41h-3.84c-0.24,0 -0.43,0.17 -0.47,0.41L9.25,5.35C8.66,5.59 8.12,5.92 7.63,6.29L5.24,5.33c-0.22,-0.08 -0.47,0 -0.59,0.22L2.74,8.87C2.62,9.08 2.66,9.34 2.86,9.48l2.03,1.58C4.84,11.36 4.8,11.69 4.8,12s0.02,0.64 0.07,0.94l-2.03,1.58c-0.18,0.14 -0.23,0.41 -0.12,0.61l1.92,3.32c0.12,0.22 0.37,0.29 0.59,0.22l2.39,-0.96c0.5,0.38 1.03,0.7 1.62,0.94l0.36,2.54c0.05,0.24 0.24,0.41 0.48,0.41h3.84c0.24,0 0.44,-0.17 0.47,-0.41l0.36,-2.54c0.59,-0.24 1.13,-0.56 1.62,-0.94l2.39,0.96c0.22,0.08 0.47,0 0.59,-0.22l1.92,-3.32c0.12,-0.22 0.07,-0.47 -0.12,-0.61L19.14,12.94zM12,15.6c-1.98,0 -3.6,-1.62 -3.6,-3.6s1.62,-3.6 3.6,-3.6s3.6,1.62 3.6,3.6S13.98,15.6 12,15.6z" />
+                          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+   Explanation for issues of type "VectorPath":
+   Using long vector paths is bad for performance. There are several ways to
+   make the pathData shorter:
+   * Using less precision
+   * Removing some minor details
+   * Using the Android Studio vector conversion tool
+   * Rasterizing the image (converting to PNG)
+
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\layout\activity_quick_settings.xml:140: Warning: Set android:baselineAligned="false" on this element for better performance [DisableBaselineAlignment]
+                <LinearLayout
+                 ~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\layout\activity_quick_settings.xml:215: Warning: Set android:baselineAligned="false" on this element for better performance [DisableBaselineAlignment]
+                <LinearLayout
+                 ~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\layout\activity_quick_settings.xml:291: Warning: Set android:baselineAligned="false" on this element for better performance [DisableBaselineAlignment]
+                <LinearLayout
+                 ~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\layout\activity_quick_settings.xml:367: Warning: Set android:baselineAligned="false" on this element for better performance [DisableBaselineAlignment]
+                <LinearLayout
+                 ~~~~~~~~~~~~
+
+   Explanation for issues of type "DisableBaselineAlignment":
+   When a LinearLayout is used to distribute the space proportionally between
+   nested layouts, the baseline alignment property should be turned off to
+   make the layout computation faster.
+
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\layout\activity_launcher_settings.xml:5: Warning: Possible overdraw: Root element paints background #FF101419 with a theme that also paints a background (inferred theme is @style/Theme.TvHome) [Overdraw]
+    android:background="#FF101419"
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\layout\activity_main.xml:6: Warning: Possible overdraw: Root element paints background #FF000000 with a theme that also paints a background (inferred theme is @style/Theme.TvHome) [Overdraw]
+    android:background="#FF000000">
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\layout-iw\activity_main.xml:7: Warning: Possible overdraw: Root element paints background #FF000000 with a theme that also paints a background (inferred theme is @style/Theme.TvHome) [Overdraw]
+    android:background="#FF000000">
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\layout-iw\dream_clock.xml:6: Warning: Possible overdraw: Root element paints background #FF000000 with a theme that also paints a background (inferred theme is @android_style/Theme_Black_NoTitleBar_Fullscreen) [Overdraw]
+    android:background="#FF000000">
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\layout\dream_clock.xml:6: Warning: Possible overdraw: Root element paints background #FF000000 with a theme that also paints a background (inferred theme is @android_style/Theme_Black_NoTitleBar_Fullscreen) [Overdraw]
+    android:background="#FF000000">
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+   Explanation for issues of type "Overdraw":
+   If you set a background drawable on a root view, then you should use a
+   custom theme where the theme background is null. Otherwise, the theme
+   background will be painted first, only to have your custom background
+   completely cover it; this is called "overdraw".
+
+   NOTE: This detector relies on figuring out which layouts are associated
+   with which activities based on scanning the Java code, and it's currently
+   doing that using an inexact pattern matching algorithm. Therefore, it can
+   incorrectly conclude which activity the layout is associated with and then
+   wrongly complain that a background-theme is hidden.
+
+   If you want your custom background on multiple pages, then you should
+   consider making a custom theme with your custom background and just using
+   that theme instead of a root element background.
+
+   Of course it's possible that your custom drawable is translucent and you
+   want it to be mixed with the background. However, you will get better
+   performance if you pre-mix the background with your drawable and use that
+   resulting image or color as a custom theme background instead.
+
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\drawable\quick_settings_all_settings_bg.xml:2: Warning: The resource R.drawable.quick_settings_all_settings_bg appears to be unused [UnusedResources]
+<selector xmlns:android="http://schemas.android.com/apk/res/android"><item android:state_focused="true"><shape android:shape="rectangle"><gradient android:angle="270" android:startColor="#59FFFFFF" android:endColor="#2EFFFFFF" /><stroke android:width="2dp" android:color="#FFFFFFFF" /><corners android:radius="18dp" /></shape></item><item><shape android:shape="rectangle"><gradient android:angle="270" android:startColor="#2EFFFFFF" android:endColor="#14FFFFFF" /><stroke android:width="1dp" android:color="#38FFFFFF" /><corners android:radius="18dp" /></shape></item></selector>
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\drawable\quick_settings_card_bg.xml:2: Warning: The resource R.drawable.quick_settings_card_bg appears to be unused [UnusedResources]
+<selector xmlns:android="http://schemas.android.com/apk/res/android"><item android:state_focused="true"><shape android:shape="rectangle"><solid android:color="#F5FFFFFF" /><stroke android:width="1dp" android:color="#FFFFFFFF" /><corners android:radius="14dp" /></shape></item><item><shape android:shape="rectangle"><gradient android:angle="270" android:startColor="#2EFFFFFF" android:endColor="#14FFFFFF" /><stroke android:width="1dp" android:color="#38FFFFFF" /><corners android:radius="14dp" /></shape></item></selector>
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\values\strings.xml:9: Warning: The resource R.string.standby appears to be unused [UnusedResources]
+    <string name="standby">Standby</string>
+            ~~~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\values\strings.xml:57: Warning: The resource R.string.wallpaper_state appears to be unused [UnusedResources]
+    <string name="wallpaper_state">Wallpaper: %1$s</string>
+            ~~~~~~~~~~~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\values\strings.xml:63: Warning: The resource R.string.screensaver_state appears to be unused [UnusedResources]
+    <string name="screensaver_state" translatable="false">Screensaver: %1$s</string>
+            ~~~~~~~~~~~~~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\values\strings.xml:83: Warning: The resource R.string.animations_state appears to be unused [UnusedResources]
+    <string name="animations_state">Animations: %1$s</string>
+            ~~~~~~~~~~~~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\values\strings.xml:85: Warning: The resource R.string.advanced_effects_state appears to be unused [UnusedResources]
+    <string name="advanced_effects_state">Advanced effects: %1$s</string>
+            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\values\strings.xml:92: Warning: The resource R.string.quick_picture appears to be unused [UnusedResources]
+    <string name="quick_picture">Display</string>
+            ~~~~~~~~~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\values\strings.xml:94: Warning: The resource R.string.quick_apps appears to be unused [UnusedResources]
+    <string name="quick_apps">Apps</string>
+            ~~~~~~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\values\strings.xml:95: Warning: The resource R.string.quick_apps_hint appears to be unused [UnusedResources]
+    <string name="quick_apps_hint">Re-enable</string>
+            ~~~~~~~~~~~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\values\strings.xml:96: Warning: The resource R.string.on appears to be unused [UnusedResources]
+    <string name="on">On</string>
+            ~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\values\strings.xml:196: Warning: The resource R.string.quick_settings_footer appears to be unused [UnusedResources]
+    <string name="quick_settings_footer" translatable="false">Press Back to close</string>
+            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+   Explanation for issues of type "UnusedResources":
+   Unused resources make applications larger and slow down builds.
+
+
+   The unused resource check can ignore tests. If you want to include
+   resources that are only referenced from tests, consider packaging them in a
+   test source set instead.
+
+   You can include test sources in the unused resource check by setting the
+   system property lint.unused-resources.include-tests =true, and to exclude
+   them (usually for performance reasons), use
+   lint.unused-resources.exclude-tests =true.
+   ,
+
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\layout\activity_quick_settings.xml:28: Warning: This LinearLayout layout or its FrameLayout parent is possibly unnecessary; transfer the background attribute to the other view [UselessParent]
+        <LinearLayout
+         ~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\layout\item_recent_card.xml:11: Warning: This LinearLayout layout or its FrameLayout parent is possibly unnecessary; transfer the background attribute to the other view [UselessParent]
+    <LinearLayout
+     ~~~~~~~~~~~~
+
+   Explanation for issues of type "UselessParent":
+   A layout with children that has no siblings, is not a scrollview or a root
+   layout, and does not have a background, can be removed and have its
+   children moved directly into the parent for a flatter and more efficient
+   layout hierarchy.
+
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\layout\activity_launcher_settings.xml:661: Warning: activity_launcher_settings.xml has more than 80 views, bad for performance [TooManyViews]
+                <TextView
+                 ~~~~~~~~
+
+   Explanation for issues of type "TooManyViews":
+   Using too many views in a single layout is bad for performance. Consider
+   using compound drawables or other tricks for reducing the number of views
+   in this layout.
+
+   The maximum view count defaults to 80 but can be configured with the
+   environment variable ANDROID_LINT_MAX_VIEW_COUNT.
+
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\layout\activity_quick_settings.xml:125: Warning: Avoid using sizes smaller than 11sp: 10sp [SmallSp]
+                        android:textSize="10sp"
+                        ~~~~~~~~~~~~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\layout\item_card_row.xml:75: Warning: Avoid using sizes smaller than 11sp: 10sp [SmallSp]
+        android:textSize="10sp"
+        ~~~~~~~~~~~~~~~~~~~~~~~
+
+   Explanation for issues of type "SmallSp":
+   Avoid using sizes smaller than 11sp.
+
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\layout\activity_recent_apps.xml:158: Warning: Missing contentDescription attribute on image [ContentDescription]
+        <ImageView
+         ~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\layout\item_recent_card.xml:29: Warning: Missing contentDescription attribute on image [ContentDescription]
+            <ImageView
+             ~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\layout\item_recent_card.xml:36: Warning: Missing contentDescription attribute on image [ContentDescription]
+            <ImageView
+             ~~~~~~~~~
+
+   Explanation for issues of type "ContentDescription":
+   Non-textual widgets like ImageViews and ImageButtons should use the
+   contentDescription attribute to specify a textual description of the widget
+   such that screen readers and other accessibility tools can adequately
+   describe the user interface.
+
+   Note that elements in application screens that are purely decorative and do
+   not provide any content or enable a user action should not have
+   accessibility content descriptions. In this case, set their descriptions to
+   @null. If your app's minSdkVersion is 16 or higher, you can instead set
+   these graphical elements' android:importantForAccessibility attributes to
+   no.
+
+   Note that for text fields, you should not set both the hint and the
+   contentDescription attributes since the hint will never be shown. Just set
+   the hint.
+
+   https://developer.android.com/guide/topics/ui/accessibility/apps#special-cases
+
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\layout\activity_launcher_settings.xml:152: Warning: Hardcoded string "4", should use @string resource [HardcodedText]
+            <TextView android:id="@+id/columns4" style="@style/SettingsColumnChoice" android:text="4" />
+                                                                                     ~~~~~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\layout\activity_launcher_settings.xml:153: Warning: Hardcoded string "5", should use @string resource [HardcodedText]
+            <TextView android:id="@+id/columns5" style="@style/SettingsColumnChoice" android:text="5" />
+                                                                                     ~~~~~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\layout\activity_launcher_settings.xml:154: Warning: Hardcoded string "6", should use @string resource [HardcodedText]
+            <TextView android:id="@+id/columns6" style="@style/SettingsColumnChoice" android:text="6" />
+                                                                                     ~~~~~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\layout\activity_launcher_settings.xml:155: Warning: Hardcoded string "7", should use @string resource [HardcodedText]
+            <TextView android:id="@+id/columns7" style="@style/SettingsColumnChoice" android:layout_marginEnd="0dp" android:text="7" />
+                                                                                                                    ~~~~~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\layout\activity_launcher_settings.xml:172: Warning: Hardcoded string "0", should use @string resource [HardcodedText]
+            <TextView android:id="@+id/rows0" style="@style/SettingsColumnChoice" android:text="0" />
+                                                                                  ~~~~~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\layout\activity_launcher_settings.xml:173: Warning: Hardcoded string "1", should use @string resource [HardcodedText]
+            <TextView android:id="@+id/rows1" style="@style/SettingsColumnChoice" android:text="1" />
+                                                                                  ~~~~~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\layout\activity_launcher_settings.xml:174: Warning: Hardcoded string "2", should use @string resource [HardcodedText]
+            <TextView android:id="@+id/rows2" style="@style/SettingsColumnChoice" android:text="2" />
+                                                                                  ~~~~~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\layout\activity_launcher_settings.xml:175: Warning: Hardcoded string "3", should use @string resource [HardcodedText]
+            <TextView android:id="@+id/rows3" style="@style/SettingsColumnChoice" android:layout_marginEnd="0dp" android:text="3" />
+                                                                                                                 ~~~~~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\layout\activity_launcher_settings.xml:192: Warning: Hardcoded string "100%", should use @string resource [HardcodedText]
+            <TextView android:id="@+id/dock100" style="@style/SettingsColumnChoice" android:text="100%" />
+                                                                                    ~~~~~~~~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\layout\activity_launcher_settings.xml:193: Warning: Hardcoded string "70%", should use @string resource [HardcodedText]
+            <TextView android:id="@+id/dock70" style="@style/SettingsColumnChoice" android:text="70%" />
+                                                                                   ~~~~~~~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\layout\activity_launcher_settings.xml:194: Warning: Hardcoded string "50%", should use @string resource [HardcodedText]
+            <TextView android:id="@+id/dock50" style="@style/SettingsColumnChoice" android:text="50%" />
+                                                                                   ~~~~~~~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\layout\activity_launcher_settings.xml:195: Warning: Hardcoded string "30%", should use @string resource [HardcodedText]
+            <TextView android:id="@+id/dock30" style="@style/SettingsColumnChoice" android:layout_marginEnd="0dp" android:text="30%" />
+                                                                                                                  ~~~~~~~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\layout\activity_launcher_settings.xml:305: Warning: Hardcoded string "›", should use @string resource [HardcodedText]
+                android:text="›"
+                ~~~~~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\layout\activity_quick_settings.xml:497: Warning: Hardcoded string "Google TV", should use @string resource [HardcodedText]
+                    android:text="Google TV"
+                    ~~~~~~~~~~~~~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\layout\activity_quick_settings.xml:535: Warning: Hardcoded string "Back", should use @string resource [HardcodedText]
+                    android:text="Back"
+                    ~~~~~~~~~~~~~~~~~~~
+
+   Explanation for issues of type "HardcodedText":
+   Hardcoding text attributes directly in layout files is bad for several
+   reasons:
+
+   * When creating configuration variations (for example for landscape or
+   portrait) you have to repeat the actual text (and keep it up to date when
+   making changes)
+
+   * The application cannot be translated to other languages by just adding
+   new translations for existing string resources.
+
+   There are quickfixes to automatically extract this hardcoded string into a
+   resource lookup.
+
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\layout\activity_launcher_settings.xml:21: Warning: TextView-1 can overlap @id/settingsClock if @string/launcher_settings grows due to localized text expansion [RelativeOverlap]
+            <TextView
+             ~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\layout\activity_quick_settings.xml:92: Warning: @id/btnAllSettings can overlap LinearLayout-3 if LinearLayout-3, @id/btnAllSettings grow due to localized text expansion [RelativeOverlap]
+                <LinearLayout
+                 ~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\layout\activity_recent_apps.xml:45: Warning: LinearLayout-3 can overlap LinearLayout-1 if LinearLayout-1, LinearLayout-3 grow due to localized text expansion [RelativeOverlap]
+        <LinearLayout
+         ~~~~~~~~~~~~
+
+   Explanation for issues of type "RelativeOverlap":
+   If relative layout has text or button items aligned to left and right sides
+   they can overlap each other due to localized text expansion unless they
+   have mutual constraints like toEndOf/toStartOf.
+
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\java\com\gathin\tvhome\AppLibraryDialog.java:363: Warning: Use "Gravity.END" instead of "Gravity.RIGHT" to ensure correct behavior in right-to-left locales [RtlHardcoded]
+        title.setGravity(Gravity.CENTER_VERTICAL | (rtl ? Gravity.RIGHT : Gravity.LEFT));
+                                                                  ~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\java\com\gathin\tvhome\AppLibraryDialog.java:363: Warning: Use "Gravity.START" instead of "Gravity.LEFT" to ensure correct behavior in right-to-left locales [RtlHardcoded]
+        title.setGravity(Gravity.CENTER_VERTICAL | (rtl ? Gravity.RIGHT : Gravity.LEFT));
+                                                                                  ~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\java\com\gathin\tvhome\AppLibraryDialog.java:601: Warning: Use "Gravity.END" instead of "Gravity.RIGHT" to ensure correct behavior in right-to-left locales [RtlHardcoded]
+        view.setGravity(rtl ? Gravity.RIGHT : Gravity.LEFT);
+                                      ~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\java\com\gathin\tvhome\AppLibraryDialog.java:601: Warning: Use "Gravity.START" instead of "Gravity.LEFT" to ensure correct behavior in right-to-left locales [RtlHardcoded]
+        view.setGravity(rtl ? Gravity.RIGHT : Gravity.LEFT);
+                                                      ~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\java\com\gathin\tvhome\MainActivity.java:2757: Warning: Use "Gravity.END" instead of "Gravity.RIGHT" to ensure correct behavior in right-to-left locales [RtlHardcoded]
+            lp.gravity = Gravity.RIGHT;
+                                 ~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\java\com\gathin\tvhome\MainActivity.java:2758: Warning: Use "Gravity.END" instead of "Gravity.RIGHT" to ensure correct behavior in right-to-left locales [RtlHardcoded]
+            ((LinearLayout.LayoutParams) clockRow.getLayoutParams()).gravity = Gravity.RIGHT;
+                                                                                       ~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\layout-iw\activity_main.xml:40: Warning: Use "end" instead of "right" to ensure correct behavior in right-to-left locales [RtlHardcoded]
+        android:layout_gravity="top|right"
+                                ~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\layout\activity_main.xml:40: Warning: Use "start" instead of "left" to ensure correct behavior in right-to-left locales [RtlHardcoded]
+        android:layout_gravity="top|left"
+                                ~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\layout-iw\activity_main.xml:43: Warning: Use "end" instead of "right" to ensure correct behavior in right-to-left locales [RtlHardcoded]
+        android:gravity="right"
+                         ~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\layout-iw\activity_main.xml:122: Warning: Use "end" instead of "right" to ensure correct behavior in right-to-left locales [RtlHardcoded]
+        android:layout_gravity="right"
+                                ~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\layout-iw\activity_main.xml:123: Warning: Use "end" instead of "right" to ensure correct behavior in right-to-left locales [RtlHardcoded]
+        android:gravity="right"
+                         ~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\layout-iw\activity_main.xml:131: Warning: Use "end" instead of "right" to ensure correct behavior in right-to-left locales [RtlHardcoded]
+            android:layout_gravity="right"
+                                    ~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\layout-iw\activity_main.xml:132: Warning: Use "end" instead of "right" to ensure correct behavior in right-to-left locales [RtlHardcoded]
+            android:gravity="right"
+                             ~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\layout-iw\activity_main.xml:145: Warning: Use "end" instead of "right" to ensure correct behavior in right-to-left locales [RtlHardcoded]
+            android:layout_gravity="right"
+                                    ~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\layout-iw\activity_main.xml:158: Warning: Use "end" instead of "right" to ensure correct behavior in right-to-left locales [RtlHardcoded]
+            android:layout_gravity="right"
+                                    ~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\layout-iw\activity_main.xml:190: Warning: Use "end" instead of "right" to ensure correct behavior in right-to-left locales [RtlHardcoded]
+                android:gravity="right|bottom">
+                                 ~~~~~~~~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\layout\activity_main.xml:190: Warning: Use "start" instead of "left" to ensure correct behavior in right-to-left locales [RtlHardcoded]
+                    android:gravity="left"
+                                     ~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\layout-iw\activity_main.xml:202: Warning: Use "end" instead of "right" to ensure correct behavior in right-to-left locales [RtlHardcoded]
+                        android:gravity="right"
+                                         ~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\layout-iw\activity_main.xml:216: Warning: Use "end" instead of "right" to ensure correct behavior in right-to-left locales [RtlHardcoded]
+                        android:gravity="right"
+                                         ~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\layout-iw\activity_main.xml:232: Warning: Use "end" instead of "right" to ensure correct behavior in right-to-left locales [RtlHardcoded]
+                            android:gravity="right"
+                                             ~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\layout\activity_main.xml:254: Warning: Use "start" instead of "left" to ensure correct behavior in right-to-left locales [RtlHardcoded]
+                            android:gravity="left"
+                                             ~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\layout\activity_main.xml:268: Warning: Use "start" instead of "left" to ensure correct behavior in right-to-left locales [RtlHardcoded]
+                            android:gravity="left"
+                                             ~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\layout\activity_main.xml:286: Warning: Use "start" instead of "left" to ensure correct behavior in right-to-left locales [RtlHardcoded]
+                            android:gravity="left"
+                                             ~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\layout\activity_main.xml:310: Warning: Use "start" instead of "left" to ensure correct behavior in right-to-left locales [RtlHardcoded]
+                android:gravity="left"
+                                 ~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\layout-iw\activity_main.xml:323: Warning: Use "end" instead of "right" to ensure correct behavior in right-to-left locales [RtlHardcoded]
+                android:gravity="right"
+                                 ~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\layout-iw\dream_clock.xml:19: Warning: Use "end" instead of "right" to ensure correct behavior in right-to-left locales [RtlHardcoded]
+        android:gravity="right"
+                         ~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\layout-iw\dream_clock.xml:63: Warning: Use "end" instead of "right" to ensure correct behavior in right-to-left locales [RtlHardcoded]
+            android:gravity="right"
+                             ~~~~~
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\res\layout-iw\item_input.xml:44: Warning: Use "end" instead of "right" to ensure correct behavior in right-to-left locales [RtlHardcoded]
+        android:gravity="right"
+                         ~~~~~
+
+   Explanation for issues of type "RtlHardcoded":
+   Using Gravity#LEFT and Gravity#RIGHT can lead to problems when a layout is
+   rendered in locales where text flows from right to left. Use Gravity#START
+   and Gravity#END instead. Similarly, in XML gravity and layout_gravity
+   attributes, use start rather than left.
+
+   For XML attributes such as paddingLeft and layout_marginLeft, use
+   paddingStart and layout_marginStart. NOTE: If your minSdkVersion is less
+   than 17, you should add both the older left/right attributes as well as the
+   new start/end attributes. On older platforms, where RTL is not supported
+   and the start/end attributes are unknown and therefore ignored, you need
+   the older left/right attributes. There is a separate lint check which
+   catches that type of error.
+
+   (Note: For Gravity#LEFT and Gravity#START, you can use these constants even
+   when targeting older platforms, because the start bitmask is a superset of
+   the left bitmask. Therefore, you can use gravity="start" rather than
+   gravity="left|start".)
+
+D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml: Warning: The project references RTL attributes, but does not explicitly enable or disable RTL support with android:supportsRtl in the manifest [RtlEnabled]
+
+   Explanation for issues of type "RtlEnabled":
+   To enable right-to-left support, when running on API 17 and higher, you
+   must set the android:supportsRtl attribute in the manifest <application>
+   element.
+
+   If you have started adding RTL attributes, but have not yet finished the
+   migration, you can set the attribute to false to satisfy this lint check.
+
+0 errors, 123 warnings

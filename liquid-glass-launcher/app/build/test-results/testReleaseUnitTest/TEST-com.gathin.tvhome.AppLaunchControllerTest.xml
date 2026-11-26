@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.gathin.tvhome.AppLaunchControllerTest" tests="12" skipped="0" failures="0" errors="0" timestamp="2026-11-13T11:55:41" hostname="POOMATTATHIL" time="0.017">
+  <properties/>
+  <testcase name="repeatedFailuresCleanUpAndAllowRetry" classname="com.gathin.tvhome.AppLaunchControllerTest" time="0.004"/>
+  <testcase name="debounceProtectionPreventsDuplicateLaunches" classname="com.gathin.tvhome.AppLaunchControllerTest" time="0.002"/>
+  <testcase name="resetClearsLaunchingAndRestoresStateImmediately" classname="com.gathin.tvhome.AppLaunchControllerTest" time="0.001"/>
+  <testcase name="cancelLaunchAllowsImmediateSubsequentTileOpen" classname="com.gathin.tvhome.AppLaunchControllerTest" time="0.001"/>
+  <testcase name="activityPauseResetsActiveState" classname="com.gathin.tvhome.AppLaunchControllerTest" time="0.0"/>
+  <testcase name="launchFailureRecoversState" classname="com.gathin.tvhome.AppLaunchControllerTest" time="0.001"/>
+  <testcase name="cancelLaunchResetsStateAndAllowsNewLaunch" classname="com.gathin.tvhome.AppLaunchControllerTest" time="0.0"/>
+  <testcase name="watchdogRecoversWhenLaunchTimesOut" classname="com.gathin.tvhome.AppLaunchControllerTest" time="0.0"/>
+  <testcase name="animationScaleMultiplierCalculation" classname="com.gathin.tvhome.AppLaunchControllerTest" time="0.0"/>
+  <testcase name="immediateLaunchWhenReducedMotionActive" classname="com.gathin.tvhome.AppLaunchControllerTest" time="0.001"/>
+  <testcase name="activityResumeResetsActiveState" classname="com.gathin.tvhome.AppLaunchControllerTest" time="0.001"/>
+  <testcase name="immediateLaunchWhenViewNull" classname="com.gathin.tvhome.AppLaunchControllerTest" time="0.001"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

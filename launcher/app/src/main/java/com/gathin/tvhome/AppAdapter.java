@@ -33,6 +33,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.dynamicanimation.animation.DynamicAnimation;
+import androidx.dynamicanimation.animation.SpringAnimation;
+import androidx.dynamicanimation.animation.SpringForce;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
@@ -244,6 +247,9 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     final float liftTranslationY;
     final float liftTranslationZ;
     private final List<Entry> items = new ArrayList<>();
+    private final Map<String, Long> stableIds = new HashMap<>();
+    private long nextStableId = 1L;
+    private int reloadGeneration;
     final AppLaunchController launchController = new AppLaunchController();
 
     AppAdapter(Context ctx, TileListener listener, int dockSize, Config cfg) {
@@ -267,7 +273,7 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         this.dockTitle = cfg.dockTitle;
         this.dockRow = cfg.dockRow;
         this.singleRow = cfg.singleRow;
-        this.restNameAlpha = cfg.alwaysShowNames ? 0.75f : 0f;
+        this.restNameAlpha = cfg.alwaysShowNames ? 1f : 0f;
         this.cinematic = cfg.cinematicHome;
         this.launchActions = cfg.launchActions;
         this.iconTiles = new HashSet<>(Arrays.asList(ctx.getResources().getStringArray(R.array.icon_tiles)));
@@ -376,7 +382,55 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         }
         items.clear();
         items.addAll(fresh);
+        final int gen = ++reloadGeneration;
         notifyDataSetChanged();
+        precomputeTileVisuals(fresh, gen);
+    }
+
+    private void precomputeTileVisuals(List<Entry> entries, int gen) {
+        final List<Entry> todo = new ArrayList<>();
+        for (Entry e : entries) {
+            if (e.kind == Entry.EMPTY) continue;
+            boolean needBackdrop = uniformTiles && e.banner == null && e.icon != null
+                    && e.icon.getConstantState() != null && e.backdrop == null;
+            boolean needAmbient = e.ambient == 0 && (e.banner != null || e.icon != null);
+            if (needBackdrop || needAmbient) {
+                todo.add(e);
+            }
+        }
+        if (todo.isEmpty()) return;
+        LauncherExecutors.io().execute(() -> {
+            final List<int[]> computed = new ArrayList<>(todo.size());
+            final int[] ambients = new int[todo.size()];
+            for (int i = 0; i < todo.size(); i++) {
+                if (reloadGeneration != gen) return;
+                Entry e = todo.get(i);
+                int amb = e.ambient;
+                if (amb == 0) {
+                    amb = uniformTiles && e.banner == null
+                            ? dominantColor(e.icon)
+                            : vividColor(e.banner != null ? e.banner : e.icon);
+                }
+                ambients[i] = amb;
+                boolean needBackdrop = uniformTiles && e.banner == null && e.icon != null
+                        && e.icon.getConstantState() != null && e.backdrop == null;
+                computed.add(needBackdrop ? backdrop(e.icon, amb) : null);
+            }
+            LauncherExecutors.main().post(() -> {
+                if (reloadGeneration != gen) return;
+                for (int i = 0; i < todo.size(); i++) {
+                    Entry e = todo.get(i);
+                    if (e.ambient == 0) e.ambient = ambients[i];
+                    int[] bd = computed.get(i);
+                    if (bd != null && e.backdrop == null) {
+                        e.backdrop = bd;
+                        e.backdropDrawable = new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, e.backdrop);
+                        int pos = items.indexOf(e);
+                        if (pos >= 0) notifyItemChanged(pos);
+                    }
+                }
+            });
+        });
     }
 
     /** icon_tiles: the app's icon centred on a dark banner-shaped tile, for apps whose own banner crops badly. */
@@ -433,19 +487,29 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         if (live == null) return null;
         int w = live.getIntrinsicWidth();
         int h = live.getIntrinsicHeight();
-        if (w <= 0 || h <= 0 || (w <= maxW && h <= maxH)) {
+        if (w <= 0 || h <= 0) return live;
+        boolean opaqueHint = live.getOpacity() == PixelFormat.OPAQUE;
+        if (w <= maxW && h <= maxH && opaqueHint) {
             return live;
         }
-        float ratio = Math.min((float) maxW / w, (float) maxH / h);
+        float ratio = (w <= maxW && h <= maxH) ? 1f : Math.min((float) maxW / w, (float) maxH / h);
         int targetW = Math.max(1, Math.round(w * ratio));
         int targetH = Math.max(1, Math.round(h * ratio));
         try {
-            Bitmap bmp = Bitmap.createBitmap(targetW, targetH, Bitmap.Config.ARGB_8888);
+            Bitmap bmp = Bitmap.createBitmap(targetW, targetH,
+                    opaqueHint ? Bitmap.Config.RGB_565 : Bitmap.Config.ARGB_8888);
             Canvas canvas = new Canvas(bmp);
             Rect saved = new Rect(live.getBounds());
             live.setBounds(0, 0, targetW, targetH);
             live.draw(canvas);
             live.setBounds(saved);
+            if (!opaqueHint && isOpaqueBitmap(bmp)) {
+                Bitmap rgb565 = bmp.copy(Bitmap.Config.RGB_565, false);
+                if (rgb565 != null) {
+                    bmp.recycle();
+                    bmp = rgb565;
+                }
+            }
             android.graphics.drawable.BitmapDrawable bd = new android.graphics.drawable.BitmapDrawable(ctx.getResources(), bmp);
             bd.setFilterBitmap(true);
             return bd;
@@ -454,8 +518,25 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         }
     }
 
+    /** Fast corner/edge/center opacity probe so opaque banners drop alpha and skip cardBackground overdraw. */
+    private static boolean isOpaqueBitmap(Bitmap bmp) {
+        int w = bmp.getWidth(), h = bmp.getHeight();
+        if (w < 4 || h < 4) return false;
+        int mx = w / 2, my = h / 2;
+        return Color.alpha(bmp.getPixel(0, 0)) == 255
+                && Color.alpha(bmp.getPixel(w - 1, 0)) == 255
+                && Color.alpha(bmp.getPixel(0, h - 1)) == 255
+                && Color.alpha(bmp.getPixel(w - 1, h - 1)) == 255
+                && Color.alpha(bmp.getPixel(mx, 0)) == 255
+                && Color.alpha(bmp.getPixel(mx, h - 1)) == 255
+                && Color.alpha(bmp.getPixel(0, my)) == 255
+                && Color.alpha(bmp.getPixel(w - 1, my)) == 255
+                && Color.alpha(bmp.getPixel(mx, my)) == 255;
+    }
+
     /** Lets go of every tile and its artwork (Home is in the background and memory is short). */
     void clear() {
+        reloadGeneration++;
         items.clear();
         notifyDataSetChanged();
     }
@@ -477,6 +558,7 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             return new RecyclerView.ViewHolder(row) { };
         }
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_app, parent, false);
+        v.forceHasOverlappingRendering(false);
         float density = parent.getResources().getDisplayMetrics().density;
         int width = parent.getWidth() > 0 ? parent.getWidth() : parent.getMeasuredWidth();
         int inner = width - parent.getPaddingLeft() - parent.getPaddingRight();
@@ -556,19 +638,26 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         h.name.setTranslationY(focused ? density * 4f : (animations && !reducedMotion ? -density * 6f : 0f));
         h.card.setScaleX(focused && animations ? focusScale() : 1f);
         h.card.setScaleY(focused && animations ? focusScale() : 1f);
-        h.card.setTranslationY(focused && advancedEffects && !dockKind ? liftTranslationY : 0f);
-        h.card.setTranslationZ(focused && advancedEffects ? liftTranslationZ : 0f);
+        h.card.setTranslationX(0f);
+        h.card.setRotationX(0f);
+        h.card.setRotationY(0f);
+        h.card.setTranslationY(focused && advancedEffects && !dockKind ? -4f * density : 0f);
+        h.card.setTranslationZ(focused && advancedEffects ? 8f * density : 0f);
         h.banner.setScaleX(focused && advancedEffects ? 1.035f : 1f);
         h.banner.setScaleY(focused && advancedEffects ? 1.035f : 1f);
         // A fully opaque banner covers the whole card (centerCrop), so the card's own fill under it is drawn for
         // nothing on every frame; keep it under banners with transparent parts and under icon tiles.
         h.card.setBackground(e.banner != null && e.banner.getOpacity() == PixelFormat.OPAQUE ? null : h.cardBackground);
         if (uniformTiles && e.banner == null) {
-            if (e.backdrop == null) e.backdrop = backdrop(e.icon, ambientColorAt(position));
-            if (e.backdropDrawable == null) {
+            if (e.backdropDrawable != null) {
+                h.card.setBackground(e.backdropDrawable);
+            } else if (e.icon != null && e.icon.getConstantState() != null) {
+                h.card.setBackground(h.cardBackground);
+            } else {
+                e.backdrop = backdrop(e.icon, ambientColorAt(position));
                 e.backdropDrawable = new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, e.backdrop);
+                h.card.setBackground(e.backdropDrawable);
             }
-            h.card.setBackground(e.backdropDrawable);
         }
         if (e.banner != null) {
             h.banner.setImageDrawable(e.banner);
@@ -634,7 +723,6 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                     opts = ActivityOptions.makeCustomAnimation(ctx, 0, 0).toBundle();
                 }
                 ctx.startActivity(launchIntent, opts);
-                RecentApps.record(ctx, e.pkg, e.component, e.label);
                 if (cinematic) LastOpened.record(ctx, e.pkg);
                 if (v != null && animated) {
                     v.postDelayed(() -> launchController.resetIfSameView(v), 450L);
@@ -667,7 +755,14 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     @Override
     public long getItemId(int position) {
-        return isLibraryAt(position) ? Long.MIN_VALUE : items.get(position).key.hashCode();
+        if (isLibraryAt(position)) return Long.MIN_VALUE;
+        String key = items.get(position).key;
+        Long id = stableIds.get(key);
+        if (id == null) {
+            id = nextStableId++;
+            stableIds.put(key, id);
+        }
+        return id;
     }
 
     /** Uses this saved order and dock size from the next reload() (Order.ranks, Order.docked). */
@@ -785,43 +880,48 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
      */
     private static int dominantColor(Drawable live) {
         if (live == null) return 0xFF6E6E73;
-        Drawable d = live.getConstantState() != null ? live.getConstantState().newDrawable().mutate() : live;
-        Rect saved = new Rect(d.getBounds());
-        int n = 24;
-        Bitmap bmp = Bitmap.createBitmap(n, n, Bitmap.Config.ARGB_8888);
-        d.setBounds(0, 0, n, n);
-        d.draw(new Canvas(bmp));
-        d.setBounds(saved);
-        float[] weight = new float[12];
-        float[] sum = new float[36];
-        float[] hsv = new float[3];
-        float totalWeight = 0;
-        int[] px = new int[n * n];
-        bmp.getPixels(px, 0, n, 0, 0, n, n);
-        for (int p : px) {
-            if (Color.alpha(p) < 128) continue;
-            Color.colorToHSV(p, hsv);
-            if (hsv[1] < 0.3f || hsv[2] < 0.25f) continue;   // white, grey and black carry no hue
-            int bin = (int) (hsv[0] / 30f) % 12;
-            float w = hsv[1] * hsv[2];
-            weight[bin] += w;
-            totalWeight += w;
-            int idx = bin * 3;
-            sum[idx] += Color.red(p) * w;
-            sum[idx + 1] += Color.green(p) * w;
-            sum[idx + 2] += Color.blue(p) * w;
+        Bitmap bmp = null;
+        try {
+            Drawable d = live.getConstantState() != null ? live.getConstantState().newDrawable().mutate() : live;
+            Rect saved = new Rect(d.getBounds());
+            int n = 24;
+            bmp = Bitmap.createBitmap(n, n, Bitmap.Config.ARGB_8888);
+            d.setBounds(0, 0, n, n);
+            d.draw(new Canvas(bmp));
+            d.setBounds(saved);
+            float[] weight = new float[12];
+            float[] sum = new float[36];
+            float[] hsv = new float[3];
+            float totalWeight = 0;
+            int[] px = new int[n * n];
+            bmp.getPixels(px, 0, n, 0, 0, n, n);
+            for (int p : px) {
+                if (Color.alpha(p) < 128) continue;
+                Color.colorToHSV(p, hsv);
+                if (hsv[1] < 0.3f || hsv[2] < 0.25f) continue;   // white, grey and black carry no hue
+                int bin = (int) (hsv[0] / 30f) % 12;
+                float w = hsv[1] * hsv[2];
+                weight[bin] += w;
+                totalWeight += w;
+                int idx = bin * 3;
+                sum[idx] += Color.red(p) * w;
+                sum[idx + 1] += Color.green(p) * w;
+                sum[idx + 2] += Color.blue(p) * w;
+            }
+            if (totalWeight < n * n * 0.03f) return 0xFF6E6E73;   // a monochrome icon, like a grey gear
+            int best = 0;
+            for (int i = 1; i < 12; i++) if (weight[i] > weight[best]) best = i;
+            if (weight[best] < n * n * 0.03f) {
+                return vividColor(live);
+            }
+            float w = weight[best];
+            int bestIdx = best * 3;
+            return Color.rgb((int) (sum[bestIdx] / w), (int) (sum[bestIdx + 1] / w), (int) (sum[bestIdx + 2] / w));
+        } catch (Throwable ignored) {
+            return 0xFF6E6E73;
+        } finally {
+            if (bmp != null && !bmp.isRecycled()) bmp.recycle();
         }
-        bmp.recycle();
-        if (totalWeight < n * n * 0.03f) return 0xFF6E6E73;   // a monochrome icon, like a grey gear
-        int best = 0;
-        for (int i = 1; i < 12; i++) if (weight[i] > weight[best]) best = i;
-        if (weight[best] < n * n * 0.03f) {
-            // Multicolored icon without a single dominant hue: pick its most vivid colour
-            return vividColor(live);
-        }
-        float w = weight[best];
-        int bestIdx = best * 3;
-        return Color.rgb((int) (sum[bestIdx] / w), (int) (sum[bestIdx + 1] / w), (int) (sum[bestIdx + 2] / w));
     }
 
     /**
@@ -939,47 +1039,53 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private static int vividColor(Drawable live) {
         if (live == null) return 0xFF444444;
-        // Draw a private copy: changing the bounds of the drawable an ImageView shows would blank the tile.
-        Drawable d = live.getConstantState() != null ? live.getConstantState().newDrawable().mutate() : live;
-        Rect saved = new Rect(d.getBounds());
-        int n = 12;
-        Bitmap bmp = Bitmap.createBitmap(n, n, Bitmap.Config.ARGB_8888);
-        Canvas c = new Canvas(bmp);
-        d.setBounds(0, 0, n, n);
-        d.draw(c);
-        d.setBounds(saved);
-        int[] px = new int[n * n];
-        bmp.getPixels(px, 0, n, 0, 0, n, n);
-        bmp.recycle();
-        float[] hsv = new float[3];
-        int best = 0xFF444444;
-        float bestScore = -1f;
-        long r = 0, g = 0, b = 0;
-        for (int p : px) {
-            int pr = (p >> 16) & 0xFF, pg = (p >> 8) & 0xFF, pb = p & 0xFF;
-            r += pr;
-            g += pg;
-            b += pb;
-            int max = Math.max(pr, Math.max(pg, pb));
-            int min = Math.min(pr, Math.min(pg, pb));
-            float sat = max == 0 ? 0f : (max - min) / (float) max;
-            float val = max / 255f;
-            float score = sat * Math.min(1f, val * 1.4f);   // saturated and not too dark
-            if (score > bestScore) {
-                bestScore = score;
-                best = p;
+        Bitmap bmp = null;
+        try {
+            // Draw a private copy: changing the bounds of the drawable an ImageView shows would blank the tile.
+            Drawable d = live.getConstantState() != null ? live.getConstantState().newDrawable().mutate() : live;
+            Rect saved = new Rect(d.getBounds());
+            int n = 12;
+            bmp = Bitmap.createBitmap(n, n, Bitmap.Config.ARGB_8888);
+            Canvas c = new Canvas(bmp);
+            d.setBounds(0, 0, n, n);
+            d.draw(c);
+            d.setBounds(saved);
+            int[] px = new int[n * n];
+            bmp.getPixels(px, 0, n, 0, 0, n, n);
+            float[] hsv = new float[3];
+            int best = 0xFF444444;
+            float bestScore = -1f;
+            long r = 0, g = 0, b = 0;
+            for (int p : px) {
+                int pr = (p >> 16) & 0xFF, pg = (p >> 8) & 0xFF, pb = p & 0xFF;
+                r += pr;
+                g += pg;
+                b += pb;
+                int max = Math.max(pr, Math.max(pg, pb));
+                int min = Math.min(pr, Math.min(pg, pb));
+                float sat = max == 0 ? 0f : (max - min) / (float) max;
+                float val = max / 255f;
+                float score = sat * Math.min(1f, val * 1.4f);   // saturated and not too dark
+                if (score > bestScore) {
+                    bestScore = score;
+                    best = p;
+                }
             }
-        }
-        if (bestScore < 0.25f) {   // nearly monochrome banner (e.g. white): use its average, lifted
-            int avg = Color.rgb((int) (r / (n * n)), (int) (g / (n * n)), (int) (b / (n * n)));
-            Color.colorToHSV(avg, hsv);
-            hsv[2] = Math.max(hsv[2], 0.55f);
+            if (bestScore < 0.25f) {   // nearly monochrome banner (e.g. white): use its average, lifted
+                int avg = Color.rgb((int) (r / (n * n)), (int) (g / (n * n)), (int) (b / (n * n)));
+                Color.colorToHSV(avg, hsv);
+                hsv[2] = Math.max(hsv[2], 0.55f);
+                return Color.HSVToColor(hsv);
+            }
+            Color.colorToHSV(best, hsv);
+            hsv[1] = Math.min(1f, hsv[1] * 1.1f);
+            hsv[2] = Math.max(0.5f, hsv[2]);
             return Color.HSVToColor(hsv);
+        } catch (Throwable ignored) {
+            return 0xFF444444;
+        } finally {
+            if (bmp != null && !bmp.isRecycled()) bmp.recycle();
         }
-        Color.colorToHSV(best, hsv);
-        hsv[1] = Math.min(1f, hsv[1] * 1.1f);
-        hsv[2] = Math.max(0.5f, hsv[2]);
-        return Color.HSVToColor(hsv);
     }
 
     /** Corner radius for a tile of this width: 16dp at the design width, proportionally less when smaller. */
@@ -1006,6 +1112,12 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         final boolean overshoot;
         /** A dock tile: it grows in place without advanced_effects' lift, which reads as off-centre in the band (#2135). */
         boolean inDock;
+        private static int lastNavDirX;
+        private static int lastNavDirY;
+
+        static int lastDirectionX() {
+            return lastNavDirX;
+        }
 
         Holder(AppAdapter adapter, View v, TileListener listener, boolean animations, boolean advancedEffects,
                boolean reducedMotion, float restNameAlpha, boolean overshoot) {
@@ -1025,8 +1137,6 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             this.overshoot = overshoot;
 
             final float density = v.getResources().getDisplayMetrics().density;
-            final float liftY = -4f * density;
-            final float liftZ = 8f * density;
 
             card.setOutlineProvider(SHARED_CARD_OUTLINE_PROVIDER);
             card.setClipToOutline(true);
@@ -1054,10 +1164,10 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                     // A short zoom with no hardware layer: building a layer for so short an animation costs more
                     // frames than it saves. The name just appears instead of fading.
                     view.animate().scaleX(s).scaleY(s)
-                            .translationY(focused && advancedEffects && !inDock ? liftY : 0f)
-                            .translationZ(focused && advancedEffects ? liftZ : 0f)
+                            .translationY(focused && advancedEffects && !inDock ? -4f * density : 0f)
+                            .translationZ(focused && advancedEffects ? 8f * density : 0f)
                             .setDuration(focused ? Motion.REDUCED_MS : 60)
-                            .setInterpolator(DECEL_1_0)
+                            .setInterpolator(new DecelerateInterpolator())
                             .start();
                     name.setAlpha(focused ? 1f : restNameAlpha);
                     // Same place as the full motion's slide ends: the layout's -6dp is only its starting point, and
@@ -1066,11 +1176,11 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                     if (focused) name.setTranslationY(density * 4f);
                 } else {
                     view.animate().scaleX(s).scaleY(s)
-                            .translationY(focused && advancedEffects && !inDock ? liftY : 0f)
-                            .translationZ(focused && advancedEffects ? liftZ : 0f)
+                            .translationY(focused && advancedEffects && !inDock ? -4f * density : 0f)
+                            .translationZ(focused && advancedEffects ? 8f * density : 0f)
                             .setDuration(advancedEffects ? (focused ? 220 : 170) : (focused ? 260 : 180))
-                            .setInterpolator(focused && !overshoot ? DECEL_1_5
-                                    : (focused ? (advancedEffects ? OVERSHOOT_ADVANCED : OVERSHOOT_STANDARD) : OVERSHOOT_ZERO))
+                            .setInterpolator(focused && !overshoot ? new DecelerateInterpolator(1.5f)
+                                    : new OvershootInterpolator(focused ? (advancedEffects ? 0.7f : 1.6f) : 0f))
                             .withLayer().start();
                     if (advancedEffects) {
                         banner.animate().scaleX(focused ? 1.035f : 1f).scaleY(focused ? 1.035f : 1f)
@@ -1082,6 +1192,7 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 }
                 int pos = getBindingAdapterPosition();
                 if (focused && listener != null && pos != RecyclerView.NO_POSITION) {
+                    UiFeedback.playFocus(view.getContext());
                     listener.onTileFocused(pos, view);
                 }
             });
@@ -1093,6 +1204,7 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             if (pos != RecyclerView.NO_POSITION && pos < adapter.items.size()) {
                 Entry e = adapter.items.get(pos);
                 if (e.kind != Entry.EMPTY) {
+                    UiFeedback.playClick(v);
                     adapter.launch(e, v);
                 }
             }
@@ -1121,8 +1233,11 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         @Override
         public boolean onKey(View view, int keyCode, KeyEvent event) {
             if (event.getAction() != KeyEvent.ACTION_DOWN) return false;
-            if (keyCode != KeyEvent.KEYCODE_DPAD_UP && keyCode != KeyEvent.KEYCODE_DPAD_DOWN
-                    && keyCode != KeyEvent.KEYCODE_DPAD_LEFT && keyCode != KeyEvent.KEYCODE_DPAD_RIGHT) return false;
+            if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT) { lastNavDirX = -1; lastNavDirY = 0; }
+            else if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT) { lastNavDirX = 1; lastNavDirY = 0; }
+            else if (keyCode == KeyEvent.KEYCODE_DPAD_UP) { lastNavDirX = 0; lastNavDirY = -1; }
+            else if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN) { lastNavDirX = 0; lastNavDirY = 1; }
+            else return false;
             int pos = getBindingAdapterPosition();
             return listener != null && pos != RecyclerView.NO_POSITION && listener.onTileVerticalKey(pos, keyCode);
         }

@@ -1,0 +1,847 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FF101419"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingStart="72dp"
+        android:paddingEnd="72dp"
+        android:paddingTop="38dp"
+        android:paddingBottom="38dp">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true"
+                android:text="@string/launcher_settings"
+                android:textColor="#FFFFFFFF"
+                android:textSize="34sp" />
+
+            <com.gathin.tvhome.LiveClockView
+                android:id="@+id/settingsClock"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:textColor="#B3FFFFFF"
+                android:textSize="24sp"
+                android:fontFamily="@string/font_light"
+                android:includeFontPadding="false" />
+        </RelativeLayout>
+
+        <LinearLayout
+            android:id="@+id/reorderChoice"
+            style="@style/SettingsRow"
+            android:text="@string/reorder"
+            android:layout_marginTop="28dp"
+            android:layout_height="wrap_content"
+            android:minHeight="56dp"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:visibility="visible">
+
+            <ImageView
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:layout_marginEnd="14dp"
+                android:src="@drawable/ic_swap_vert"
+                android:tint="#FFFFFFFF"
+                android:duplicateParentState="true"
+                android:contentDescription="@null" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:duplicateParentState="true">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/reorder_apps"
+                    android:textColor="#FFFFFFFF"
+                    android:textSize="18sp"
+                    android:duplicateParentState="true" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:text="@string/reorder_apps_summary"
+                    android:textColor="#FFACB8C1"
+                    android:textSize="13sp"
+                    android:duplicateParentState="true" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/buttonMapperChoice"
+            style="@style/SettingsRow"
+            android:layout_marginTop="12dp"
+            android:layout_height="wrap_content"
+            android:minHeight="56dp"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:visibility="visible">
+
+            <ImageView
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:layout_marginEnd="14dp"
+                android:src="@drawable/ic_remote"
+                android:tint="#FFFFFFFF"
+                android:duplicateParentState="true"
+                android:contentDescription="@null" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:duplicateParentState="true">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/button_mapper"
+                    android:textColor="#FFFFFFFF"
+                    android:textSize="18sp"
+                    android:duplicateParentState="true" />
+
+                <TextView
+                    android:id="@+id/buttonMapperSummary"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:text="@string/button_mapper_summary"
+                    android:textColor="#FFACB8C1"
+                    android:textSize="13sp"
+                    android:duplicateParentState="true" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="28dp"
+            android:text="@string/columns_label"
+            android:textColor="#FFFFFFFF"
+            android:textSize="20sp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:orientation="horizontal">
+
+            <TextView android:id="@+id/columns4" style="@style/SettingsColumnChoice" android:text="4" />
+            <TextView android:id="@+id/columns5" style="@style/SettingsColumnChoice" android:text="5" />
+            <TextView android:id="@+id/columns6" style="@style/SettingsColumnChoice" android:text="6" />
+            <TextView android:id="@+id/columns7" style="@style/SettingsColumnChoice" android:layout_marginEnd="0dp" android:text="7" />
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="28dp"
+            android:text="@string/rows_below_dock_label"
+            android:textColor="#FFFFFFFF"
+            android:textSize="20sp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:orientation="horizontal">
+
+            <TextView android:id="@+id/rows0" style="@style/SettingsColumnChoice" android:text="0" />
+            <TextView android:id="@+id/rows1" style="@style/SettingsColumnChoice" android:text="1" />
+            <TextView android:id="@+id/rows2" style="@style/SettingsColumnChoice" android:text="2" />
+            <TextView android:id="@+id/rows3" style="@style/SettingsColumnChoice" android:layout_marginEnd="0dp" android:text="3" />
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="28dp"
+            android:text="@string/dock_opacity_label"
+            android:textColor="#FFFFFFFF"
+            android:textSize="20sp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:orientation="horizontal">
+
+            <TextView android:id="@+id/dock100" style="@style/SettingsColumnChoice" android:text="100%" />
+            <TextView android:id="@+id/dock70" style="@style/SettingsColumnChoice" android:text="70%" />
+            <TextView android:id="@+id/dock50" style="@style/SettingsColumnChoice" android:text="50%" />
+            <TextView android:id="@+id/dock30" style="@style/SettingsColumnChoice" android:layout_marginEnd="0dp" android:text="30%" />
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="28dp"
+            android:text="@string/dream_name"
+            android:textColor="#FFFFFFFF"
+            android:textSize="20sp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:orientation="horizontal">
+
+            <TextView android:id="@+id/clockSystem" style="@style/SettingsColumnChoice" android:text="@string/clock_format_system" />
+            <TextView android:id="@+id/clock12" style="@style/SettingsColumnChoice" android:text="@string/clock_format_12" />
+            <TextView android:id="@+id/clock24" style="@style/SettingsColumnChoice" android:layout_marginEnd="0dp" android:text="@string/clock_format_24" />
+        </LinearLayout>
+
+        <!-- Wallpaper Switch Row -->
+        <LinearLayout
+            android:id="@+id/wallpaperChoice"
+            style="@style/SettingsRow"
+            android:layout_marginTop="28dp"
+            android:layout_height="wrap_content"
+            android:minHeight="56dp"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:duplicateParentState="true">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/wallpaper_label"
+                    android:textColor="#FFFFFFFF"
+                    android:textSize="18sp"
+                    android:duplicateParentState="true" />
+
+                <TextView
+                    android:id="@+id/wallpaperSummary"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:textColor="#FFACB8C1"
+                    android:textSize="13sp"
+                    android:duplicateParentState="true" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/wallpaperSwitch"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:minWidth="64dp"
+                android:gravity="center"
+                android:paddingStart="14dp"
+                android:paddingEnd="14dp"
+                android:paddingTop="4dp"
+                android:paddingBottom="4dp"
+                android:textSize="14sp"
+                android:fontFamily="sans-serif-bold"
+                android:text="@string/switch_on_badge"
+                android:textColor="#FFFFFFFF"
+                android:background="@drawable/switch_on_bg"
+                android:duplicateParentState="true" />
+        </LinearLayout>
+
+        <!-- Choose Wallpaper Action Row -->
+        <LinearLayout
+            android:id="@+id/chooseWallpaperRow"
+            style="@style/SettingsRow"
+            android:layout_marginTop="8dp"
+            android:layout_height="wrap_content"
+            android:minHeight="50dp"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_marginEnd="14dp"
+                android:src="@drawable/ic_picture"
+                android:tint="#FFFFFFFF"
+                android:duplicateParentState="true"
+                android:contentDescription="@null" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/choose_wallpaper"
+                android:textColor="#FFFFFFFF"
+                android:textSize="16sp"
+                android:duplicateParentState="true" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="›"
+                android:textColor="#FFACB8C1"
+                android:textSize="20sp"
+                android:duplicateParentState="true" />
+        </LinearLayout>
+
+        <!-- Screensaver Switch Row -->
+        <LinearLayout
+            android:id="@+id/screensaverRow"
+            style="@style/SettingsRow"
+            android:layout_marginTop="12dp"
+            android:layout_height="wrap_content"
+            android:minHeight="56dp"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:duplicateParentState="true">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/screensaver_label"
+                    android:textColor="#FFFFFFFF"
+                    android:textSize="18sp"
+                    android:duplicateParentState="true" />
+
+                <TextView
+                    android:id="@+id/screensaverSummary"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:text="@string/screensaver_summary"
+                    android:textColor="#FFACB8C1"
+                    android:textSize="13sp"
+                    android:duplicateParentState="true" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/screensaverSwitch"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:minWidth="64dp"
+                android:gravity="center"
+                android:paddingStart="14dp"
+                android:paddingEnd="14dp"
+                android:paddingTop="4dp"
+                android:paddingBottom="4dp"
+                android:textSize="14sp"
+                android:fontFamily="sans-serif-bold"
+                android:text="@string/switch_on_badge"
+                android:textColor="#FFFFFFFF"
+                android:background="@drawable/switch_on_bg"
+                android:duplicateParentState="true" />
+        </LinearLayout>
+
+        <!-- Screensaver Month Calendar Switch Row -->
+        <LinearLayout
+            android:id="@+id/screensaverCalendarRow"
+            style="@style/SettingsRow"
+            android:layout_marginTop="12dp"
+            android:layout_height="wrap_content"
+            android:minHeight="56dp"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:duplicateParentState="true">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/screensaver_calendar_label"
+                    android:textColor="#FFFFFFFF"
+                    android:textSize="18sp"
+                    android:duplicateParentState="true" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:text="@string/screensaver_calendar_summary"
+                    android:textColor="#FFACB8C1"
+                    android:textSize="13sp"
+                    android:duplicateParentState="true" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/screensaverCalendarSwitch"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:minWidth="64dp"
+                android:gravity="center"
+                android:paddingStart="14dp"
+                android:paddingEnd="14dp"
+                android:paddingTop="4dp"
+                android:paddingBottom="4dp"
+                android:textSize="14sp"
+                android:fontFamily="sans-serif-bold"
+                android:text="@string/switch_on_badge"
+                android:textColor="#FFFFFFFF"
+                android:background="@drawable/switch_on_bg"
+                android:duplicateParentState="true" />
+        </LinearLayout>
+
+        <!-- Liquid Glass Switch Row -->
+        <LinearLayout
+            android:id="@+id/liquidGlassRow"
+            style="@style/SettingsRow"
+            android:layout_marginTop="12dp"
+            android:layout_height="wrap_content"
+            android:minHeight="56dp"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:duplicateParentState="true">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/liquid_glass_label"
+                    android:textColor="#FFFFFFFF"
+                    android:textSize="18sp"
+                    android:duplicateParentState="true" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:text="@string/liquid_glass_summary"
+                    android:textColor="#FFACB8C1"
+                    android:textSize="13sp"
+                    android:duplicateParentState="true" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/liquidGlassSwitch"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:minWidth="64dp"
+                android:gravity="center"
+                android:paddingStart="14dp"
+                android:paddingEnd="14dp"
+                android:paddingTop="4dp"
+                android:paddingBottom="4dp"
+                android:textSize="14sp"
+                android:fontFamily="sans-serif-bold"
+                android:text="@string/switch_on_badge"
+                android:textColor="#FFFFFFFF"
+                android:background="@drawable/switch_on_bg"
+                android:duplicateParentState="true" />
+        </LinearLayout>
+
+        <!-- Animations Switch Row -->
+        <LinearLayout
+            android:id="@+id/animationsChoice"
+            style="@style/SettingsRow"
+            android:layout_marginTop="12dp"
+            android:layout_height="wrap_content"
+            android:minHeight="56dp"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:duplicateParentState="true">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/animations"
+                    android:textColor="#FFFFFFFF"
+                    android:textSize="18sp"
+                    android:duplicateParentState="true" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:text="@string/animations_summary"
+                    android:textColor="#FFACB8C1"
+                    android:textSize="13sp"
+                    android:duplicateParentState="true" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/animationsSwitch"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:minWidth="64dp"
+                android:gravity="center"
+                android:paddingStart="14dp"
+                android:paddingEnd="14dp"
+                android:paddingTop="4dp"
+                android:paddingBottom="4dp"
+                android:textSize="14sp"
+                android:fontFamily="sans-serif-bold"
+                android:text="@string/switch_on_badge"
+                android:textColor="#FFFFFFFF"
+                android:background="@drawable/switch_on_bg"
+                android:duplicateParentState="true" />
+        </LinearLayout>
+
+        <!-- Advanced Effects Switch Row -->
+        <LinearLayout
+            android:id="@+id/advancedChoice"
+            style="@style/SettingsRow"
+            android:layout_marginTop="12dp"
+            android:layout_height="wrap_content"
+            android:minHeight="56dp"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:duplicateParentState="true">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/advanced_effects"
+                    android:textColor="#FFFFFFFF"
+                    android:textSize="18sp"
+                    android:duplicateParentState="true" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:text="@string/advanced_effects_summary"
+                    android:textColor="#FFACB8C1"
+                    android:textSize="13sp"
+                    android:duplicateParentState="true" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/advancedSwitch"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:minWidth="64dp"
+                android:gravity="center"
+                android:paddingStart="14dp"
+                android:paddingEnd="14dp"
+                android:paddingTop="4dp"
+                android:paddingBottom="4dp"
+                android:textSize="14sp"
+                android:fontFamily="sans-serif-bold"
+                android:text="@string/switch_on_badge"
+                android:textColor="#FFFFFFFF"
+                android:background="@drawable/switch_on_bg"
+                android:duplicateParentState="true" />
+        </LinearLayout>
+
+        <!-- Top Bar Stats Switch Row -->
+        <LinearLayout
+            android:id="@+id/statsRow"
+            style="@style/SettingsRow"
+            android:layout_marginTop="12dp"
+            android:layout_height="wrap_content"
+            android:minHeight="56dp"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:duplicateParentState="true">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/stats_label"
+                    android:textColor="#FFFFFFFF"
+                    android:textSize="18sp"
+                    android:duplicateParentState="true" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:text="@string/stats_summary"
+                    android:textColor="#FFACB8C1"
+                    android:textSize="13sp"
+                    android:duplicateParentState="true" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/statsSwitch"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:minWidth="64dp"
+                android:gravity="center"
+                android:paddingStart="14dp"
+                android:paddingEnd="14dp"
+                android:paddingTop="4dp"
+                android:paddingBottom="4dp"
+                android:textSize="14sp"
+                android:fontFamily="sans-serif-bold"
+                android:text="@string/switch_on_badge"
+                android:textColor="#FFFFFFFF"
+                android:background="@drawable/switch_on_bg"
+                android:duplicateParentState="true" />
+        </LinearLayout>
+
+        <!-- Inputs Pill Switch Row -->
+        <LinearLayout
+            android:id="@+id/inputsPillRow"
+            style="@style/SettingsRow"
+            android:layout_marginTop="12dp"
+            android:layout_height="wrap_content"
+            android:minHeight="56dp"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:duplicateParentState="true">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/inputs_pill_label"
+                    android:textColor="#FFFFFFFF"
+                    android:textSize="18sp"
+                    android:duplicateParentState="true" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:text="@string/inputs_pill_summary"
+                    android:textColor="#FFACB8C1"
+                    android:textSize="13sp"
+                    android:duplicateParentState="true" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/inputsPillSwitch"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:minWidth="64dp"
+                android:gravity="center"
+                android:paddingStart="14dp"
+                android:paddingEnd="14dp"
+                android:paddingTop="4dp"
+                android:paddingBottom="4dp"
+                android:textSize="14sp"
+                android:fontFamily="sans-serif-bold"
+                android:text="@string/switch_on_badge"
+                android:textColor="#FFFFFFFF"
+                android:background="@drawable/switch_on_bg"
+                android:duplicateParentState="true" />
+        </LinearLayout>
+
+        <!-- Recent Apps Pill Switch Row -->
+        <LinearLayout
+            android:id="@+id/recentsPillRow"
+            style="@style/SettingsRow"
+            android:layout_marginTop="12dp"
+            android:layout_height="wrap_content"
+            android:minHeight="56dp"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:duplicateParentState="true">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/recents_pill_label"
+                    android:textColor="#FFFFFFFF"
+                    android:textSize="18sp"
+                    android:duplicateParentState="true" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:text="@string/recents_pill_summary"
+                    android:textColor="#FFACB8C1"
+                    android:textSize="13sp"
+                    android:duplicateParentState="true" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/recentsPillSwitch"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:minWidth="64dp"
+                android:gravity="center"
+                android:paddingStart="14dp"
+                android:paddingEnd="14dp"
+                android:paddingTop="4dp"
+                android:paddingBottom="4dp"
+                android:textSize="14sp"
+                android:fontFamily="sans-serif-bold"
+                android:text="@string/switch_on_badge"
+                android:textColor="#FFFFFFFF"
+                android:background="@drawable/switch_on_bg"
+                android:duplicateParentState="true" />
+        </LinearLayout>
+
+        <!-- Network Pill Switch Row -->
+        <LinearLayout
+            android:id="@+id/networkPillRow"
+            style="@style/SettingsRow"
+            android:layout_marginTop="12dp"
+            android:layout_height="wrap_content"
+            android:minHeight="56dp"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:duplicateParentState="true">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/network_pill_label"
+                    android:textColor="#FFFFFFFF"
+                    android:textSize="18sp"
+                    android:duplicateParentState="true" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:text="@string/network_pill_summary"
+                    android:textColor="#FFACB8C1"
+                    android:textSize="13sp"
+                    android:duplicateParentState="true" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/networkPillSwitch"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:minWidth="64dp"
+                android:gravity="center"
+                android:paddingStart="14dp"
+                android:paddingEnd="14dp"
+                android:paddingTop="4dp"
+                android:paddingBottom="4dp"
+                android:textSize="14sp"
+                android:fontFamily="sans-serif-bold"
+                android:text="@string/switch_on_badge"
+                android:textColor="#FFFFFFFF"
+                android:background="@drawable/switch_on_bg"
+                android:duplicateParentState="true" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/openOnStartChoice"
+            style="@style/SettingsRow"
+            android:layout_marginTop="28dp"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/followThemeChoice"
+            style="@style/SettingsRow"
+            android:layout_marginTop="12dp"
+            android:text="@string/follow_theme" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="7dp"
+            android:text="@string/follow_theme_hint"
+            android:textColor="#FFACB8C1"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/defaultHomeChoice"
+            style="@style/SettingsRow"
+            android:layout_marginTop="28dp"
+            android:text="@string/home_settings" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="7dp"
+            android:text="@string/home_settings_help"
+            android:textColor="#FFACB8C1"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/tvSettingsChoice"
+            style="@style/SettingsRow"
+            android:layout_marginTop="18dp"
+            android:text="@string/tv_settings" />
+    </LinearLayout>
+</ScrollView>

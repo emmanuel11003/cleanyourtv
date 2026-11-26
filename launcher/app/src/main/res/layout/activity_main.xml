@@ -64,7 +64,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:singleLine="true"
-                android:textColor="#B3FFFFFF"
+                android:textColor="#FFFFFFFF"
                 android:textSize="12sp"
                 android:fontFamily="@string/font_medium"
                 android:letterSpacing="0.22"
@@ -89,7 +89,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
             android:singleLine="true"
-            android:textColor="#99FFFFFF"
+            android:textColor="#FFFFFFFF"
             android:textSize="12sp"
             android:fontFamily="@string/font_medium"
             android:letterSpacing="0.12" />
@@ -116,16 +116,19 @@
     <!-- Top shelf: the focused dock app's name, positioned above the dock in code. -->
     <LinearLayout
         android:id="@+id/hero"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="68dp"
+        android:layout_marginEnd="68dp"
         android:orientation="vertical"
         android:alpha="0">
 
         <TextView
             android:id="@+id/heroName"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:gravity="left"
+            android:ellipsize="end"
             android:textColor="#FFFFFFFF"
             android:textSize="48sp"
             android:fontFamily="@string/font_light"
@@ -136,19 +139,21 @@
         <!-- Cinematic shelf only: when the app was last opened, and the dock position dots. -->
         <TextView
             android:id="@+id/heroMeta"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:gravity="left"
+            android:ellipsize="end"
             android:layout_marginStart="4dp"
             android:layout_marginTop="12dp"
             android:singleLine="true"
-            android:textColor="#B3FFFFFF"
+            android:textColor="#FFFFFFFF"
             android:textSize="15sp"
             android:fontFamily="@string/font_light"
             android:visibility="gone" />
 
         <LinearLayout
             android:id="@+id/heroDots"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="6dp"
             android:layout_marginStart="4dp"
             android:layout_marginTop="16dp"
@@ -168,14 +173,19 @@
 
         <!-- No clipping down to the pills: with advanced effects a focused pill scales up past its row. -->
         <RelativeLayout
+            android:id="@+id/topBar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:paddingStart="24dp"
+            android:paddingEnd="24dp"
+            android:paddingTop="14dp"
+            android:paddingBottom="14dp"
             android:clipChildren="false"
             android:clipToPadding="false">
 
             <LinearLayout
                 android:id="@+id/leftBlock"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentStart="true"
                 android:layout_toStartOf="@+id/topButtons"
@@ -188,19 +198,19 @@
                 <TextView
                     android:id="@+id/greeting"
                     android:gravity="left"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:singleLine="true"
                     android:ellipsize="end"
                     android:layout_marginStart="4dp"
-                    android:textColor="#8CFFFFFF"
+                    android:textColor="#FFFFFFFF"
                     android:textSize="12sp"
                     android:fontFamily="@string/font_medium"
                     android:letterSpacing="0.22"
                     android:textAllCaps="true" />
 
                 <LinearLayout
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:baselineAligned="true">
@@ -224,7 +234,7 @@
                         android:layout_marginBottom="8dp"
                         android:format12Hour="a"
                         android:format24Hour=""
-                        android:textColor="#B3FFFFFF"
+                        android:textColor="#FFFFFFFF"
                         android:textSize="15sp"
                         android:fontFamily="@string/font_medium"
                         android:letterSpacing="0.08"
@@ -256,7 +266,7 @@
                             android:layout_height="wrap_content"
                             android:singleLine="true"
                             android:ellipsize="end"
-                            android:textColor="#E6FFFFFF"
+                            android:textColor="#FFFFFFFF"
                             android:textSize="17sp"
                             android:fontFamily="@string/font_regular"
                             android:letterSpacing="0.02"
@@ -274,7 +284,7 @@
                             android:ellipsize="end"
                             android:format12Hour="@string/date_format_home"
                             android:format24Hour="@string/date_format_home"
-                            android:textColor="#A6FFFFFF"
+                            android:textColor="#FFFFFFFF"
                             android:textSize="14sp"
                             android:fontFamily="@string/font_regular"
                             android:letterSpacing="0.14"
@@ -289,7 +299,7 @@
                             android:layout_marginTop="4dp"
                             android:singleLine="true"
                             android:ellipsize="end"
-                            android:textColor="#80FFFFFF"
+                            android:textColor="#FFFFFFFF"
                             android:textSize="14sp"
                             android:fontFamily="@string/font_regular"
                             android:letterSpacing="0.14"
@@ -298,50 +308,56 @@
                     </LinearLayout>
                 </LinearLayout>
 
+                <!-- System / memory status inside the adaptive dock (shown when show_stats is on). -->
+                <TextView
+                    android:id="@+id/stats"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginTop="6dp"
+                    android:gravity="left"
+                    android:singleLine="true"
+                    android:ellipsize="end"
+                    android:textColor="#FFFFFFFF"
+                    android:textSize="13sp"
+                    android:fontFamily="@string/font_medium"
+                    android:letterSpacing="0.04"
+                    android:focusable="false"
+                    android:visibility="gone" />
             </LinearLayout>
-
-            <!-- Shown only when show_stats is on. Outside leftBlock, so the top buttons stay level with the clock
-                 row; gone, it takes no space. -->
-            <TextView
-                android:id="@+id/stats"
-                android:layout_width="wrap_content"
-                android:layout_below="@id/leftBlock"
-                android:layout_alignStart="@id/leftBlock"
-                android:gravity="left"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
-                android:singleLine="true"
-                android:ellipsize="end"
-                android:textColor="#D9FFFFFF"
-                android:textSize="14sp"
-                android:fontFamily="@string/font_medium"
-                android:letterSpacing="0.04"
-                android:focusable="false"
-                android:visibility="gone" />
 
             <LinearLayout
                 android:id="@+id/topButtons"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
-                android:layout_alignBottom="@id/leftBlock"
-                android:layout_marginBottom="6dp"
+                android:layout_centerVertical="true"
                 android:clipChildren="false"
                 android:clipToPadding="false"
                 android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/btnNowPlaying"
+                    style="@style/TopButton"
+                    android:visibility="gone"
+                    android:maxWidth="195dp"
+                    android:singleLine="true"
+                    android:ellipsize="end"
+                    android:drawableStart="@drawable/ic_music"
+                    android:nextFocusDown="@+id/grid" />
+
+                <TextView
+                    android:id="@+id/btnSearch"
+                    style="@style/TopButtonIcon"
+                    android:contentDescription="@string/search"
+                    android:drawableStart="@drawable/ic_search"
+                    android:nextFocusDown="@+id/grid" />
 
                 <TextView
                     android:id="@+id/btnInputs"
                     style="@style/TopButton"
                     android:text="@string/inputs"
                     android:drawableStart="@drawable/ic_input"
-                    android:nextFocusDown="@+id/grid" />
-
-                <TextView
-                    android:id="@+id/btnRecents"
-                    style="@style/TopButton"
-                    android:text="@string/recents"
-                    android:drawableStart="@drawable/ic_recents"
                     android:nextFocusDown="@+id/grid" />
 
                 <TextView

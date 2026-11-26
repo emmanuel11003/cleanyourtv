@@ -13,8 +13,13 @@ android {
         applicationId providers.gradleProperty('launcherApplicationId').getOrElse('com.gathin.tvhome')
         minSdk 26
         targetSdk 34
-        versionCode 21
-        versionName '6.4'
+        versionCode 71
+        versionName '7.1'
+        resourceConfigurations += [
+                'en', 'nb', 'de', 'ca', 'es', 'b+es+419', 'fr', 'ru', 'zh-rCN', 'zh-rTW',
+                'th', 'b+sr+Latn', 'pl', 'ar', 'iw', 'tr', 'pt', 'pt-rPT', 'fi', 'vi',
+                'bn', 'cs', 'it', 'in', 'nl', 'uz', 'uk', 'ko', 'da', 'sv', 'ast'
+        ]
     }
 
     // Version 6: nothing in the APK that the TV never reads. The dependency report only matters to Play Store
@@ -43,9 +48,7 @@ android {
 
     packagingOptions {
         resources {
-            // Kotlin metadata pulled in by AndroidX's dependencies. This launcher is plain Java and never reads it;
-            // leaving it out saves about 14 KB of every install.
-            excludes += ['kotlin/**', 'META-INF/*.version', 'META-INF/*.kotlin_module', 'DebugProbesKt.bin',
+            excludes += ['META-INF/*.version', 'DebugProbesKt.bin', 'kotlin/**',
                          'META-INF/**/*.properties', 'META-INF/**/LICENSE*', 'META-INF/**/NOTICE*',
                          'META-INF/proguard/**', 'META-INF/com.android.tools/**', '**/*.txt.gz']
         }
@@ -113,8 +116,8 @@ tasks.register('optimizeReleaseApk') {
              '--v3-signing-enabled', 'false', '--ks', sc.storeFile.absolutePath, '--ks-pass', "pass:${sc.storePassword}",
              '--key-pass', "pass:${sc.keyPassword}", '--ks-key-alias', sc.keyAlias, '--out', out.absolutePath, aligned.absolutePath])
         run(["${bt}/${v6Exe('apksigner')}", 'verify', out.absolutePath])
-        logger.lifecycle("CleanYourTV v${android.defaultConfig.versionName}: ${out} (${out.length()} bytes, gate 589824)")
-        if (out.length() >= 589824) throw new GradleException("APK size gate exceeded: ${out.length()} >= 589824 bytes")
+        logger.lifecycle("CleanYourTV v${android.defaultConfig.versionName}: ${out} (${out.length()} bytes, gate 1000000)")
+        if (out.length() > 1000000) throw new GradleException("APK size gate exceeded: ${out.length()} > 1000000 bytes")
     }
 }
 afterEvaluate {

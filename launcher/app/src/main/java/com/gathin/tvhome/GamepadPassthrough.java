@@ -24,11 +24,13 @@ final class GamepadPassthrough implements InputManager.InputDeviceListener {
     }
 
     void start() {
+        if (input == null) return;
         input.registerInputDeviceListener(this, null);
         update();
     }
 
     void stop() {
+        if (input == null) return;
         input.unregisterInputDeviceListener(this);
     }
 
@@ -44,6 +46,7 @@ final class GamepadPassthrough implements InputManager.InputDeviceListener {
     }
 
     private boolean gamepadConnected() {
+        if (input == null) return false;
         for (int id : input.getInputDeviceIds()) {
             InputDevice device = input.getInputDevice(id);
             if (device != null && !device.isVirtual() && isGamepad(device.getSources())) return true;

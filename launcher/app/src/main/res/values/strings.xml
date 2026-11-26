@@ -206,39 +206,62 @@
     <string name="sleep_timer_no_helper" translatable="false">The TV will sleep in %1$d min. Turn on the CleanYourTV accessibility helper so it can switch the TV off; until then the screensaver starts.</string>
     <string name="notifications_addon_help" translatable="false">Notifications require the Notification Center add-on</string>
 
-    <!-- Remote Button Mapper -->
-    <string name="button_mapper" translatable="false">Button Mapper</string>
-    <string name="button_mapper_summary" translatable="false">Customize remote buttons to launch apps or actions</string>
-    <string name="button_mapper_mapped" translatable="false">%1$d buttons customized</string>
-    <string name="button_mapper_learn" translatable="false">Detect Remote Button…</string>
-    <string name="button_mapper_learn_prompt" translatable="false">Press any button on your TV remote to customize it.\n\nPress Back to cancel.</string>
-    <string name="button_mapper_reset" translatable="false">Default (Unmapped)</string>
-    <string name="button_mapper_clear_all" translatable="false">Clear All Mappings</string>
-    <string name="button_mapper_clear_all_confirm" translatable="false">Remove all custom remote button mappings?</string>
-    <string name="button_mapper_action_quick_settings" translatable="false">Quick Settings</string>
-    <string name="button_mapper_action_inputs" translatable="false">TV Inputs</string>
-    <string name="button_mapper_action_reorder" translatable="false">Rearrange Apps</string>
-    <string name="button_mapper_action_screensaver" translatable="false">Screensaver / Clock</string>
-    <string name="button_mapper_action_library" translatable="false">App Library</string>
-    <string name="button_mapper_action_tv_settings" translatable="false">TV Settings</string>
-    <string name="button_mapper_action_recents" translatable="false">Recent Apps</string>
-    <string name="button_mapper_launch_app" translatable="false">Launch App…</string>
-    <string name="button_mapper_key_cannot_remap" translatable="false">This navigation button cannot be remapped.</string>
-
-    <!-- Recent Applications / Multitasking Switcher -->
-    <string name="recents" translatable="false">Recents</string>
-    <string name="recent_apps_title" translatable="false">Recent Apps</string>
-    <string name="recent_apps_subtitle" translatable="false">Switch between recent apps or manage tasks</string>
-    <string name="recents_action_open" translatable="false">Switch to App</string>
-    <string name="recents_action_dismiss" translatable="false">Dismiss Task</string>
-    <string name="recents_action_force_stop" translatable="false">Force Stop App</string>
-    <string name="recents_action_app_info" translatable="false">App Info</string>
-    <string name="recents_empty_title" translatable="false">No Recent Apps</string>
-    <string name="recents_empty_message" translatable="false">Apps opened from CleanYourTV will appear here for quick switching.</string>
-    <string name="recents_empty_return" translatable="false">Return Home</string>
-    <string name="recents_dismissed_toast" translatable="false">%1$s dismissed from recents. The app may still be running in the background.</string>
-    <string name="recents_force_stop_requires_auth" translatable="false">Direct force stop requires elevated privileges (e.g. Shizuku/ADB). Use App Info instead.</string>
-    <string name="recents_pill_label" translatable="false">Recent Apps Pill</string>
-    <string name="recents_pill_summary" translatable="false">Show recent apps switcher in top bar</string>
     <string name="choose_wallpaper" translatable="false">Change Wallpaper…</string>
+    <string name="wallpaper_sync_open" translatable="false">Wi-Fi Wallpaper &amp; Backup Sync…</string>
+
+    <string name="search" translatable="false">Search</string>
+    <string name="spotlight_hint" translatable="false">Search apps, inputs, or actions…</string>
+    <string name="spotlight_empty" translatable="false">No matches found</string>
+    <string name="quick_settings_title" translatable="false">Quick Settings</string>
+
+    <string name="media_play_pause" translatable="false">Play / Pause</string>
+    <string name="media_next" translatable="false">Next track</string>
+    <string name="media_prev" translatable="false">Previous track</string>
+    <string name="media_open_app" translatable="false">Open player</string>
+
+    <string name="tile_open" translatable="false">Open</string>
+    <string name="tile_rename" translatable="false">Rename app…</string>
+    <string name="tile_rename_hint" translatable="false">Custom app name</string>
+    <string name="tile_rename_reset" translatable="false">Reset name</string>
+    <string name="tile_hide" translatable="false">Hide from Home</string>
+    <string name="tile_hidden_toast" translatable="false">Hidden %1$s. Unhide in Launcher Settings or Search.</string>
+    <string name="hidden_apps_label" translatable="false">Hidden apps</string>
+    <string name="hidden_apps_summary" translatable="false">Unhide apps hidden from the Home grid</string>
+    <string name="hidden_apps_none" translatable="false">No apps are currently hidden</string>
+    <string name="unhide_toast" translatable="false">Restored %1$s to Home</string>
+
+    <string name="tile_boost_ram" translatable="false">Free RAM</string>
+    <string name="boost_ram_tile_fmt" translatable="false">Boost · %1$dM</string>
+    <string name="boost_ram_freed" translatable="false">Freed %1$d MB · %2$d MB free</string>
+    <string name="boost_ram_clean" translatable="false">Memory optimized · %1$d MB free</string>
+
+    <string name="backup_label" translatable="false">Backup &amp; Restore</string>
+    <string name="backup_summary" translatable="false">Export or restore layout, labels, hidden apps &amp; settings</string>
+    <string name="backup_export" translatable="false">Export backup (JSON)</string>
+    <string name="backup_restore" translatable="false">Restore from backup</string>
+    <string name="backup_saved" translatable="false">Backup saved (%1$d settings, %2$d apps)</string>
+    <string name="backup_restored" translatable="false">Restored %1$d settings &amp; %2$d apps</string>
+    <string name="backup_failed" translatable="false">Backup error: %1$s</string>
+
+    <string name="tilt_focus_label" translatable="false">Focus parallax tilt</string>
+    <string name="tilt_focus_summary" translatable="false">Subtle 3D perspective tilt &amp; specular shift on focused tiles</string>
+    <string name="ui_sounds_label" translatable="false">Navigation click sounds</string>
+    <string name="ui_sounds_summary" translatable="false">Subtle audio feedback when moving focus or selecting tiles</string>
+
+    <string name="wallpaper_sync_title" translatable="false">Wi-Fi Wallpaper &amp; Backup Sync</string>
+    <string name="wallpaper_sync_subtitle" translatable="false">Scan the QR code or open the URL on your phone browser (same Wi-Fi)</string>
+    <string name="sync_running" translatable="false">Server running on Wi-Fi</string>
+    <string name="sync_stopped" translatable="false">Server stopped</string>
+    <string name="sync_no_network" translatable="false">Connect TV to Wi-Fi or Ethernet</string>
+    <string name="sync_pin_fmt" translatable="false">Pairing PIN: %1$s</string>
+    <string name="sync_start" translatable="false">Start server</string>
+    <string name="sync_stop" translatable="false">Stop server</string>
+    <string name="sync_new_pin" translatable="false">New PIN</string>
+    <string name="sync_clear_home" translatable="false">Reset Home</string>
+    <string name="sync_clear_ss" translatable="false">Reset Screensaver</string>
+    <string name="sync_cleared" translatable="false">Wallpaper reset</string>
+    <string name="sync_home_status" translatable="false">Home: %1$s</string>
+    <string name="sync_ss_status" translatable="false">Screensaver: %1$s</string>
+    <string name="sync_custom" translatable="false">Custom</string>
+    <string name="sync_follows_home" translatable="false">Follows Home</string>
 </resources>

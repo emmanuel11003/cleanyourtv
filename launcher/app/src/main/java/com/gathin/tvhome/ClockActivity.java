@@ -18,13 +18,27 @@ public class ClockActivity extends Activity {
     }
 
 
+    private static boolean justShown;
+
+    static boolean consumeJustShown() {
+        boolean v = justShown;
+        justShown = false;
+        return v;
+    }
+
     private ClockScene scene;
+    private boolean animateTransitions;
 
     @Override
     @SuppressWarnings("deprecation")
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        justShown = true;
+        Config cfg = Config.load(this);
+        animateTransitions = cfg.animations && !cfg.reducedMotion;
+        Motion.applyFadeTransition(this, animateTransitions);
         setContentView(R.layout.dream_clock);
+        getWindow().setBackgroundDrawable(null);
         ClockFormat.apply(getWindow().getDecorView(), Config.load(this).clockFormat);
         getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN
                 | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_IMMERSIVE);
@@ -66,9 +80,8 @@ public class ClockActivity extends Activity {
     }
 
     @Override
-    @SuppressWarnings("deprecation")
     public void finish() {
         super.finish();
-        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+        Motion.applyFadeTransition(this, animateTransitions);
     }
 }

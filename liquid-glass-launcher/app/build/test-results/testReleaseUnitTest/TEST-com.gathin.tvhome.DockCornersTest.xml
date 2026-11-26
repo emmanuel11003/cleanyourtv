@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.gathin.tvhome.DockCornersTest" tests="3" skipped="0" failures="0" errors="0" timestamp="2026-11-13T11:55:42" hostname="POOMATTATHIL" time="0.003">
+  <properties/>
+  <testcase name="evenPaddingIsTheGapBetweenTilesUnlessTheEdgeIsTighter" classname="com.gathin.tvhome.DockCornersTest" time="0.002"/>
+  <testcase name="evenPaddingStaysPositiveAndBelowTheCellFromFourToSevenColumns" classname="com.gathin.tvhome.DockCornersTest" time="0.001"/>
+  <testcase name="bandRadiusIsTileRadiusPlusPadding" classname="com.gathin.tvhome.DockCornersTest" time="0.0"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

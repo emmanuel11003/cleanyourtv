@@ -42,6 +42,7 @@ final class Config {
     static final String SETTINGS_NAME = "launcher_settings";
     static final String ROWS_BELOW_DOCK_KEY = "rows_below_dock";
     static final String WALLPAPER_CHOICE_KEY = "wallpaper_choice";
+    static final String SCREENSAVER_WALLPAPER_KEY = "screensaver_wallpaper";
     static final String SCREENSAVER_STYLE_KEY = "screensaver_style";
     static final String SCREENSAVER_BG_KEY = "screensaver_bg";
     static final String DOCK_OPACITY_KEY = "dock_opacity";
@@ -131,8 +132,6 @@ final class Config {
     final boolean showNetworkPill;
     /** Show the Inputs pill when the TV has inputs to list (config.xml, show_inputs_pill). */
     final boolean showInputsPill;
-    /** Show the Recent Apps pill in the top bar (config.xml, show_recents_pill). */
-    final boolean showRecentsPill;
     /** Wi-Fi and Settings pills as round icon buttons, Inputs keeps its label (config.xml icon_only_buttons). */
     final boolean iconOnlyButtons;
     /** The Inputs pill as a round icon button too (config.xml icon_only_inputs). */
@@ -290,7 +289,7 @@ final class Config {
                    Map<String, String> appBanners, String sourcePanelService, String sourcePanelAction,
                    String sourcePanelExtra, boolean coocaaSources, String inputAction, List<String> inputSources,
                    String inputUriScheme, int columns, int rowsBelowDock, boolean animations, boolean advancedEffects,
-                   boolean shamsiDate, String greetingName, boolean moduleCards, boolean reducedMotion, boolean bootToLiveTv, boolean openOnStartChoice, boolean dockTitle, boolean dockRow, boolean topMenu, boolean launcherSettingsButton, boolean reorderButton, boolean showNetworkPill, boolean showInputsPill, boolean showRecentsPill, boolean iconOnlyButtons, boolean iconOnlyInputs, boolean libraryButton, boolean showLibraryPill, int wifiLabelWidth, boolean alwaysShowNames, boolean wallpaperTrueColor, boolean focusOvershoot, String vpnApp,
+                   boolean shamsiDate, String greetingName, boolean moduleCards, boolean reducedMotion, boolean bootToLiveTv, boolean openOnStartChoice, boolean dockTitle, boolean dockRow, boolean topMenu, boolean launcherSettingsButton, boolean reorderButton, boolean showNetworkPill, boolean showInputsPill, boolean iconOnlyButtons, boolean iconOnlyInputs, boolean libraryButton, boolean showLibraryPill, int wifiLabelWidth, boolean alwaysShowNames, boolean wallpaperTrueColor, boolean focusOvershoot, String vpnApp,
                    boolean showHomeSettingsShortcut, boolean showStats, String gameDay, boolean appLibrary, boolean appLibrarySelection, boolean libraryOkOpens, boolean uniformTiles, int backgroundColor, int skyIntensity,
                    int[] settingsKeycodes, boolean settingsKeyPanel, boolean restoreKeyServices, boolean wallpaperEnabled, File wallpaper, List<File> wallpapers,
                    int wallpaperRotationMinutes, int wallpaperDim, int dockOpacity, String wallpaperOrder, boolean overlayApplied,
@@ -346,7 +345,6 @@ final class Config {
         this.reorderButton = reorderButton;
         this.showNetworkPill = showNetworkPill;
         this.showInputsPill = showInputsPill;
-        this.showRecentsPill = showRecentsPill;
         this.iconOnlyButtons = iconOnlyButtons;
         this.iconOnlyInputs = iconOnlyInputs;
         this.iconOnlyVpn = iconOnlyVpn;
@@ -439,7 +437,46 @@ final class Config {
         return ctx.getExternalFilesDir(null);
     }
 
+    private static final Object CACHE_LOCK = new Object();
+    private static Config cachedConfig;
+    private static String cachedKey;
+
+    static void invalidateCache() {
+        synchronized (CACHE_LOCK) {
+            cachedConfig = null;
+            cachedKey = null;
+        }
+    }
+
     static Config load(Context ctx) {
+        if (ctx != null) {
+            try {
+                File dir = dir(ctx);
+                File file = dir != null ? new File(dir, FILE_NAME) : null;
+                boolean mounted = Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState());
+                SharedPreferences sp = ctx.getSharedPreferences(SETTINGS_NAME, Context.MODE_PRIVATE);
+                long rev = sp.getLong(SETTINGS_REVISION_KEY, 0L);
+                String localeKey = ctx.getResources().getConfiguration().getLocales().toLanguageTags();
+                String key = rev + "|" + mounted + "|" + fileStamp(file) + "|" + localeKey;
+                synchronized (CACHE_LOCK) {
+                    if (cachedConfig != null && key.equals(cachedKey)) {
+                        return cachedConfig;
+                    }
+                }
+                Config loaded = loadUncached(ctx);
+                synchronized (CACHE_LOCK) {
+                    cachedConfig = loaded;
+                    cachedKey = key;
+                }
+                return loaded;
+            } catch (Throwable ignored) {
+                // Fall through to uncached load in headless/mock test contexts.
+            }
+        }
+        return loadUncached(ctx);
+    }
+
+    private static Config loadUncached(Context ctx) {
         Resources res = ctx.getResources();
         List<String> dock = new ArrayList<>(Arrays.asList(res.getStringArray(R.array.dock_apps)));
         boolean fillDock = res.getBoolean(R.bool.fill_dock);
@@ -480,7 +517,6 @@ final class Config {
         boolean reorderButton = res.getBoolean(R.bool.reorder_button);
         boolean showNetworkPill = res.getBoolean(R.bool.show_network_pill);
         boolean showInputsPill = res.getBoolean(R.bool.show_inputs_pill);
-        boolean showRecentsPill = res.getBoolean(R.bool.show_recents_pill);
         boolean iconOnlyButtons = res.getBoolean(R.bool.icon_only_buttons);
         boolean iconOnlyInputs = res.getBoolean(R.bool.icon_only_inputs);
         boolean iconOnlyVpn = res.getBoolean(R.bool.icon_only_vpn);
@@ -569,8 +605,16 @@ final class Config {
             dock = stringList(json, "dock_apps", dock);
             fillDock = bool(json, "fill_dock", fillDock);
             hidden = stringList(json, "hidden_apps", hidden);
+            if (!hidden.contains("com.emmanuel.wallpapersync")) {
+                hidden = new ArrayList<>(hidden);
+                hidden.add("com.emmanuel.wallpapersync");
+            }
             libraryApps = stringList(json, "library_apps", libraryApps);
             libraryExcludedApps = stringList(json, "library_excluded_apps", libraryExcludedApps);
+            if (!libraryExcludedApps.contains("com.emmanuel.wallpapersync")) {
+                libraryExcludedApps = new ArrayList<>(libraryExcludedApps);
+                libraryExcludedApps.add("com.emmanuel.wallpapersync");
+            }
             liveTv = string(json, "live_tv_package", liveTv);
             liveTvAction = string(json, "live_tv_action", liveTvAction);
             liveTvInputId = string(json, "live_tv_input_id", liveTvInputId);
@@ -605,7 +649,6 @@ final class Config {
             reorderButton = bool(json, "reorder_button", reorderButton);
             showNetworkPill = bool(json, "show_network_pill", showNetworkPill);
             showInputsPill = bool(json, "show_inputs_pill", showInputsPill);
-            showRecentsPill = bool(json, "show_recents_pill", showRecentsPill);
             iconOnlyButtons = bool(json, "icon_only_buttons", iconOnlyButtons);
             iconOnlyInputs = bool(json, "icon_only_inputs", iconOnlyInputs);
             iconOnlyVpn = bool(json, "icon_only_vpn", iconOnlyVpn);
@@ -684,6 +727,12 @@ final class Config {
         }
         // A top-bar app is moved there, not copied: it leaves the grid.
         for (String pkg : topBarApps) if (!hidden.contains(pkg)) hidden.add(pkg);
+        // Merge user on-TV hidden apps and custom app labels (persisted in launcher_settings).
+        for (String pkg : AppCustomizations.loadHidden(ctx)) {
+            if (!hidden.contains(pkg)) hidden.add(pkg);
+        }
+        Map<String, String> mergedLabels = new HashMap<>(packageMap(appLabels));
+        mergedLabels.putAll(AppCustomizations.loadLabels(ctx));
         // A theme push or reset invalidates choices made on the TV. On first use, remember the
         // current theme without clearing choices from an older launcher version.
         SharedPreferences choices = ctx.getSharedPreferences(SETTINGS_NAME, Context.MODE_PRIVATE);
@@ -698,7 +747,6 @@ final class Config {
         if (choices.contains("show_stats")) showStats = choices.getBoolean("show_stats", showStats);
         if (choices.contains("show_inputs_pill")) showInputsPill = choices.getBoolean("show_inputs_pill", showInputsPill);
         if (choices.contains("show_network_pill")) showNetworkPill = choices.getBoolean("show_network_pill", showNetworkPill);
-        if (choices.contains("show_recents_pill")) showRecentsPill = choices.getBoolean("show_recents_pill", showRecentsPill);
         if (choices.contains("screensaver_enabled")) {
             boolean ssEnabled = choices.getBoolean("screensaver_enabled", true);
             if (!ssEnabled) idleClockMinutes = 0;
@@ -761,10 +809,10 @@ final class Config {
         Festival festival = json == null ? Festival.NONE : Festival.parse(festivalName(json),
                 string(json, "festival_until", ""), string(json, "greeting", ""), string(json, "accent_color", ""));
 
-        return new Config(dock, fillDock, hidden, libraryApps, libraryExcludedApps, liveTv, liveTvAction, liveTvInputId, packageMap(launchActions), packageMap(appLabels),
+        return new Config(dock, fillDock, hidden, libraryApps, libraryExcludedApps, liveTv, liveTvAction, liveTvInputId, packageMap(launchActions), mergedLabels,
                 packageMap(appBanners), panelService, panelAction, panelExtra, coocaaSources, inputAction, inputSources, inputUriScheme, Math.max(1, columns),
                 Math.max(0, rowsBelow), animations, advancedEffects, shamsi, greetingName, moduleCards, reducedMotion, bootToLiveTv,
-                openOnStartChoice, dockTitle, dockRow, topMenu, launcherSettingsButton, reorderButton, showNetworkPill, showInputsPill, showRecentsPill,
+                openOnStartChoice, dockTitle, dockRow, topMenu, launcherSettingsButton, reorderButton, showNetworkPill, showInputsPill,
                 iconOnlyButtons, iconOnlyInputs, libraryButton, showLibraryPill, wifiLabelWidth, alwaysShowNames, wallpaperTrueColor, focusOvershoot,
                 vpn, homeSettings, showStats, gameDay, library, librarySelection, libraryOkOpens, uniformTiles, background,
                 Math.max(0, Math.min(100, skyIntensity)), settingsKeycodes, settingsKeyPanel, restoreKeyServices, wallpaperEnabled, wallpaper,
@@ -810,9 +858,9 @@ final class Config {
 
     private static final String[] ON_TV_CHOICE_KEYS = {
             "columns", ROWS_BELOW_DOCK_KEY, "animations", "advanced_effects",
-            WALLPAPER_CHOICE_KEY, SCREENSAVER_STYLE_KEY, SCREENSAVER_BG_KEY,
+            WALLPAPER_CHOICE_KEY, SCREENSAVER_WALLPAPER_KEY, SCREENSAVER_STYLE_KEY, SCREENSAVER_BG_KEY,
             "screensaver_enabled", "show_stats", "show_inputs_pill",
-            "show_recents_pill", "show_network_pill", DOCK_OPACITY_KEY,
+            "show_network_pill", DOCK_OPACITY_KEY,
             CLOCK_FORMAT_KEY, OpenOnStart.KEY
     };
 
@@ -868,20 +916,38 @@ final class Config {
      * start before the card is mounted (seen at every boot on a Xiaomi MiTV-MTEQ0), and without the copy it comes
      * up with the built-in dock order. A missing file on mounted storage still means no overlay.
      */
+    private static final Object OVERLAY_LOCK = new Object();
+    private static String lastOverlayStamp;
+
     private static JSONObject readOverlay(Context ctx, File file, boolean mounted) {
         File copy = new File(ctx.getFilesDir(), FILE_NAME);
-        if (!mounted) return read(copy);
-        JSONObject json = read(file);
-        if (json == null) {
-            copy.delete();
-        } else {
-            try (FileOutputStream out = new FileOutputStream(copy)) {
-                out.write(json.toString().getBytes(StandardCharsets.UTF_8));
-            } catch (IOException e) {
-                Log.w(TAG, "could not keep a copy of " + file + ": " + e.getMessage());
+        synchronized (OVERLAY_LOCK) {
+            if (!mounted) return read(copy);
+            JSONObject json = read(file);
+            if (json == null) {
+                copy.delete();
+                lastOverlayStamp = null;
+            } else {
+                String stamp = fileStamp(file);
+                if (!stamp.equals(lastOverlayStamp) || !copy.isFile()) {
+                    File tmp = new File(ctx.getFilesDir(), FILE_NAME + ".tmp");
+                    try (FileOutputStream out = new FileOutputStream(tmp)) {
+                        out.write(json.toString().getBytes(StandardCharsets.UTF_8));
+                        out.flush();
+                        if (tmp.renameTo(copy)) {
+                            lastOverlayStamp = stamp;
+                        } else {
+                            tmp.delete();
+                            Log.w(TAG, "could not keep a copy of " + file);
+                        }
+                    } catch (IOException e) {
+                        tmp.delete();
+                        Log.w(TAG, "could not keep a copy of " + file + ": " + e.getMessage());
+                    }
+                }
             }
+            return json;
         }
-        return json;
     }
 
     private static JSONObject read(File file) {

@@ -1,0 +1,4 @@
+#!/bin/sh
+# Reuse the repository wrapper; this add-on remains its own Gradle project.
+dir="$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)"
+exec "$dir/../../launcher/gradlew" -p "$dir" "$@"

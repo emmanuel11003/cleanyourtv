@@ -61,7 +61,7 @@
             android:gravity="center"
             android:maxLines="1"
             android:ellipsize="end"
-            android:textColor="#80FFFFFF"
+            android:textColor="#FFFFFFFF"
             android:textSize="12sp"
             android:fontFamily="@string/font_regular" />
     </LinearLayout>

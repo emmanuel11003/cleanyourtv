@@ -1,5 +1,7 @@
 package com.gathin.tvhome;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
@@ -17,9 +19,11 @@ import android.view.animation.DecelerateInterpolator;
  */
 public final class AppLaunchController {
 
-    public static final int LAUNCH_ANIMATION_MS = 45;
+    public static final int LAUNCH_ANIMATION_MS = 36;
     public static final float LAUNCH_SCALE_MULTIPLIER = 1.045f;
     public static final long LAUNCH_TIMEOUT_MS = 2000L;
+    private static final AccelerateDecelerateInterpolator ACCEL_DECEL = new AccelerateDecelerateInterpolator();
+    private static final DecelerateInterpolator DECEL = new DecelerateInterpolator();
 
     public interface LaunchCallback {
         void onLaunchReady(AppAdapter.Entry entry, boolean animated);
@@ -56,34 +60,11 @@ public final class AppLaunchController {
         activeEntry = entry;
         activeNormalScale = normalScale;
 
-        // If reduced motion is requested, headless, or animations are disabled, launch immediately without delay
-        if (view == null || !animations || reducedMotion) {
-            activeView = null;
-            if (callback != null) {
-                callback.onLaunchReady(entry, false);
-            }
-            return true;
+        // Upstream behavior: launch immediately without custom tile zoom/fade animation.
+        activeView = null;
+        if (callback != null) {
+            callback.onLaunchReady(entry, false);
         }
-
-        activeView = view;
-        float targetScale = normalScale * LAUNCH_SCALE_MULTIPLIER;
-
-        view.animate().cancel();
-        view.animate()
-                .scaleX(targetScale)
-                .scaleY(targetScale)
-                .setDuration(LAUNCH_ANIMATION_MS)
-                .setInterpolator(new AccelerateDecelerateInterpolator())
-                .withEndAction(() -> {
-                    if (cancelled) {
-                        return;
-                    }
-                    if (callback != null) {
-                        callback.onLaunchReady(entry, true);
-                    }
-                })
-                .start();
-
         return true;
     }
 
@@ -100,12 +81,13 @@ public final class AppLaunchController {
         launching = false;
 
         if (activeView != null) {
+            activeView.animate().setListener(null);
             activeView.animate().cancel();
             activeView.animate()
                     .scaleX(activeNormalScale)
                     .scaleY(activeNormalScale)
                     .setDuration(70)
-                    .setInterpolator(new DecelerateInterpolator())
+                    .setInterpolator(DECEL)
                     .start();
             activeView = null;
         }
@@ -118,6 +100,7 @@ public final class AppLaunchController {
         launching = false;
         cancelled = cancelledState;
         if (activeView != null) {
+            activeView.animate().setListener(null);
             activeView.animate().cancel();
             activeView.setScaleX(activeNormalScale);
             activeView.setScaleY(activeNormalScale);

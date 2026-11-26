@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.gathin.tvhome.FestivalTest" tests="8" skipped="0" failures="0" errors="0" timestamp="2026-11-13T11:55:42" hostname="POOMATTATHIL" time="0.008">
+  <properties/>
+  <testcase name="malformedValuesTurnTheSkinOff" classname="com.gathin.tvhome.FestivalTest" time="0.006"/>
+  <testcase name="activeThroughTheLastDayInclusive" classname="com.gathin.tvhome.FestivalTest" time="0.0"/>
+  <testcase name="customGreetingIsSanitizedAndOverridesTheFestivalDefault" classname="com.gathin.tvhome.FestivalTest" time="0.0"/>
+  <testcase name="halloweenHasItsOwnSkinAndPumpkinAccent" classname="com.gathin.tvhome.FestivalTest" time="0.0"/>
+  <testcase name="accentFallsBackToDiyaGold" classname="com.gathin.tvhome.FestivalTest" time="0.001"/>
+  <testcase name="unknownFestivalKeepsTheTimeOfDayGreeting" classname="com.gathin.tvhome.FestivalTest" time="0.0"/>
+  <testcase name="noEndDateStaysOn" classname="com.gathin.tvhome.FestivalTest" time="0.0"/>
+  <testcase name="otherFestivalsKeepTheDiyaSkin" classname="com.gathin.tvhome.FestivalTest" time="0.0"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

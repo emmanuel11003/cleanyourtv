@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.gathin.tvhome.GameDayTest" tests="11" skipped="0" failures="0" errors="0" timestamp="2026-11-13T11:55:42" hostname="POOMATTATHIL" time="0.01">
+  <properties/>
+  <testcase name="turnIsLiveOnlyBetweenStartAndEnd" classname="com.gathin.tvhome.GameDayTest" time="0.005"/>
+  <testcase name="noF1OutsideItsWeekend" classname="com.gathin.tvhome.GameDayTest" time="0.003"/>
+  <testcase name="nextTurnIsNeverMoreThanOneTurnAway" classname="com.gathin.tvhome.GameDayTest" time="0.0"/>
+  <testcase name="turnSecondsOutOfRangeBecomesThirty" classname="com.gathin.tvhome.GameDayTest" time="0.0"/>
+  <testcase name="f1LiveSortsFirst" classname="com.gathin.tvhome.GameDayTest" time="0.001"/>
+  <testcase name="f1JoinsSortedByItsNextSession" classname="com.gathin.tvhome.GameDayTest" time="0.0"/>
+  <testcase name="durationHelperMatchesTheCountdown" classname="com.gathin.tvhome.GameDayTest" time="0.0"/>
+  <testcase name="rotationIndex" classname="com.gathin.tvhome.GameDayTest" time="0.001"/>
+  <testcase name="endedGamesAreDropped" classname="com.gathin.tvhome.GameDayTest" time="0.0"/>
+  <testcase name="noTurnsHidesPanel" classname="com.gathin.tvhome.GameDayTest" time="0.0"/>
+  <testcase name="rowsAreParsedAndBadOnesSkipped" classname="com.gathin.tvhome.GameDayTest" time="0.0"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

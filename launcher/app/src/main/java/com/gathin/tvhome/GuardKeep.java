@@ -41,7 +41,7 @@ final class GuardKeep {
     }
 
     static void setOffInStandby(Context context, boolean off) {
-        context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit().putBoolean(KEY_OFF, off).commit();
+        context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit().putBoolean(KEY_OFF, off).apply();
     }
 
     /** Puts HomeKeyService back on the enabled list when standby exit is opted in. Other services stay. */

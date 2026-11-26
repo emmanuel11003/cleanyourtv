@@ -179,9 +179,10 @@ class TheNotesClaimsAboutThisBoard(unittest.TestCase):
         self.assertNotRegex(self.page, r"am start[^\n]*(factory|hkcfac|factorymenu)")
 
     def test_the_inputs_extra_is_the_one_the_launcher_sends(self):
-        source = java_files()["MainActivity.java"]
+        files = java_files()
+        source = files.get("TvInputRouter.java", files["MainActivity.java"])
         self.assertIn('putExtra("input"', source,
-                      "MainActivity.openInput no longer sends the source number as the extra 'input', "
+                      "TvInputRouter.openInput no longer sends the source number as the extra 'input', "
                       "so the note's comparison with CVTE's extra is stale")
         self.assertEqual(missing(self.page, ["input_sources", "input_action",
                                              "MTK_EXTRA_INPUT_ID",

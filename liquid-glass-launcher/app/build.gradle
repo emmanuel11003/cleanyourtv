@@ -1,0 +1,130 @@
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    namespace 'com.gathin.tvhome'
+    compileSdk 34
+
+    defaultConfig {
+        // Opt-in identity for firmware with a package-name HOME allowlist.
+        // Xiaomi: docs/devices/xiaomi-mitv-aetp0-dofus.md (com.ts.launcher).
+        // ColorOS TV: docs/devices/oppo-k9-55-oppocnm632.md (com.oneplus.tv.launcher2).
+        applicationId providers.gradleProperty('launcherApplicationId').getOrElse('com.gathin.tvhome.liquidglass')
+        minSdk 26
+        targetSdk 34
+        versionCode 1
+        versionName '1.0'
+    }
+
+    // Version 6: nothing in the APK that the TV never reads. The dependency report only matters to Play Store
+    // uploads, and BuildConfig / AIDL / RenderScript are not used by this launcher.
+    dependenciesInfo {
+        includeInApk false
+        includeInBundle false
+    }
+    buildFeatures {
+        buildConfig false
+        aidl false
+        renderScript false
+        shaders false
+    }
+
+    buildTypes {
+        release {
+            // R8 strips and optimises the code (AndroidX included): smaller APK, faster start on a slow TV CPU.
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            // Sideloaded over ADB, never published: sign with the debug key so it installs over a debug build.
+            signingConfig signingConfigs.debug
+        }
+    }
+
+    packagingOptions {
+        resources {
+            // Kotlin metadata pulled in by AndroidX's dependencies. This launcher is plain Java and never reads it;
+            // leaving it out saves about 14 KB of every install.
+            excludes += ['kotlin/**', 'META-INF/*.version', 'META-INF/*.kotlin_module', 'DebugProbesKt.bin',
+                         'META-INF/**/*.properties', 'META-INF/**/LICENSE*', 'META-INF/**/NOTICE*',
+                         'META-INF/proguard/**', 'META-INF/com.android.tools/**', '**/*.txt.gz']
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+}
+
+// Version 6 final pass over the release APK (build-tools only, nothing added to the app):
+//  1. aapt2 optimize collapses resource entry names in resources.arsc (about 15 KB). Code reads
+//     resources through R ids; the only lookup by name is banner_* drawables (AppAdapter.bundledBanner),
+//     which stay named.
+//  2. zipalign, then sign with APK Signature Scheme v2 only: minSdk 26 never reads the v1 JAR signature.
+// Output: app/build/outputs/apk/release/tvhome-v<versionName>-release.apk
+def v6BuildTools = "${android.sdkDirectory}/build-tools/${android.buildToolsVersion}"
+def v6Exe = { String name -> org.gradle.internal.os.OperatingSystem.current().isWindows() ? (name == 'apksigner' ? "${name}.bat" : "${name}.exe") : name }
+tasks.register('optimizeReleaseApk') {
+    def apkDir = layout.buildDirectory.dir('outputs/apk/release')
+    def work = layout.buildDirectory.dir('v6opt')
+    def resDir = file('src/main/res')
+    inputs.file(apkDir.map { it.file('app-release.apk') })
+    outputs.file(apkDir.map { it.file("liquid-glass-v${android.defaultConfig.versionName}-release.apk") })
+    doLast {
+        def bt = v6BuildTools
+        def w = work.get().asFile
+        w.mkdirs()
+        def src = apkDir.get().file('app-release.apk').asFile
+        def keep = new File(w, 'keep-names.cfg')
+        def names = new TreeSet<String>()
+        resDir.eachDirMatch(~/drawable.*/) { d -> d.eachFileMatch(~/banner_.*/) { f -> names << f.name.replaceFirst(/\..*$/, '') } }
+        keep.text = names.collect { "drawable/${it}#no_collapse" }.join('\n') + '\n'
+        def opt = new File(w, 'optimized.apk')
+        def aligned = new File(w, 'aligned.apk')
+        def out = outputs.files.singleFile
+        def run = { List<String> cmd ->
+            def p = cmd.execute()
+            def err = new StringBuffer(), std = new StringBuffer()
+            p.consumeProcessOutput(std, err)
+            if (p.waitFor() != 0) throw new GradleException("${cmd[0]} failed:\n${std}${err}")
+        }
+        // Build metadata the TV never reads (VCS info, AGP version); AGP adds it after packaging, so excludes miss it.
+        // About 450 B with zip headers, and the v2 signing block pads to a 4 KB boundary, so a few bytes can cost 4 KB.
+        // Removed from a copy before aapt2, which then rewrites the whole zip with plain headers (zipfs adds
+        // timestamp extras to every central-directory entry, about 3 KB).
+        def trimmed = new File(w, 'trimmed.apk')
+        java.nio.file.Files.copy(src.toPath(), trimmed.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING)
+        def zfs = java.nio.file.FileSystems.newFileSystem(trimmed.toPath(), (ClassLoader) null)
+        try {
+            ['META-INF/version-control-info.textproto', 'META-INF/com/android/build/gradle/app-metadata.properties'].each { n ->
+                java.nio.file.Files.deleteIfExists(zfs.getPath(n))
+            }
+        } finally { zfs.close() }
+        // --deduplicate-entry-values: with names collapsed, resources whose value is identical (same colour, same
+        // bool, same translated string) share one stored entry; lookups by id are unchanged (about 6 KB).
+        run(["${bt}/${v6Exe('aapt2')}", 'optimize', '--collapse-resource-names', '--deduplicate-entry-values',
+             '--resources-config-path', keep.absolutePath, '-o', opt.absolutePath, trimmed.absolutePath])
+        // -z: recompress every deflated entry with Zopfli. Standard deflate, so any unzip reads it; just packed
+        // tighter (about 16 KB, mostly classes.dex). resources.arsc stays stored and aligned.
+        run(["${bt}/${v6Exe('zipalign')}", '-f', '-p', '-z', '4', opt.absolutePath, aligned.absolutePath])
+        def sc = android.signingConfigs.debug
+        run(["${bt}/${v6Exe('apksigner')}", 'sign', '--v1-signing-enabled', 'false', '--v2-signing-enabled', 'true',
+             '--v3-signing-enabled', 'false', '--ks', sc.storeFile.absolutePath, '--ks-pass', "pass:${sc.storePassword}",
+             '--key-pass', "pass:${sc.keyPassword}", '--ks-key-alias', sc.keyAlias, '--out', out.absolutePath, aligned.absolutePath])
+        run(["${bt}/${v6Exe('apksigner')}", 'verify', out.absolutePath])
+        logger.lifecycle("Liquid Glass v${android.defaultConfig.versionName}: ${out} (${out.length()} bytes, gate 589824)")
+        if (out.length() >= 589824) throw new GradleException("APK size gate exceeded: ${out.length()} >= 589824 bytes")
+    }
+}
+afterEvaluate {
+    tasks.named('assembleRelease') { finalizedBy 'optimizeReleaseApk' }
+    tasks.named('optimizeReleaseApk') { dependsOn 'packageRelease' }
+}
+
+dependencies {
+    implementation 'androidx.recyclerview:recyclerview:1.3.2'
+    implementation 'androidx.dynamicanimation:dynamicanimation:1.0.0'
+    // Test only (never in the APK): plain JVM tests for the module card validators, src/test.
+    testImplementation 'junit:junit:4.13.2'
+}

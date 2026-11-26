@@ -1,0 +1,552 @@
+-- Merging decision tree log ---
+provider#com.gathin.tvhome.ThemeProvider
+INJECTED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:258:9-262:77
+	android:authorities
+		INJECTED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml
+		ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:260:13-57
+	android:exported
+		ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:261:13-36
+	android:permission
+		ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:262:13-74
+	android:name
+		ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:259:13-42
+manifest
+ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:2:1-307:12
+INJECTED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:2:1-307:12
+INJECTED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:2:1-307:12
+INJECTED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:2:1-307:12
+MERGED from [androidx.recyclerview:recyclerview:1.3.2] C:\Users\johnj\.gradle\caches\8.9\transforms\62454a3cca38d4b1256266a06e5b4e28\transformed\recyclerview-1.3.2\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.dynamicanimation:dynamicanimation:1.0.0] C:\Users\johnj\.gradle\caches\8.9\transforms\f4be888dc301859ee5f0f579bb6b38e7\transformed\dynamicanimation-1.0.0\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.customview:customview:1.0.0] C:\Users\johnj\.gradle\caches\8.9\transforms\665b1e76a46b4d117d595669e0cc4c46\transformed\customview-1.0.0\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.legacy:legacy-support-core-utils:1.0.0] C:\Users\johnj\.gradle\caches\8.9\transforms\77afff4facff46d9e0ffea40c9ced703\transformed\legacy-support-core-utils-1.0.0\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.customview:customview-poolingcontainer:1.0.0] C:\Users\johnj\.gradle\caches\8.9\transforms\70a4404f78ff4408ba72cdeb9a417244\transformed\customview-poolingcontainer-1.0.0\AndroidManifest.xml:17:1-23:12
+MERGED from [androidx.core:core-ktx:1.5.0] C:\Users\johnj\.gradle\caches\8.9\transforms\9ff1fbd0aec35f5246851cd69fdfa9dd\transformed\core-ktx-1.5.0\AndroidManifest.xml:2:1-9:12
+MERGED from [androidx.loader:loader:1.0.0] C:\Users\johnj\.gradle\caches\8.9\transforms\67ea28c3055e9d64bcc9ee19a46f8200\transformed\loader-1.0.0\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.core:core:1.7.0] C:\Users\johnj\.gradle\caches\8.9\transforms\3afe7fa58a47c7b182ae0caccac05374\transformed\core-1.7.0\AndroidManifest.xml:17:1-26:12
+MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.1] C:\Users\johnj\.gradle\caches\8.9\transforms\d76f7faec08758676fd25dae129ae9e7\transformed\versionedparcelable-1.1.1\AndroidManifest.xml:17:1-27:12
+MERGED from [androidx.lifecycle:lifecycle-runtime:2.3.1] C:\Users\johnj\.gradle\caches\8.9\transforms\f1d82a6203e10e6412308c12e4bcd04c\transformed\lifecycle-runtime-2.3.1\AndroidManifest.xml:17:1-24:12
+MERGED from [androidx.documentfile:documentfile:1.0.0] C:\Users\johnj\.gradle\caches\8.9\transforms\9a0b92f9f6b3c890fc34cb4403a07da6\transformed\documentfile-1.0.0\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.localbroadcastmanager:localbroadcastmanager:1.0.0] C:\Users\johnj\.gradle\caches\8.9\transforms\955be4a975cbcd5ce3b32db831311006\transformed\localbroadcastmanager-1.0.0\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.print:print:1.0.0] C:\Users\johnj\.gradle\caches\8.9\transforms\17976e65923912d1f5a695e89a707860\transformed\print-1.0.0\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.lifecycle:lifecycle-livedata:2.0.0] C:\Users\johnj\.gradle\caches\8.9\transforms\5f37a4f6d9bd8a1c6da483e924d7d2b3\transformed\lifecycle-livedata-2.0.0\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.lifecycle:lifecycle-livedata-core:2.0.0] C:\Users\johnj\.gradle\caches\8.9\transforms\6aae9ef7e700247fdc9a3e710784986a\transformed\lifecycle-livedata-core-2.0.0\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.arch.core:core-runtime:2.1.0] C:\Users\johnj\.gradle\caches\8.9\transforms\d0330487892176a387111f536d1875f8\transformed\core-runtime-2.1.0\AndroidManifest.xml:17:1-24:12
+MERGED from [androidx.lifecycle:lifecycle-viewmodel:2.0.0] C:\Users\johnj\.gradle\caches\8.9\transforms\298f772fcc963083d510cf044b5f8bad\transformed\lifecycle-viewmodel-2.0.0\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.annotation:annotation-experimental:1.1.0] C:\Users\johnj\.gradle\caches\8.9\transforms\cbf874f2032679cdc0e9758f5dc6ada9\transformed\annotation-experimental-1.1.0\AndroidManifest.xml:17:1-24:12
+	package
+		INJECTED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml
+	android:versionName
+		INJECTED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml
+	xmlns:tools
+		ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:3:5-51
+	android:versionCode
+		INJECTED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml
+	xmlns:android
+		ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:2:11-69
+uses-feature#android.software.leanback
+ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:5:5-87
+	android:required
+		ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:5:60-84
+	android:name
+		ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:5:19-59
+uses-feature#android.hardware.touchscreen
+ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:6:5-90
+	android:required
+		ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:6:63-87
+	android:name
+		ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:6:19-62
+uses-feature#android.hardware.wifi
+ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:7:5-83
+	android:required
+		ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:7:56-80
+	android:name
+		ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:7:19-55
+uses-feature#android.hardware.location.gps
+ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:8:5-91
+	android:required
+		ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:8:64-88
+	android:name
+		ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:8:19-63
+uses-permission#android.permission.ACCESS_NETWORK_STATE
+ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:10:5-79
+	android:name
+		ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:10:22-76
+uses-permission#android.permission.ACCESS_WIFI_STATE
+ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:11:5-76
+	android:name
+		ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:11:22-73
+uses-permission#android.permission.ACCESS_FINE_LOCATION
+ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:15:5-16:45
+	tools:ignore
+		ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:16:9-42
+	android:name
+		ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:15:22-76
+uses-permission#android.permission.WRITE_SECURE_SETTINGS
+ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:19:5-20:47
+	tools:ignore
+		ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:20:9-44
+	android:name
+		ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:19:22-77
+uses-permission#android.permission.BLUETOOTH_CONNECT
+ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:21:5-76
+	android:name
+		ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:21:22-73
+uses-permission#android.permission.PACKAGE_USAGE_STATS
+ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:22:5-23:47
+	tools:ignore
+		ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:23:9-44
+	android:name
+		ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:22:22-75
+uses-permission#yandex.tv.permission.ACCESS_TV_SOURCE
+ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:26:5-77
+	android:name
+		ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:26:22-74
+queries
+ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:30:5-89:15
+intent#action:name:android.settings.SETTINGS
+ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:32:9-34:18
+action#android.settings.SETTINGS
+ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:33:13-64
+	android:name
+		ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:33:21-61
+intent#action:name:android.settings.SLICE_SETTINGS
+ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:35:9-37:18
+action#android.settings.SLICE_SETTINGS
+ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:36:13-70
+	android:name
+		ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:36:21-67
+intent#action:name:android.settings.WIFI_SETTINGS
+ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:38:9-40:18
+action#android.settings.WIFI_SETTINGS
+ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:39:13-69
+	android:name
+		ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:39:21-66
+intent#action:name:android.settings.DISPLAY_SETTINGS
+ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:41:9-43:18
+action#android.settings.DISPLAY_SETTINGS
+ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:42:13-72
+	android:name
+		ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:42:21-69
+intent#action:name:com.android.tv.action.VIEW_INPUTS
+ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:44:9-46:18
+action#com.android.tv.action.VIEW_INPUTS
+ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:45:13-72
+	android:name
+		ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:45:21-69
+intent#action:name:com.android.tv.action.VIEW_SOUND_SETTINGS
+ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:47:9-49:18
+action#com.android.tv.action.VIEW_SOUND_SETTINGS
+ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:48:13-80
+	android:name
+		ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:48:21-77
+intent#action:name:com.google.android.tv.googletvremotepairer.action.BLUETOOTH_PAIRING
+ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:50:9-52:18
+action#com.google.android.tv.googletvremotepairer.action.BLUETOOTH_PAIRING
+ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:51:13-106
+	android:name
+		ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:51:21-103
+intent#action:name:com.google.android.tv.settings.ambient
+ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:53:9-55:18
+action#com.google.android.tv.settings.ambient
+ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:54:13-77
+	android:name
+		ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:54:21-74
+intent#action:name:android.settings.MANAGE_APPLICATIONS_SETTINGS
+ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:56:9-58:18
+action#android.settings.MANAGE_APPLICATIONS_SETTINGS
+ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:57:13-84
+	android:name
+		ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:57:21-81
+intent#action:name:android.settings.APPLICATION_DETAILS_SETTINGS+data:scheme:package
+ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:60:9-63:18
+action#android.settings.APPLICATION_DETAILS_SETTINGS
+ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:61:13-84
+	android:name
+		ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:61:21-81
+data
+ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:62:13-46
+	android:host
+		ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:221:47-68
+	android:scheme
+		ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:62:19-43
+intent#action:name:android.intent.action.MAIN+category:name:android.intent.category.LAUNCHER
+ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:64:9-67:18
+action#android.intent.action.MAIN
+ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:65:13-65
+	android:name
+		ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:65:21-62
+category#android.intent.category.LAUNCHER
+ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:66:13-73
+	android:name
+		ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:66:23-70
+intent#action:name:android.intent.action.MAIN+category:name:android.intent.category.LEANBACK_LAUNCHER
+ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:68:9-71:18
+category#android.intent.category.LEANBACK_LAUNCHER
+ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:70:13-82
+	android:name
+		ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:70:23-79
+intent#action:name:android.intent.action.MAIN+category:name:com.gathin.tvhome.category.DOCK_CARD
+ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:72:9-75:18
+category#com.gathin.tvhome.category.DOCK_CARD
+ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:74:13-77
+	android:name
+		ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:74:23-74
+intent#action:name:android.intent.action.MAIN+category:name:android.intent.category.HOME
+ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:77:9-80:18
+category#android.intent.category.HOME
+ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:79:13-69
+	android:name
+		ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:79:23-66
+package#com.xiaomi.mitv.settings
+ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:83:9-60
+	android:name
+		ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:83:18-57
+package#com.tcl.settings
+ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:84:9-52
+	android:name
+		ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:84:18-49
+package#com.amazon.tv.launcher
+ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:85:9-58
+	android:name
+		ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:85:18-55
+provider
+ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:87:9-68
+	android:authorities
+		ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:87:19-65
+application
+ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:91:5-306:19
+INJECTED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:91:5-306:19
+MERGED from [androidx.core:core:1.7.0] C:\Users\johnj\.gradle\caches\8.9\transforms\3afe7fa58a47c7b182ae0caccac05374\transformed\core-1.7.0\AndroidManifest.xml:24:5-89
+MERGED from [androidx.core:core:1.7.0] C:\Users\johnj\.gradle\caches\8.9\transforms\3afe7fa58a47c7b182ae0caccac05374\transformed\core-1.7.0\AndroidManifest.xml:24:5-89
+MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.1] C:\Users\johnj\.gradle\caches\8.9\transforms\d76f7faec08758676fd25dae129ae9e7\transformed\versionedparcelable-1.1.1\AndroidManifest.xml:24:5-25:19
+MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.1] C:\Users\johnj\.gradle\caches\8.9\transforms\d76f7faec08758676fd25dae129ae9e7\transformed\versionedparcelable-1.1.1\AndroidManifest.xml:24:5-25:19
+	android:extractNativeLibs
+		INJECTED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml
+	android:localeConfig
+		ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:98:9-51
+	android:appComponentFactory
+		ADDED from [androidx.core:core:1.7.0] C:\Users\johnj\.gradle\caches\8.9\transforms\3afe7fa58a47c7b182ae0caccac05374\transformed\core-1.7.0\AndroidManifest.xml:24:18-86
+	android:label
+		ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:92:9-41
+	android:hardwareAccelerated
+		ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:96:9-43
+	android:icon
+		ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:93:9-43
+	android:allowBackup
+		ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:97:9-36
+	android:banner
+		ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:94:9-42
+	android:theme
+		ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:95:9-44
+activity#com.gathin.tvhome.MainActivity
+ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:100:9-126:20
+	android:screenOrientation
+		ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:108:13-50
+	android:clearTaskOnLaunch
+		ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:106:13-45
+	android:stateNotNeeded
+		ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:104:13-42
+	android:excludeFromRecents
+		ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:105:13-46
+	android:launchMode
+		ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:103:13-44
+	android:exported
+		ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:102:13-36
+	android:configChanges
+		ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:107:13-90
+	android:name
+		ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:101:13-41
+intent-filter#action:name:android.intent.action.MAIN+category:name:android.intent.category.COMMON_HOME+category:name:android.intent.category.DEFAULT+category:name:android.intent.category.HOME+category:name:com.heytap.tv.launcher.category.MODERN_HOME
+ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:112:13-120:29
+category#android.intent.category.COMMON_HOME
+ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:115:17-80
+	android:name
+		ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:115:27-77
+category#android.intent.category.DEFAULT
+ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:116:17-76
+	android:name
+		ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:116:27-73
+category#com.heytap.tv.launcher.category.MODERN_HOME
+ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:119:17-88
+	android:name
+		ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:119:27-85
+intent-filter#action:name:android.intent.action.MAIN+category:name:android.intent.category.LEANBACK_LAUNCHER
+ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:122:13-125:29
+activity#com.gathin.tvhome.LauncherSettingsActivity
+ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:128:9-138:20
+	android:screenOrientation
+		ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:133:13-50
+	android:excludeFromRecents
+		ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:132:13-46
+	android:exported
+		ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:130:13-36
+	android:taskAffinity
+		ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:131:13-36
+	android:name
+		ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:129:13-53
+intent-filter#action:name:com.gathin.tvhome.liquidglass.action.SETTINGS+category:name:android.intent.category.DEFAULT
+ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:134:13-137:29
+action#com.gathin.tvhome.liquidglass.action.SETTINGS
+ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:135:17-88
+	android:name
+		ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:135:25-85
+activity#com.gathin.tvhome.InputsRequestActivity
+ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:144:9-155:20
+	android:enabled
+		ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:147:13-36
+	android:excludeFromRecents
+		ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:148:13-46
+	android:noHistory
+		ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:149:13-37
+	android:exported
+		ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:146:13-36
+	android:theme
+		ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:150:13-59
+	android:name
+		ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:145:13-50
+intent-filter#action:name:com.android.tv.action.VIEW_INPUTS+category:name:android.intent.category.DEFAULT
+ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:151:13-154:29
+activity#com.gathin.tvhome.QuickSettingsActivity
+ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:159:9-173:20
+	android:excludeFromRecents
+		ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:164:13-46
+	android:launchMode
+		ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:163:13-43
+	android:noHistory
+		ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:165:13-37
+	android:exported
+		ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:161:13-36
+	android:theme
+		ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:166:13-60
+	android:taskAffinity
+		ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:162:13-36
+	android:name
+		ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:160:13-50
+intent-filter#action:name:android.app.action.OPEN_NOTIFICATION_HANDLER_PANEL+action:name:android.app.action.TOGGLE_NOTIFICATION_HANDLER_PANEL+action:name:android.intent.action.QUICK_SETTINGS+category:name:android.intent.category.DEFAULT
+ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:167:13-172:29
+action#android.app.action.OPEN_NOTIFICATION_HANDLER_PANEL
+ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:168:17-93
+	android:name
+		ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:168:25-90
+action#android.app.action.TOGGLE_NOTIFICATION_HANDLER_PANEL
+ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:169:17-95
+	android:name
+		ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:169:25-92
+action#android.intent.action.QUICK_SETTINGS
+ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:170:17-79
+	android:name
+		ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:170:25-76
+activity#com.gathin.tvhome.RecentAppsActivity
+ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:175:9-186:20
+	android:excludeFromRecents
+		ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:180:13-46
+	android:launchMode
+		ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:179:13-43
+	android:exported
+		ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:177:13-36
+	android:theme
+		ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:181:13-60
+	android:taskAffinity
+		ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:178:13-36
+	android:name
+		ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:176:13-47
+intent-filter#action:name:com.gathin.tvhome.liquidglass.action.RECENTS+category:name:android.intent.category.DEFAULT
+ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:182:13-185:29
+action#com.gathin.tvhome.liquidglass.action.RECENTS
+ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:183:17-87
+	android:name
+		ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:183:25-84
+activity#com.gathin.tvhome.HomeSettingsActivity
+ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:187:9-192:62
+	android:excludeFromRecents
+		ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:191:13-46
+	android:exported
+		ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:189:13-37
+	android:theme
+		ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:192:13-59
+	android:taskAffinity
+		ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:190:13-36
+	android:name
+		ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:188:13-49
+service#com.gathin.tvhome.HomeKeyService
+ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:195:9-207:19
+	android:label
+		ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:197:13-50
+	android:exported
+		ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:199:13-36
+	android:permission
+		ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:200:13-79
+	android:directBootAware
+		ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:198:13-43
+	android:name
+		ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:196:13-43
+intent-filter#action:name:android.accessibilityservice.AccessibilityService
+ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:201:13-203:29
+action#android.accessibilityservice.AccessibilityService
+ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:202:17-92
+	android:name
+		ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:202:25-89
+meta-data#android.accessibilityservice
+ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:204:13-206:60
+	android:resource
+		ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:206:17-57
+	android:name
+		ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:205:17-60
+activity#com.gathin.tvhome.AppLaunchActivity
+ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:211:9-223:20
+	android:excludeFromRecents
+		ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:214:13-46
+	android:noHistory
+		ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:215:13-37
+	android:exported
+		ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:213:13-36
+	android:theme
+		ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:216:13-59
+	android:name
+		ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:212:13-46
+intent-filter#action:name:android.intent.action.VIEW+category:name:android.intent.category.BROWSABLE+category:name:android.intent.category.DEFAULT+data:host:launch+data:scheme:market
+ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:217:13-222:29
+action#android.intent.action.VIEW
+ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:218:17-69
+	android:name
+		ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:218:25-66
+category#android.intent.category.BROWSABLE
+ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:220:17-78
+	android:name
+		ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:220:27-75
+activity#com.gathin.tvhome.ClockActivity
+ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:226:9-231:80
+	android:excludeFromRecents
+		ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:229:13-46
+	android:noHistory
+		ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:230:13-37
+	android:exported
+		ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:228:13-36
+	android:theme
+		ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:231:13-77
+	android:name
+		ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:227:13-42
+activity#com.gathin.tvhome.ProbeActivity
+ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:235:9-241:75
+	android:excludeFromRecents
+		ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:238:13-46
+	android:noHistory
+		ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:239:13-37
+	android:exported
+		ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:237:13-37
+	android:theme
+		ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:241:13-72
+	android:taskAffinity
+		ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:240:13-36
+	android:name
+		ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:236:13-42
+service#com.gathin.tvhome.ClockDream
+ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:245:9-254:19
+	android:label
+		ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:247:13-47
+	android:exported
+		ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:248:13-36
+	android:permission
+		ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:249:13-71
+	android:name
+		ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:246:13-39
+intent-filter#action:name:android.service.dreams.DreamService+category:name:android.intent.category.DEFAULT
+ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:250:13-253:29
+action#android.service.dreams.DreamService
+ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:251:17-78
+	android:name
+		ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:251:25-75
+service#com.gathin.tvhome.GuardRevival
+ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:269:9-278:19
+	android:label
+		ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:273:13-50
+	android:exported
+		ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:272:13-36
+	android:permission
+		ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:274:13-87
+	android:directBootAware
+		ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:271:13-43
+	android:name
+		ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:270:13-41
+intent-filter#action:name:android.service.notification.NotificationListenerService
+ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:275:13-277:29
+action#android.service.notification.NotificationListenerService
+ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:276:17-99
+	android:name
+		ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:276:25-96
+receiver#com.gathin.tvhome.GuardConfig
+ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:279:9-286:20
+	android:exported
+		ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:281:13-36
+	android:permission
+		ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:282:13-74
+	android:name
+		ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:280:13-40
+intent-filter#action:name:com.gathin.tvhome.liquidglass.GUARD
+ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:283:13-285:29
+action#com.gathin.tvhome.liquidglass.GUARD
+ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:284:17-78
+	android:name
+		ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:284:25-75
+receiver#com.gathin.tvhome.SleepTimer
+ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:289:9-291:40
+	android:exported
+		ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:291:13-37
+	android:name
+		ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:290:13-39
+service#com.gathin.tvhome.InputKeyService
+ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:293:9-305:19
+	android:label
+		ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:297:13-45
+	android:exported
+		ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:296:13-36
+	android:permission
+		ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:298:13-79
+	android:directBootAware
+		ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:295:13-43
+	android:name
+		ADDED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:294:13-44
+uses-sdk
+INJECTED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml reason: use-sdk injection requested
+INJECTED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml
+INJECTED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml
+MERGED from [androidx.recyclerview:recyclerview:1.3.2] C:\Users\johnj\.gradle\caches\8.9\transforms\62454a3cca38d4b1256266a06e5b4e28\transformed\recyclerview-1.3.2\AndroidManifest.xml:20:5-44
+MERGED from [androidx.recyclerview:recyclerview:1.3.2] C:\Users\johnj\.gradle\caches\8.9\transforms\62454a3cca38d4b1256266a06e5b4e28\transformed\recyclerview-1.3.2\AndroidManifest.xml:20:5-44
+MERGED from [androidx.dynamicanimation:dynamicanimation:1.0.0] C:\Users\johnj\.gradle\caches\8.9\transforms\f4be888dc301859ee5f0f579bb6b38e7\transformed\dynamicanimation-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.dynamicanimation:dynamicanimation:1.0.0] C:\Users\johnj\.gradle\caches\8.9\transforms\f4be888dc301859ee5f0f579bb6b38e7\transformed\dynamicanimation-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.customview:customview:1.0.0] C:\Users\johnj\.gradle\caches\8.9\transforms\665b1e76a46b4d117d595669e0cc4c46\transformed\customview-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.customview:customview:1.0.0] C:\Users\johnj\.gradle\caches\8.9\transforms\665b1e76a46b4d117d595669e0cc4c46\transformed\customview-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.legacy:legacy-support-core-utils:1.0.0] C:\Users\johnj\.gradle\caches\8.9\transforms\77afff4facff46d9e0ffea40c9ced703\transformed\legacy-support-core-utils-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.legacy:legacy-support-core-utils:1.0.0] C:\Users\johnj\.gradle\caches\8.9\transforms\77afff4facff46d9e0ffea40c9ced703\transformed\legacy-support-core-utils-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.customview:customview-poolingcontainer:1.0.0] C:\Users\johnj\.gradle\caches\8.9\transforms\70a4404f78ff4408ba72cdeb9a417244\transformed\customview-poolingcontainer-1.0.0\AndroidManifest.xml:20:5-21:38
+MERGED from [androidx.customview:customview-poolingcontainer:1.0.0] C:\Users\johnj\.gradle\caches\8.9\transforms\70a4404f78ff4408ba72cdeb9a417244\transformed\customview-poolingcontainer-1.0.0\AndroidManifest.xml:20:5-21:38
+MERGED from [androidx.core:core-ktx:1.5.0] C:\Users\johnj\.gradle\caches\8.9\transforms\9ff1fbd0aec35f5246851cd69fdfa9dd\transformed\core-ktx-1.5.0\AndroidManifest.xml:5:5-7:41
+MERGED from [androidx.core:core-ktx:1.5.0] C:\Users\johnj\.gradle\caches\8.9\transforms\9ff1fbd0aec35f5246851cd69fdfa9dd\transformed\core-ktx-1.5.0\AndroidManifest.xml:5:5-7:41
+MERGED from [androidx.loader:loader:1.0.0] C:\Users\johnj\.gradle\caches\8.9\transforms\67ea28c3055e9d64bcc9ee19a46f8200\transformed\loader-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.loader:loader:1.0.0] C:\Users\johnj\.gradle\caches\8.9\transforms\67ea28c3055e9d64bcc9ee19a46f8200\transformed\loader-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.core:core:1.7.0] C:\Users\johnj\.gradle\caches\8.9\transforms\3afe7fa58a47c7b182ae0caccac05374\transformed\core-1.7.0\AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.core:core:1.7.0] C:\Users\johnj\.gradle\caches\8.9\transforms\3afe7fa58a47c7b182ae0caccac05374\transformed\core-1.7.0\AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.1] C:\Users\johnj\.gradle\caches\8.9\transforms\d76f7faec08758676fd25dae129ae9e7\transformed\versionedparcelable-1.1.1\AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.1] C:\Users\johnj\.gradle\caches\8.9\transforms\d76f7faec08758676fd25dae129ae9e7\transformed\versionedparcelable-1.1.1\AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.lifecycle:lifecycle-runtime:2.3.1] C:\Users\johnj\.gradle\caches\8.9\transforms\f1d82a6203e10e6412308c12e4bcd04c\transformed\lifecycle-runtime-2.3.1\AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.lifecycle:lifecycle-runtime:2.3.1] C:\Users\johnj\.gradle\caches\8.9\transforms\f1d82a6203e10e6412308c12e4bcd04c\transformed\lifecycle-runtime-2.3.1\AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.documentfile:documentfile:1.0.0] C:\Users\johnj\.gradle\caches\8.9\transforms\9a0b92f9f6b3c890fc34cb4403a07da6\transformed\documentfile-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.documentfile:documentfile:1.0.0] C:\Users\johnj\.gradle\caches\8.9\transforms\9a0b92f9f6b3c890fc34cb4403a07da6\transformed\documentfile-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.localbroadcastmanager:localbroadcastmanager:1.0.0] C:\Users\johnj\.gradle\caches\8.9\transforms\955be4a975cbcd5ce3b32db831311006\transformed\localbroadcastmanager-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.localbroadcastmanager:localbroadcastmanager:1.0.0] C:\Users\johnj\.gradle\caches\8.9\transforms\955be4a975cbcd5ce3b32db831311006\transformed\localbroadcastmanager-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.print:print:1.0.0] C:\Users\johnj\.gradle\caches\8.9\transforms\17976e65923912d1f5a695e89a707860\transformed\print-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.print:print:1.0.0] C:\Users\johnj\.gradle\caches\8.9\transforms\17976e65923912d1f5a695e89a707860\transformed\print-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-livedata:2.0.0] C:\Users\johnj\.gradle\caches\8.9\transforms\5f37a4f6d9bd8a1c6da483e924d7d2b3\transformed\lifecycle-livedata-2.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-livedata:2.0.0] C:\Users\johnj\.gradle\caches\8.9\transforms\5f37a4f6d9bd8a1c6da483e924d7d2b3\transformed\lifecycle-livedata-2.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-livedata-core:2.0.0] C:\Users\johnj\.gradle\caches\8.9\transforms\6aae9ef7e700247fdc9a3e710784986a\transformed\lifecycle-livedata-core-2.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-livedata-core:2.0.0] C:\Users\johnj\.gradle\caches\8.9\transforms\6aae9ef7e700247fdc9a3e710784986a\transformed\lifecycle-livedata-core-2.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.arch.core:core-runtime:2.1.0] C:\Users\johnj\.gradle\caches\8.9\transforms\d0330487892176a387111f536d1875f8\transformed\core-runtime-2.1.0\AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.arch.core:core-runtime:2.1.0] C:\Users\johnj\.gradle\caches\8.9\transforms\d0330487892176a387111f536d1875f8\transformed\core-runtime-2.1.0\AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.lifecycle:lifecycle-viewmodel:2.0.0] C:\Users\johnj\.gradle\caches\8.9\transforms\298f772fcc963083d510cf044b5f8bad\transformed\lifecycle-viewmodel-2.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-viewmodel:2.0.0] C:\Users\johnj\.gradle\caches\8.9\transforms\298f772fcc963083d510cf044b5f8bad\transformed\lifecycle-viewmodel-2.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.annotation:annotation-experimental:1.1.0] C:\Users\johnj\.gradle\caches\8.9\transforms\cbf874f2032679cdc0e9758f5dc6ada9\transformed\annotation-experimental-1.1.0\AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.annotation:annotation-experimental:1.1.0] C:\Users\johnj\.gradle\caches\8.9\transforms\cbf874f2032679cdc0e9758f5dc6ada9\transformed\annotation-experimental-1.1.0\AndroidManifest.xml:20:5-22:41
+	android:targetSdkVersion
+		INJECTED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml
+	android:minSdkVersion
+		INJECTED from D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml

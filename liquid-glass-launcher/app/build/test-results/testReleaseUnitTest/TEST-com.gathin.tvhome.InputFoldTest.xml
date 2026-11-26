@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.gathin.tvhome.InputFoldTest" tests="5" skipped="0" failures="0" errors="0" timestamp="2026-11-13T11:55:42" hostname="POOMATTATHIL" time="0.001">
+  <properties/>
+  <testcase name="anEmptyPortReportingStandbyFolds" classname="com.gathin.tvhome.InputFoldTest" time="0.0"/>
+  <testcase name="aConnectedHdmiPortStays" classname="com.gathin.tvhome.InputFoldTest" time="0.0"/>
+  <testcase name="anAvJackAlwaysFolds" classname="com.gathin.tvhome.InputFoldTest" time="0.0"/>
+  <testcase name="anHdmiRowWithNoStateStays" classname="com.gathin.tvhome.InputFoldTest" time="0.0"/>
+  <testcase name="aDisconnectedPortFolds" classname="com.gathin.tvhome.InputFoldTest" time="0.0"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

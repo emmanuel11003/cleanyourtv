@@ -4,7 +4,15 @@
     android:id="@+id/scrim"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#70000000">
+    android:clipChildren="false"
+    android:clipToPadding="false">
+
+    <View
+        android:id="@+id/scrimBackdrop"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#48000000"
+        android:importantForAccessibility="no" />
 
     <!-- Floating Rounded Panel (Google TV Exact Bounds) -->
     <FrameLayout
@@ -20,15 +28,19 @@
         android:paddingEnd="14dp"
         android:paddingTop="18dp"
         android:paddingBottom="14dp"
+        android:clipChildren="false"
+        android:clipToPadding="false"
         android:clickable="true"
         android:focusable="false"
-        android:elevation="20dp">
+        android:elevation="0dp">
 
         <!-- Main Panel View -->
         <LinearLayout
             android:id="@+id/layoutMainPanel"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:clipChildren="false"
+            android:clipToPadding="false"
             android:orientation="vertical">
 
             <!-- Top Header: Date, Clock & Circular All Settings Button -->
@@ -36,23 +48,30 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="4dp"
-                android:layout_marginEnd="4dp">
+                android:layout_marginEnd="4dp"
+                android:clipChildren="false"
+                android:clipToPadding="false">
 
                 <!-- Left: Date & Large Clock -->
                 <LinearLayout
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_alignParentStart="true"
+                    android:layout_toStartOf="@id/btnAllSettings"
+                    android:layout_marginEnd="10dp"
                     android:layout_centerVertical="true"
                     android:orientation="vertical">
 
                     <TextView
                         android:id="@+id/quickDate"
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:textSize="12sp"
-                        android:textColor="#9AA0A6"
-                        android:fontFamily="@string/font_body"
+                        android:textSize="10.5sp"
+                        android:textColor="#FFA8C7FA"
+                        android:textAllCaps="true"
+                        android:letterSpacing="0.06"
+                        android:fontFamily="@string/font_medium"
+                        android:ellipsize="end"
                         android:singleLine="true" />
 
                     <LinearLayout
@@ -67,8 +86,8 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textSize="28sp"
-                            android:textColor="#FFFFFF"
-                            android:fontFamily="@string/font_medium"
+                            android:textColor="#FFE3E2E6"
+                            android:fontFamily="@string/font_body"
                             android:singleLine="true" />
 
                         <TextClock
@@ -79,7 +98,7 @@
                             android:layout_gravity="bottom"
                             android:layout_marginBottom="3dp"
                             android:textSize="12sp"
-                            android:textColor="#80FFFFFF"
+                            android:textColor="#FFC4C6D0"
                             android:fontFamily="@string/font_medium"
                             android:format12Hour="a"
                             android:format24Hour=""
@@ -121,25 +140,111 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
                         android:text="@string/all_settings"
-                        android:textColor="@color/quick_tile_sub_color"
+                        android:textColor="#FFD8DAE2"
                         android:textSize="10sp"
                         android:fontFamily="@string/font_body"
-                        android:duplicateParentState="true"
                         android:singleLine="true" />
                 </LinearLayout>
             </RelativeLayout>
 
-            <!-- Eight Quick Settings Tiles (2 Columns x 4 Rows) -->
+            <!-- Live Media Now-Playing Bar (hidden when nothing is playing) -->
+            <LinearLayout
+                android:id="@+id/quickMediaCard"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/quick_settings_tile_bg"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingStart="10dp"
+                android:paddingEnd="6dp"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
+                android:visibility="gone">
+
+                <ImageView
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:src="@drawable/ic_music"
+                    android:tint="#FFA8C7FA"
+                    android:contentDescription="@null" />
+
+                <LinearLayout
+                    android:id="@+id/quickMediaOpen"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="4dp"
+                    android:focusable="true"
+                    android:clickable="true"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/quickMediaTitle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:textColor="#FFE3E2E6"
+                        android:textSize="12sp"
+                        android:fontFamily="@string/font_medium" />
+
+                    <TextView
+                        android:id="@+id/quickMediaArtist"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:textColor="#FFC4C6D0"
+                        android:textSize="10sp"
+                        android:fontFamily="@string/font_body" />
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/quickMediaPlayPause"
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
+                    android:gravity="center"
+                    android:text="⏯"
+                    android:textColor="@color/quick_tile_text_color"
+                    android:textSize="12sp"
+                    android:background="@drawable/quick_settings_circle_bg"
+                    android:focusable="true"
+                    android:clickable="true"
+                    android:contentDescription="@string/media_play_pause" />
+
+                <TextView
+                    android:id="@+id/quickMediaNext"
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
+                    android:layout_marginStart="4dp"
+                    android:gravity="center"
+                    android:text="⏭"
+                    android:textColor="@color/quick_tile_text_color"
+                    android:textSize="12sp"
+                    android:background="@drawable/quick_settings_circle_bg"
+                    android:focusable="true"
+                    android:clickable="true"
+                    android:contentDescription="@string/media_next" />
+            </LinearLayout>
+
+            <!-- Quick Settings Tiles (2 Columns x 5 Rows) -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="14dp"
+                android:layout_marginTop="12dp"
+                android:clipChildren="false"
+                android:clipToPadding="false"
                 android:orientation="vertical">
 
                 <!-- Row 1: Screensaver & Inputs -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:clipChildren="false"
+                    android:clipToPadding="false"
+                    android:baselineAligned="false"
                     android:orientation="horizontal">
 
                     <LinearLayout
@@ -147,7 +252,7 @@
                         android:layout_width="0dp"
                         android:layout_weight="1"
                         android:layout_height="52dp"
-                        android:layout_marginEnd="3dp"
+                        android:layout_marginEnd="4dp"
                         android:background="@drawable/quick_settings_tile_bg"
                         android:focusable="true"
                         android:clickable="true"
@@ -181,7 +286,7 @@
                         android:layout_width="0dp"
                         android:layout_weight="1"
                         android:layout_height="52dp"
-                        android:layout_marginStart="3dp"
+                        android:layout_marginStart="4dp"
                         android:background="@drawable/quick_settings_tile_bg"
                         android:focusable="true"
                         android:clickable="true"
@@ -215,7 +320,10 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="6dp"
+                    android:layout_marginTop="7dp"
+                    android:clipChildren="false"
+                    android:clipToPadding="false"
+                    android:baselineAligned="false"
                     android:orientation="horizontal">
 
                     <LinearLayout
@@ -223,7 +331,7 @@
                         android:layout_width="0dp"
                         android:layout_weight="1"
                         android:layout_height="52dp"
-                        android:layout_marginEnd="3dp"
+                        android:layout_marginEnd="4dp"
                         android:background="@drawable/quick_settings_tile_bg"
                         android:focusable="true"
                         android:clickable="true"
@@ -257,7 +365,7 @@
                         android:layout_width="0dp"
                         android:layout_weight="1"
                         android:layout_height="52dp"
-                        android:layout_marginStart="3dp"
+                        android:layout_marginStart="4dp"
                         android:background="@drawable/quick_settings_tile_bg"
                         android:focusable="true"
                         android:clickable="true"
@@ -291,7 +399,10 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="6dp"
+                    android:layout_marginTop="7dp"
+                    android:clipChildren="false"
+                    android:clipToPadding="false"
+                    android:baselineAligned="false"
                     android:orientation="horizontal">
 
                     <LinearLayout
@@ -299,7 +410,7 @@
                         android:layout_width="0dp"
                         android:layout_weight="1"
                         android:layout_height="52dp"
-                        android:layout_marginEnd="3dp"
+                        android:layout_marginEnd="4dp"
                         android:background="@drawable/quick_settings_tile_bg"
                         android:focusable="true"
                         android:clickable="true"
@@ -333,7 +444,7 @@
                         android:layout_width="0dp"
                         android:layout_weight="1"
                         android:layout_height="52dp"
-                        android:layout_marginStart="3dp"
+                        android:layout_marginStart="4dp"
                         android:background="@drawable/quick_settings_tile_bg"
                         android:focusable="true"
                         android:clickable="true"
@@ -367,7 +478,10 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="6dp"
+                    android:layout_marginTop="7dp"
+                    android:clipChildren="false"
+                    android:clipToPadding="false"
+                    android:baselineAligned="false"
                     android:orientation="horizontal">
 
                     <LinearLayout
@@ -375,7 +489,7 @@
                         android:layout_width="0dp"
                         android:layout_weight="1"
                         android:layout_height="52dp"
-                        android:layout_marginEnd="3dp"
+                        android:layout_marginEnd="4dp"
                         android:background="@drawable/quick_settings_tile_bg"
                         android:focusable="true"
                         android:clickable="true"
@@ -410,7 +524,7 @@
                         android:layout_width="0dp"
                         android:layout_weight="1"
                         android:layout_height="52dp"
-                        android:layout_marginStart="3dp"
+                        android:layout_marginStart="4dp"
                         android:background="@drawable/quick_settings_tile_bg"
                         android:focusable="true"
                         android:clickable="true"
@@ -440,38 +554,85 @@
                     </LinearLayout>
                 </LinearLayout>
 
-                <!-- Row 5: Notifications (Full-width) -->
+                <!-- Row 5: Notifications & Free RAM Boost -->
                 <LinearLayout
-                    android:id="@+id/tileNotifications"
                     android:layout_width="match_parent"
-                    android:layout_height="52dp"
-                    android:layout_marginTop="6dp"
-                    android:background="@drawable/quick_settings_tile_bg"
-                    android:focusable="true"
-                    android:clickable="true"
-                    android:gravity="center_vertical"
-                    android:paddingStart="12dp"
-                    android:paddingEnd="12dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="7dp"
+                    android:clipChildren="false"
+                    android:clipToPadding="false"
+                    android:baselineAligned="false"
                     android:orientation="horizontal">
 
-                    <ImageView
-                        android:layout_width="18dp"
-                        android:layout_height="18dp"
-                        android:src="@drawable/ic_notifications"
-                        android:tint="@color/quick_tile_icon_color"
-                        android:duplicateParentState="true"
-                        android:contentDescription="@null" />
+                    <LinearLayout
+                        android:id="@+id/tileNotifications"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="52dp"
+                        android:layout_marginEnd="4dp"
+                        android:background="@drawable/quick_settings_tile_bg"
+                        android:focusable="true"
+                        android:clickable="true"
+                        android:gravity="center_vertical"
+                        android:paddingStart="10dp"
+                        android:paddingEnd="4dp"
+                        android:orientation="horizontal">
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        android:text="@string/tile_notifications"
-                        android:textColor="@color/quick_tile_text_color"
-                        android:textSize="12sp"
-                        android:fontFamily="@string/font_medium"
-                        android:duplicateParentState="true"
-                        android:singleLine="true" />
+                        <ImageView
+                            android:layout_width="18dp"
+                            android:layout_height="18dp"
+                            android:src="@drawable/ic_notifications"
+                            android:tint="@color/quick_tile_icon_color"
+                            android:duplicateParentState="true"
+                            android:contentDescription="@null" />
+
+                        <TextView
+                            android:id="@+id/notificationsLabel"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="6dp"
+                            android:text="@string/tile_notifications"
+                            android:textColor="@color/quick_tile_text_color"
+                            android:textSize="12sp"
+                            android:fontFamily="@string/font_medium"
+                            android:duplicateParentState="true"
+                            android:singleLine="true" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/tileBoostRam"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="52dp"
+                        android:layout_marginStart="4dp"
+                        android:background="@drawable/quick_settings_tile_bg"
+                        android:focusable="true"
+                        android:clickable="true"
+                        android:gravity="center_vertical"
+                        android:paddingStart="12dp"
+                        android:paddingEnd="6dp"
+                        android:orientation="horizontal">
+
+                        <ImageView
+                            android:layout_width="18dp"
+                            android:layout_height="18dp"
+                            android:src="@drawable/ic_boost"
+                            android:tint="@color/quick_tile_icon_color"
+                            android:duplicateParentState="true"
+                            android:contentDescription="@null" />
+
+                        <TextView
+                            android:id="@+id/boostRamLabel"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:text="@string/tile_boost_ram"
+                            android:textColor="@color/quick_tile_text_color"
+                            android:textSize="12sp"
+                            android:fontFamily="@string/font_medium"
+                            android:duplicateParentState="true"
+                            android:singleLine="true" />
+                    </LinearLayout>
                 </LinearLayout>
             </LinearLayout>
 
@@ -494,48 +655,10 @@
                     android:layout_height="wrap_content"
                     android:layout_alignParentStart="true"
                     android:layout_centerVertical="true"
-                    android:text="Google TV"
+                    android:text="@string/quick_settings_footer"
                     android:textColor="#5F6368"
                     android:textSize="12sp"
                     android:fontFamily="@string/font_medium" />
-
-                <!-- 3 Dot Page Indicators -->
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerInParent="true"
-                    android:orientation="horizontal">
-
-                    <View
-                        android:layout_width="5dp"
-                        android:layout_height="5dp"
-                        android:background="@drawable/quick_settings_circle_bg"
-                        android:alpha="0.9" />
-
-                    <View
-                        android:layout_width="5dp"
-                        android:layout_height="5dp"
-                        android:layout_marginStart="4dp"
-                        android:background="@drawable/quick_settings_circle_bg"
-                        android:alpha="0.4" />
-
-                    <View
-                        android:layout_width="5dp"
-                        android:layout_height="5dp"
-                        android:layout_marginStart="4dp"
-                        android:background="@drawable/quick_settings_circle_bg"
-                        android:alpha="0.4" />
-                </LinearLayout>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentEnd="true"
-                    android:layout_centerVertical="true"
-                    android:text="Back"
-                    android:textColor="#5F6368"
-                    android:textSize="11sp"
-                    android:fontFamily="@string/font_body" />
             </RelativeLayout>
 
         </LinearLayout>

@@ -35,6 +35,7 @@ public class ThemeProvider extends ContentProvider {
     public ParcelFileDescriptor openFile(Uri uri, String mode) throws FileNotFoundException {
         File f = file(uri);
         if (mode.contains("w")) {
+            Config.invalidateCache();
             return ParcelFileDescriptor.open(f, ParcelFileDescriptor.MODE_WRITE_ONLY
                     | ParcelFileDescriptor.MODE_CREATE | ParcelFileDescriptor.MODE_TRUNCATE);
         }
@@ -43,6 +44,7 @@ public class ThemeProvider extends ContentProvider {
 
     @Override
     public int delete(Uri uri, String selection, String[] selectionArgs) {
+        Config.invalidateCache();
         File dir = Config.dir(getContext());
         if (dir != null && ThemeFiles.isCollection(uri.getPathSegments())) {
             File[] images = new File(dir, ThemeFiles.WALLPAPERS).listFiles((d, name) -> ThemeFiles.collectionImage(name));

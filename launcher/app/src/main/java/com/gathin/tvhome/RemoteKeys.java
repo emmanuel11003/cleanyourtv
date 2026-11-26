@@ -350,7 +350,7 @@ final class RemoteKeys {
     static boolean isAction(String target) {
         switch (target) {
             case "back": case "home": case "recents": case "mute": case "sleep":
-            case "screensaver": case "settings": case "wifi": case "library": case "ignore":
+            case "screensaver": case "settings": case "wifi": case "library": case "search": case "ignore":
                 return true;
             default:
                 return false;
@@ -390,15 +390,32 @@ final class RemoteKeys {
                 // Home with the App library open on top; Home does nothing when app_library is off.
                 start(ctx, new Intent(ctx, MainActivity.class).setAction(MainActivity.ACTION_APP_LIBRARY));
                 break;
+            case "search":
+                start(ctx, new Intent(ctx, MainActivity.class).setAction(MainActivity.ACTION_SPOTLIGHT_SEARCH));
+                break;
             default:
                 break;   // "ignore", or "sleep" below Android 9: consumed, nothing to do
         }
         return true;
     }
 
+    private static volatile Config cachedConfig;
+    private static volatile long cachedSettingsRev = Long.MIN_VALUE;
+
+    private static Config cachedConfig(Context ctx) {
+        long rev = ctx.getSharedPreferences(Config.SETTINGS_NAME, Context.MODE_PRIVATE)
+                .getLong(Config.SETTINGS_REVISION_KEY, 0L);
+        Config cfg = cachedConfig;
+        if (cfg != null && cachedSettingsRev == rev) return cfg;
+        cfg = Config.load(ctx);
+        cachedConfig = cfg;
+        cachedSettingsRev = rev;
+        return cfg;
+    }
+
     private static Bundle openOpts(Context ctx) {
         try {
-            Config cfg = Config.load(ctx);
+            Config cfg = cachedConfig(ctx);
             if (cfg.animations && !cfg.reducedMotion) {
                 return ActivityOptions.makeCustomAnimation(ctx, R.anim.app_open_enter, R.anim.app_open_exit).toBundle();
             }
@@ -443,7 +460,7 @@ final class RemoteKeys {
             try {
                 ctx.startActivity(new Intent(ctx, MainActivity.class).setAction(MainActivity.ACTION_VIEW_INPUTS)
                         .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
-            } catch (ActivityNotFoundException ignored) {
+            } catch (ActivityNotFoundException | SecurityException ignored) {
             }
             return;
         }
@@ -464,7 +481,7 @@ final class RemoteKeys {
                     .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             // Aimed at the Live TV app first, as the Inputs menu does: an app that also claims the channel URI
             // (the Fluffy file manager on a TCL G03) turned the press into a chooser.
-            String liveTv = Config.load(ctx).liveTvPackage;
+            String liveTv = cachedConfig(ctx).liveTvPackage;
             if (liveTv != null && !liveTv.isEmpty()) {
                 try {
                     ctx.startActivity(new Intent(view).setPackage(liveTv));
@@ -474,7 +491,7 @@ final class RemoteKeys {
             }
             try {
                 ctx.startActivity(view);
-            } catch (ActivityNotFoundException ignored) {
+            } catch (ActivityNotFoundException | SecurityException ignored) {
             }
             return;
         }
@@ -487,7 +504,6 @@ final class RemoteKeys {
                 } else {
                     ctx.startActivity(new Intent().setComponent(activity).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
                 }
-                RecentApps.record(ctx, activity.getPackageName(), activity, null);
             } catch (ActivityNotFoundException | SecurityException ignored) {
             }
             return;
@@ -502,8 +518,7 @@ final class RemoteKeys {
         }
         try {
             startWithOpts(ctx, open.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
-            RecentApps.record(ctx, pkg, open.getComponent(), null);
-        } catch (ActivityNotFoundException ignored) {
+        } catch (ActivityNotFoundException | SecurityException ignored) {
         }
     }
 }

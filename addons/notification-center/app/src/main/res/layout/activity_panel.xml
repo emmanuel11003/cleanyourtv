@@ -4,9 +4,11 @@
     android:id="@+id/scrim"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#70000000">
+    android:clipChildren="false"
+    android:clipToPadding="false"
+    android:background="#48000000">
 
-    <!-- Floating Rounded Panel (Google TV Exact Bounds) -->
+    <!-- Floating Rounded Panel (Matches Quick Toggle Bounds & Surface) -->
     <FrameLayout
         android:id="@+id/panel"
         android:layout_width="290dp"
@@ -20,33 +22,57 @@
         android:paddingEnd="14dp"
         android:paddingTop="18dp"
         android:paddingBottom="14dp"
+        android:clipChildren="false"
+        android:clipToPadding="false"
         android:clickable="true"
         android:focusable="false"
-        android:elevation="20dp">
+        android:elevation="0dp">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:clipChildren="false"
+            android:clipToPadding="false"
             android:orientation="vertical">
 
-            <!-- Top Header: Title & Clear all button -->
+            <!-- Top Header: Date, Title & Clear all button (Matches Quick Toggle Header) -->
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="4dp"
-                android:layout_marginEnd="4dp">
+                android:layout_marginEnd="4dp"
+                android:clipChildren="false"
+                android:clipToPadding="false">
 
-                <TextView
-                    android:id="@+id/txtHeaderTitle"
+                <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentStart="true"
                     android:layout_centerVertical="true"
-                    android:text="@string/header_title"
-                    android:textSize="18sp"
-                    android:textColor="#FFFFFF"
-                    android:fontFamily="@string/font_medium"
-                    android:singleLine="true" />
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/txtDate"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="11sp"
+                        android:textColor="#FFA8C7FA"
+                        android:textAllCaps="true"
+                        android:letterSpacing="0.12"
+                        android:fontFamily="@string/font_medium"
+                        android:singleLine="true" />
+
+                    <TextView
+                        android:id="@+id/txtHeaderTitle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:text="@string/header_title"
+                        android:textSize="22sp"
+                        android:textColor="#FFE3E2E6"
+                        android:fontFamily="@string/font_body"
+                        android:singleLine="true" />
+                </LinearLayout>
 
                 <TextView
                     android:id="@+id/btnClearAll"
@@ -57,12 +83,12 @@
                     android:background="@drawable/button_clear_all_bg"
                     android:focusable="true"
                     android:clickable="true"
-                    android:paddingStart="10dp"
-                    android:paddingEnd="10dp"
-                    android:paddingTop="4dp"
-                    android:paddingBottom="4dp"
+                    android:paddingStart="12dp"
+                    android:paddingEnd="12dp"
+                    android:paddingTop="6dp"
+                    android:paddingBottom="6dp"
                     android:text="@string/clear_all"
-                    android:textSize="12sp"
+                    android:textSize="11sp"
                     android:textColor="@color/quick_tile_text_color"
                     android:fontFamily="@string/font_medium" />
             </RelativeLayout>
@@ -70,7 +96,7 @@
             <!-- Spacer between Header and List -->
             <View
                 android:layout_width="match_parent"
-                android:layout_height="12dp" />
+                android:layout_height="16dp" />
 
             <!-- Active Notifications Scroll List -->
             <ScrollView
@@ -78,12 +104,16 @@
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="1"
+                android:clipChildren="false"
+                android:clipToPadding="false"
                 android:scrollbars="none">
 
                 <LinearLayout
                     android:id="@+id/layoutNotificationsList"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:clipChildren="false"
+                    android:clipToPadding="false"
                     android:orientation="vertical" />
             </ScrollView>
 
@@ -101,7 +131,7 @@
                     android:layout_width="36dp"
                     android:layout_height="36dp"
                     android:src="@drawable/ic_notifications"
-                    android:tint="#5F6368"
+                    android:tint="#FFA8C7FA"
                     android:contentDescription="@null" />
 
                 <TextView
@@ -109,7 +139,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
                     android:text="@string/no_notifications"
-                    android:textColor="#9AA0A6"
+                    android:textColor="#FFC4C6D0"
                     android:textSize="13sp"
                     android:fontFamily="@string/font_body" />
             </LinearLayout>
@@ -168,20 +198,10 @@
                     android:layout_height="wrap_content"
                     android:layout_alignParentStart="true"
                     android:layout_centerVertical="true"
-                    android:text="Google TV"
+                    android:text="@string/app_name"
                     android:textColor="#5F6368"
                     android:textSize="12sp"
                     android:fontFamily="@string/font_medium" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentEnd="true"
-                    android:layout_centerVertical="true"
-                    android:text="Back"
-                    android:textColor="#5F6368"
-                    android:textSize="11sp"
-                    android:fontFamily="@string/font_body" />
             </RelativeLayout>
 
         </LinearLayout>

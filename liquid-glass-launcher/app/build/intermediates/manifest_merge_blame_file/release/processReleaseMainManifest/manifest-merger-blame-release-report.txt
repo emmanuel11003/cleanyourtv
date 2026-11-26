@@ -1,0 +1,639 @@
+1<?xml version="1.0" encoding="utf-8"?>
+2<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+3    package="com.gathin.tvhome.liquidglass"
+4    android:versionCode="1"
+5    android:versionName="1.0" >
+6
+7    <uses-sdk
+8        android:minSdkVersion="26"
+9        android:targetSdkVersion="34" />
+10
+11    <uses-feature
+11-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:5:5-87
+12        android:name="android.software.leanback"
+12-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:5:19-59
+13        android:required="false" />
+13-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:5:60-84
+14    <uses-feature
+14-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:6:5-90
+15        android:name="android.hardware.touchscreen"
+15-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:6:19-62
+16        android:required="false" />
+16-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:6:63-87
+17    <uses-feature
+17-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:7:5-83
+18        android:name="android.hardware.wifi"
+18-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:7:19-55
+19        android:required="false" />
+19-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:7:56-80
+20    <uses-feature
+20-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:8:5-91
+21        android:name="android.hardware.location.gps"
+21-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:8:19-63
+22        android:required="false" />
+22-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:8:64-88
+23
+24    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+24-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:10:5-79
+24-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:10:22-76
+25    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+25-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:11:5-76
+25-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:11:22-73
+26    <!--
+27         Needed since Android 10 to read the Wi-Fi network name for the network pill. Never requested at
+28         runtime: build-and-install grants it with pm grant, so lint's Android 12 "ask for COARSE with
+29         FINE" rule does not apply here.
+30    -->
+31    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+31-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:15:5-16:45
+31-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:15:22-76
+32    <!--
+33         Puts the remote's accessibility helpers back after a force stop of this app took them off the enabled
+34         list (ServiceRepair). Granted with pm grant by build-and-install when a helper is enabled.
+35    -->
+36    <uses-permission android:name="android.permission.WRITE_SECURE_SETTINGS" />
+36-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:19:5-20:47
+36-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:19:22-77
+37    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
+37-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:21:5-76
+37-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:21:22-73
+38    <uses-permission android:name="android.permission.PACKAGE_USAGE_STATS" />
+38-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:22:5-23:47
+38-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:22:22-75
+39    <!--
+40         YaOS (Yandex TV OS): HDMI, AV and the tuner all play in com.yandex.tv.live, whose activities require
+41         this permission (protection level normal, so it is granted at install). Ignored on other TVs.
+42    -->
+43    <uses-permission android:name="yandex.tv.permission.ACCESS_TV_SOURCE" />
+43-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:26:5-77
+43-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:26:22-74
+44
+45    <!--
+46         Android 11+ package visibility: lets the launcher list the TV apps it shows as tiles, and the
+47         apps that declare a module card (docs/specs/card.md).
+48    -->
+49    <queries>
+49-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:30:5-89:15
+50
+51        <!-- The standard settings handlers, so package visibility doesn't hide them and send the pills to a vendor fallback by mistake. -->
+52        <intent>
+52-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:32:9-34:18
+53            <action android:name="android.settings.SETTINGS" />
+53-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:33:13-64
+53-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:33:21-61
+54        </intent>
+55        <intent>
+55-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:35:9-37:18
+56            <action android:name="android.settings.SLICE_SETTINGS" />
+56-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:36:13-70
+56-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:36:21-67
+57        </intent>
+58        <intent>
+58-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:38:9-40:18
+59            <action android:name="android.settings.WIFI_SETTINGS" />
+59-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:39:13-69
+59-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:39:21-66
+60        </intent>
+61        <intent>
+61-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:41:9-43:18
+62            <action android:name="android.settings.DISPLAY_SETTINGS" />
+62-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:42:13-72
+62-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:42:21-69
+63        </intent>
+64        <intent>
+64-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:44:9-46:18
+65            <action android:name="com.android.tv.action.VIEW_INPUTS" />
+65-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:45:13-72
+65-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:45:21-69
+66        </intent>
+67        <intent>
+67-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:47:9-49:18
+68            <action android:name="com.android.tv.action.VIEW_SOUND_SETTINGS" />
+68-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:48:13-80
+68-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:48:21-77
+69        </intent>
+70        <intent>
+70-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:50:9-52:18
+71            <action android:name="com.google.android.tv.googletvremotepairer.action.BLUETOOTH_PAIRING" />
+71-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:51:13-106
+71-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:51:21-103
+72        </intent>
+73        <intent>
+73-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:53:9-55:18
+74            <action android:name="com.google.android.tv.settings.ambient" />
+74-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:54:13-77
+74-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:54:21-74
+75        </intent>
+76        <intent>
+76-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:56:9-58:18
+77            <action android:name="android.settings.MANAGE_APPLICATIONS_SETTINGS" />
+77-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:57:13-84
+77-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:57:21-81
+78        </intent>
+79        <!-- The tile menu and the app library offer App info only where this resolves (SystemSettings.appInfo). -->
+80        <intent>
+80-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:60:9-63:18
+81            <action android:name="android.settings.APPLICATION_DETAILS_SETTINGS" />
+81-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:61:13-84
+81-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:61:21-81
+82
+83            <data android:scheme="package" />
+83-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:62:13-46
+83-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:62:19-43
+84        </intent>
+85        <intent>
+85-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:64:9-67:18
+86            <action android:name="android.intent.action.MAIN" />
+86-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:65:13-65
+86-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:65:21-62
+87
+88            <category android:name="android.intent.category.LAUNCHER" />
+88-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:66:13-73
+88-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:66:23-70
+89        </intent>
+90        <intent>
+90-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:68:9-71:18
+91            <action android:name="android.intent.action.MAIN" />
+91-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:65:13-65
+91-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:65:21-62
+92
+93            <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
+93-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:70:13-82
+93-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:70:23-79
+94        </intent>
+95        <intent>
+95-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:72:9-75:18
+96            <action android:name="android.intent.action.MAIN" />
+96-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:65:13-65
+96-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:65:21-62
+97
+98            <category android:name="com.gathin.tvhome.category.DOCK_CARD" />
+98-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:74:13-77
+98-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:74:23-74
+99        </intent>
+100        <!-- stock_home_redirect: HomeKeyService looks up the stock launcher's HOME activity. -->
+101        <intent>
+101-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:77:9-80:18
+102            <action android:name="android.intent.action.MAIN" />
+102-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:65:13-65
+102-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:65:21-62
+103
+104            <category android:name="android.intent.category.HOME" />
+104-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:79:13-69
+104-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:79:23-66
+105        </intent>
+106        <!--
+107             China-market MIUI TV firmware: the Settings and Wi-Fi pills fall back to Xiaomi's settings app.
+108             Fire TV: the real settings menu lives in the stock launcher (see settings_fallback_components).
+109        -->
+110        <package android:name="com.xiaomi.mitv.settings" />
+110-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:83:9-60
+110-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:83:18-57
+111        <package android:name="com.tcl.settings" />
+111-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:84:9-52
+111-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:84:18-49
+112        <package android:name="com.amazon.tv.launcher" />
+112-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:85:9-58
+112-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:85:18-55
+113        <!-- Coocaa OS sources for the Inputs menu (coocaa_sources); see CoocaaSources. -->
+114        <provider android:authorities="com.skyworth.tv.provider" />
+114-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:87:9-68
+114-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:87:19-65
+115        <provider android:authorities="com.skyworth.tv.sdk.provider" />
+115-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:87:9-68
+115-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:87:19-65
+116    </queries>
+117
+118    <application
+118-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:91:5-306:19
+119        android:allowBackup="false"
+119-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:97:9-36
+120        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
+120-->[androidx.core:core:1.7.0] C:\Users\johnj\.gradle\caches\8.9\transforms\3afe7fa58a47c7b182ae0caccac05374\transformed\core-1.7.0\AndroidManifest.xml:24:18-86
+121        android:banner="@drawable/banner"
+121-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:94:9-42
+122        android:extractNativeLibs="false"
+123        android:hardwareAccelerated="true"
+123-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:96:9-43
+124        android:icon="@mipmap/ic_launcher"
+124-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:93:9-43
+125        android:label="@string/app_name"
+125-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:92:9-41
+126        android:localeConfig="@xml/locales_config"
+126-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:98:9-51
+127        android:theme="@style/Theme.TvHome" >
+127-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:95:9-44
+128        <activity
+128-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:100:9-126:20
+129            android:name="com.gathin.tvhome.MainActivity"
+129-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:101:13-41
+130            android:clearTaskOnLaunch="true"
+130-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:106:13-45
+131            android:configChanges="orientation|screenSize|keyboard|keyboardHidden|uiMode"
+131-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:107:13-90
+132            android:excludeFromRecents="true"
+132-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:105:13-46
+133            android:exported="true"
+133-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:102:13-36
+134            android:launchMode="singleTask"
+134-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:103:13-44
+135            android:screenOrientation="landscape"
+135-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:108:13-50
+136            android:stateNotNeeded="true" >
+136-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:104:13-42
+137
+138            <!--
+139                 CVTE firmware (ro.CVT_EN_COMMON_HOME_INTENT=1) sends the Home key and boot as MAIN + HOME +
+140                 COMMON_HOME, which only matches a filter that lists both (#1201). In this one filter, not a second
+141                 one: a plain HOME intent still matches it, and a second filter could list this activity twice.
+142            -->
+143            <intent-filter>
+143-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:112:13-120:29
+144                <action android:name="android.intent.action.MAIN" />
+144-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:65:13-65
+144-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:65:21-62
+145
+146                <category android:name="android.intent.category.HOME" />
+146-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:79:13-69
+146-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:79:23-66
+147                <category android:name="android.intent.category.COMMON_HOME" />
+147-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:115:17-80
+147-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:115:27-77
+148                <category android:name="android.intent.category.DEFAULT" />
+148-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:116:17-76
+148-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:116:27-73
+149                <!--
+150                     ColorOS TV: boot only promotes a HOME that declares this category.
+151                     docs/devices/oppo-k9-55-oppocnm632.md (prior art: aerial-tv oppo-coloros-tv.md).
+152                -->
+153                <category android:name="com.heytap.tv.launcher.category.MODERN_HOME" />
+153-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:119:17-88
+153-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:119:27-85
+154            </intent-filter>
+155            <!-- Listed in the TV's own app list, so it can be opened from the stock home screen too. -->
+156            <intent-filter>
+156-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:122:13-125:29
+157                <action android:name="android.intent.action.MAIN" />
+157-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:65:13-65
+157-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:65:21-62
+158
+159                <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
+159-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:70:13-82
+159-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:70:23-79
+160            </intent-filter>
+161        </activity>
+162        <activity
+162-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:128:9-138:20
+163            android:name="com.gathin.tvhome.LauncherSettingsActivity"
+163-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:129:13-53
+164            android:excludeFromRecents="true"
+164-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:132:13-46
+165            android:exported="true"
+165-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:130:13-36
+166            android:screenOrientation="landscape"
+166-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:133:13-50
+167            android:taskAffinity="" >
+167-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:131:13-36
+168            <intent-filter>
+168-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:134:13-137:29
+169                <action android:name="com.gathin.tvhome.liquidglass.action.SETTINGS" />
+169-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:135:17-88
+169-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:135:25-85
+170
+171                <category android:name="android.intent.category.DEFAULT" />
+171-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:116:17-76
+171-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:116:27-73
+172            </intent-filter>
+173        </activity>
+174        <!--
+175             The system input switcher (com.android.tv.action.VIEW_INPUTS), which is what the remote's Input
+176             button becomes through the TV's Live TV app or InputKeyService. Disabled here and switched on by
+177             MainActivity only while handle_view_inputs is true (config.xml or a theme), for sets whose stock
+178             launcher was the only handler of the action (Hisense huangshan, Android TV 10): kept off, a TV with
+179             its own input picker never sees a second candidate and a chooser.
+180        -->
+181        <activity
+181-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:144:9-155:20
+182            android:name="com.gathin.tvhome.InputsRequestActivity"
+182-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:145:13-50
+183            android:enabled="false"
+183-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:147:13-36
+184            android:excludeFromRecents="true"
+184-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:148:13-46
+185            android:exported="true"
+185-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:146:13-36
+186            android:noHistory="true"
+186-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:149:13-37
+187            android:theme="@android:style/Theme.NoDisplay" >
+187-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:150:13-59
+188            <intent-filter>
+188-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:151:13-154:29
+189                <action android:name="com.android.tv.action.VIEW_INPUTS" />
+189-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:45:13-72
+189-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:45:21-69
+190
+191                <category android:name="android.intent.category.DEFAULT" />
+191-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:116:17-76
+191-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:116:27-73
+192            </intent-filter>
+193        </activity>
+194        <!--
+195             Remote Settings button panel (settings_key_panel); own task so the app behind stays put.
+196             No screenOrientation: a translucent activity may not request one on Android 8.0 (API 26),
+197             which throws IllegalStateException in onCreate (#1122); a TV is landscape anyway.
+198        -->
+199        <activity
+199-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:159:9-173:20
+200            android:name="com.gathin.tvhome.QuickSettingsActivity"
+200-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:160:13-50
+201            android:excludeFromRecents="true"
+201-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:164:13-46
+202            android:exported="true"
+202-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:161:13-36
+203            android:launchMode="singleTop"
+203-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:163:13-43
+204            android:noHistory="true"
+204-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:165:13-37
+205            android:taskAffinity=""
+205-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:162:13-36
+206            android:theme="@style/Theme.TvHome.Translucent" >
+206-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:166:13-60
+207            <intent-filter>
+207-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:167:13-172:29
+208                <action android:name="android.app.action.OPEN_NOTIFICATION_HANDLER_PANEL" />
+208-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:168:17-93
+208-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:168:25-90
+209                <action android:name="android.app.action.TOGGLE_NOTIFICATION_HANDLER_PANEL" />
+209-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:169:17-95
+209-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:169:25-92
+210                <action android:name="android.intent.action.QUICK_SETTINGS" />
+210-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:170:17-79
+210-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:170:25-76
+211
+212                <category android:name="android.intent.category.DEFAULT" />
+212-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:116:17-76
+212-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:116:27-73
+213            </intent-filter>
+214        </activity>
+215        <!-- Apple TV-style Recent Apps / Multitasking Switcher carousel. -->
+216        <activity
+216-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:175:9-186:20
+217            android:name="com.gathin.tvhome.RecentAppsActivity"
+217-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:176:13-47
+218            android:excludeFromRecents="true"
+218-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:180:13-46
+219            android:exported="true"
+219-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:177:13-36
+220            android:launchMode="singleTop"
+220-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:179:13-43
+221            android:taskAffinity=""
+221-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:178:13-36
+222            android:theme="@style/Theme.TvHome.Translucent" >
+222-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:181:13-60
+223            <intent-filter>
+223-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:182:13-185:29
+224                <action android:name="com.gathin.tvhome.liquidglass.action.RECENTS" />
+224-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:183:17-87
+224-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:183:25-84
+225
+226                <category android:name="android.intent.category.DEFAULT" />
+226-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:116:17-76
+226-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:116:27-73
+227            </intent-filter>
+228        </activity>
+229        <activity
+229-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:187:9-192:62
+230            android:name="com.gathin.tvhome.HomeSettingsActivity"
+230-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:188:13-49
+231            android:excludeFromRecents="true"
+231-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:191:13-46
+232            android:exported="false"
+232-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:189:13-37
+233            android:taskAffinity=""
+233-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:190:13-36
+234            android:theme="@android:style/Theme.NoDisplay" />
+234-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:192:13-59
+235        <!--
+236             Home button for remotes that send KEYCODE_ALL_APPS (Xiaomi). Opt-in: HOME_KEY_SERVICE=1
+237             build-and-install.sh; see HomeKeyService.
+238        -->
+239        <service
+239-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:195:9-207:19
+240            android:name="com.gathin.tvhome.HomeKeyService"
+240-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:196:13-43
+241            android:directBootAware="true"
+241-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:198:13-43
+242            android:exported="true"
+242-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:199:13-36
+243            android:label="@string/home_key_name"
+243-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:197:13-50
+244            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE" >
+244-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:200:13-79
+245            <intent-filter>
+245-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:201:13-203:29
+246                <action android:name="android.accessibilityservice.AccessibilityService" />
+246-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:202:17-92
+246-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:202:25-89
+247            </intent-filter>
+248
+249            <meta-data
+249-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:204:13-206:60
+250                android:name="android.accessibilityservice"
+250-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:205:17-60
+251                android:resource="@xml/home_key_service" />
+251-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:206:17-57
+252        </service>
+253
+254        <!--
+255             market://launch?id=<package>: package-name app launches from the Android TV Remote service
+256             (Home Assistant android_tv_remote), normally served by the stock launcher.
+257        -->
+258        <activity
+258-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:211:9-223:20
+259            android:name="com.gathin.tvhome.AppLaunchActivity"
+259-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:212:13-46
+260            android:excludeFromRecents="true"
+260-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:214:13-46
+261            android:exported="true"
+261-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:213:13-36
+262            android:noHistory="true"
+262-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:215:13-37
+263            android:theme="@android:style/Theme.NoDisplay" >
+263-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:216:13-59
+264            <intent-filter>
+264-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:217:13-222:29
+265                <action android:name="android.intent.action.VIEW" />
+265-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:218:17-69
+265-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:218:25-66
+266
+267                <category android:name="android.intent.category.DEFAULT" />
+267-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:116:17-76
+267-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:116:27-73
+268                <category android:name="android.intent.category.BROWSABLE" />
+268-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:220:17-78
+268-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:220:27-75
+269
+270                <data
+270-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:62:13-46
+271                    android:host="launch"
+271-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:221:47-68
+272                    android:scheme="market" />
+272-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:62:19-43
+273            </intent-filter>
+274        </activity>
+275
+276        <!-- The same clock, started by Home itself after home_idle_clock_minutes without input. -->
+277        <activity
+277-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:226:9-231:80
+278            android:name="com.gathin.tvhome.ClockActivity"
+278-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:227:13-42
+279            android:excludeFromRecents="true"
+279-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:229:13-46
+280            android:exported="true"
+280-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:228:13-36
+281            android:noHistory="true"
+281-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:230:13-37
+282            android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen" />
+282-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:231:13-77
+283
+284        <!--
+285             stock_home_redirect at boot: HomeKeyService opens this invisible activity once, so the screen behind
+286             it sends a window event when it closes (HomeKeyService.probeAtBoot).
+287        -->
+288        <activity
+288-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:235:9-241:75
+289            android:name="com.gathin.tvhome.ProbeActivity"
+289-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:236:13-42
+290            android:excludeFromRecents="true"
+290-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:238:13-46
+291            android:exported="false"
+291-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:237:13-37
+292            android:noHistory="true"
+292-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:239:13-37
+293            android:taskAffinity=""
+293-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:240:13-36
+294            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+294-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:241:13-72
+295
+296        <!--
+297             Screensaver: pick it in Settings, or `settings put secure screensaver_components
+298             com.gathin.tvhome/.ClockDream` over adb.
+299        -->
+300        <service
+300-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:245:9-254:19
+301            android:name="com.gathin.tvhome.ClockDream"
+301-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:246:13-39
+302            android:exported="true"
+302-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:248:13-36
+303            android:label="@string/dream_name"
+303-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:247:13-47
+304            android:permission="android.permission.BIND_DREAM_SERVICE" >
+304-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:249:13-71
+305            <intent-filter>
+305-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:250:13-253:29
+306                <action android:name="android.service.dreams.DreamService" />
+306-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:251:17-78
+306-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:251:25-75
+307
+308                <category android:name="android.intent.category.DEFAULT" />
+308-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:116:17-76
+308-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:116:27-73
+309            </intent-filter>
+310        </service>
+311
+312        <!--
+313             tools/theme.sh writes the theme through this where the shell can't reach Android/data;
+314             see ThemeProvider. WRITE_SECURE_SETTINGS: the adb shell has it, ordinary apps don't.
+315        -->
+316        <provider
+317            android:name="com.gathin.tvhome.ThemeProvider"
+317-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:259:13-42
+318            android:authorities="com.gathin.tvhome.liquidglass.theme"
+318-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:260:13-57
+319            android:exported="true"
+319-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:261:13-36
+320            android:permission="android.permission.WRITE_SECURE_SETTINGS" />
+320-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:262:13-74
+321
+322        <!--
+323         The remote's Input button (KEYCODE_TV or KEYCODE_TV_INPUT) opens the input switcher, and input_key_keycodes and
+324         app_keys (config.xml or a theme) bring back other remote buttons; see InputKeyService.
+325        -->
+326        <!--
+327             Bound again by the system after a force stop, which restarts Home on firmware that kills
+328             third-party apps (TCL tc8000_ay30a2). It reads no notification.
+329             cmd notification allow_listener com.gathin.tvhome/.GuardRevival
+330        -->
+331        <service
+331-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:269:9-278:19
+332            android:name="com.gathin.tvhome.GuardRevival"
+332-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:270:13-41
+333            android:directBootAware="true"
+333-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:271:13-43
+334            android:exported="true"
+334-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:272:13-36
+335            android:label="@string/home_key_name"
+335-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:273:13-50
+336            android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE" >
+336-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:274:13-87
+337            <intent-filter>
+337-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:275:13-277:29
+338                <action android:name="android.service.notification.NotificationListenerService" />
+338-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:276:17-99
+338-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:276:25-96
+339            </intent-filter>
+340        </service>
+341
+342        <receiver
+342-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:279:9-286:20
+343            android:name="com.gathin.tvhome.GuardConfig"
+343-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:280:13-40
+344            android:exported="true"
+344-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:281:13-36
+345            android:permission="android.permission.WRITE_SECURE_SETTINGS" >
+345-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:282:13-74
+346            <intent-filter>
+346-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:283:13-285:29
+347                <action android:name="com.gathin.tvhome.liquidglass.GUARD" />
+347-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:284:17-78
+347-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:284:25-75
+348            </intent-filter>
+349        </receiver>
+350
+351        <!-- Quick Settings sleep timer: its one alarm lands here (explicit intent only). -->
+352        <receiver
+352-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:289:9-291:40
+353            android:name="com.gathin.tvhome.SleepTimer"
+353-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:290:13-39
+354            android:exported="false" />
+354-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:291:13-37
+355
+356        <service
+356-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:293:9-305:19
+357            android:name="com.gathin.tvhome.InputKeyService"
+357-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:294:13-44
+358            android:directBootAware="true"
+358-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:295:13-43
+359            android:exported="true"
+359-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:296:13-36
+360            android:label="@string/app_name"
+360-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:297:13-45
+361            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE" >
+361-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:298:13-79
+362            <intent-filter>
+362-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:201:13-203:29
+363                <action android:name="android.accessibilityservice.AccessibilityService" />
+363-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:202:17-92
+363-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:202:25-89
+364            </intent-filter>
+365
+366            <meta-data
+366-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:204:13-206:60
+367                android:name="android.accessibilityservice"
+367-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:205:17-60
+368                android:resource="@xml/input_key_service" />
+368-->D:\emmanuel\new tv app\liquid-glass-launcher\app\src\main\AndroidManifest.xml:206:17-57
+369        </service>
+370    </application>
+371
+372</manifest>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.gathin.tvhome.SunTest" tests="6" skipped="0" failures="0" errors="0" timestamp="2026-11-13T11:55:42" hostname="POOMATTATHIL" time="0.009">
+  <properties/>
+  <testcase name="noSunriseOrSunsetAtThePoles" classname="com.gathin.tvhome.SunTest" time="0.006"/>
+  <testcase name="theReferenceDayMapsOntoItself" classname="com.gathin.tvhome.SunTest" time="0.001"/>
+  <testcase name="skyGlowsLandOnTheRealSunriseAndSunset" classname="com.gathin.tvhome.SunTest" time="0.0"/>
+  <testcase name="vilniusWinterDayIsShortAndLate" classname="com.gathin.tvhome.SunTest" time="0.001"/>
+  <testcase name="nonsenseSunTimesFallBackToTheReferenceDay" classname="com.gathin.tvhome.SunTest" time="0.0"/>
+  <testcase name="vilniusSummerDayIsLongInLocalSummerTime" classname="com.gathin.tvhome.SunTest" time="0.0"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

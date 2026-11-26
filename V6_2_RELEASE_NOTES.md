@@ -18,8 +18,8 @@
 Version 6.2 centralizes all remote key interception and dispatch logic into `RemoteKeys.java`, resolving input collisions while strictly preserving the verified golden navigation baseline:
 
 - **Centralized Dispatch**:
-  - `RemoteKeys.isInputKey(int keyCode, int[] extra)` handles standard `KEYCODE_TV_INPUT` (178), `KEYCODE_TV` (170), and direct inputs `KEYCODE_TV_INPUT_HDMI_1` through `KEYCODE_TV_INPUT_VGA_1` (243–251).
-  - `RemoteKeys.handleInputKey(Context ctx, KeyEvent event, int[] extra)` dispatches `com.android.tv.action.VIEW_INPUTS` (with fallback to `MainActivity.ACTION_VIEW_INPUTS`) on `ACTION_UP`.
+  - `InputKeyService.isInputKey(int keyCode)` handles standard `KEYCODE_TV_INPUT` (178), `KEYCODE_TV` (170), and configured `input_key_keycodes`.
+  - `RemoteKeys.handle(Context ctx, KeyEvent event, String app, String holdApp)` dispatches configured app, input, and action targets while deduplicating events across `HomeKeyService` and `InputKeyService`.
 - **Precedence in Key Services**:
   - In `HomeKeyService.java` and `InputKeyService.java`, input keys take precedence over `scan:240`, ensuring the remote Input button cleanly launches the stock Google TV input selector instead of opening Quick Settings.
 - **Physical Remote Buttons**:

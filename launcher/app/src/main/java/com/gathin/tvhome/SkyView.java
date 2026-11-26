@@ -36,14 +36,18 @@ public class SkyView extends View {
         return false;
     }
 
-    private static final int TEX_W = 480;
-    private static final int TEX_H = 270;
+    private static final int TEX_W = 240;
+    private static final int TEX_H = 135;
 
     /** Opacity of the whole backdrop, 0 to 255, from sky_intensity. */
     private int intensity;
     private int lastMinute = -1;
+    private LocalDate cachedSunDay;
+    private int[] cachedSunTimes;
     private Bitmap texture;
     private BitmapDrawable drawable;
+    private Canvas offscreenCanvas;
+    private final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
 
     public SkyView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
@@ -63,6 +67,18 @@ public class SkyView extends View {
         render(false);
     }
 
+    /** Drops the offscreen sky texture when Home is hidden under memory pressure. */
+    void release() {
+        setBackground(null);
+        drawable = null;
+        offscreenCanvas = null;
+        lastMinute = -1;
+        if (texture != null) {
+            if (!texture.isRecycled()) texture.recycle();
+            texture = null;
+        }
+    }
+
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
@@ -72,13 +88,21 @@ public class SkyView extends View {
     /** Today's sunrise and sunset at the configured place, or null without one (fixed reference day). */
     @Nullable
     private int[] sunTimes() {
+        LocalDate today = LocalDate.now();
+        if (today.equals(cachedSunDay)) return cachedSunTimes;
+        cachedSunDay = today;
         String lat = getContext().getString(R.string.latitude);
         String lon = getContext().getString(R.string.longitude);
-        if (lat.isEmpty() || lon.isEmpty()) return null;
+        if (lat.isEmpty() || lon.isEmpty()) {
+            cachedSunTimes = null;
+            return null;
+        }
         try {
-            return Sun.riseAndSet(LocalDate.now(), Double.parseDouble(lat), Double.parseDouble(lon),
+            cachedSunTimes = Sun.riseAndSet(today, Double.parseDouble(lat), Double.parseDouble(lon),
                     ZoneId.systemDefault());
+            return cachedSunTimes;
         } catch (NumberFormatException e) {
+            cachedSunTimes = null;
             return null;
         }
     }
@@ -91,11 +115,15 @@ public class SkyView extends View {
 
         int[] sun = sunTimes();
         Sky.Palette sky = sun == null ? Sky.at(minute) : Sky.at(minute, sun[0], sun[1]);
-        if (texture == null) texture = Bitmap.createBitmap(TEX_W, TEX_H, Bitmap.Config.ARGB_8888);
-        Canvas canvas = new Canvas(texture);
+        if (texture == null) {
+            texture = Bitmap.createBitmap(TEX_W, TEX_H, Bitmap.Config.ARGB_8888);
+            offscreenCanvas = new Canvas(texture);
+        } else if (offscreenCanvas == null) {
+            offscreenCanvas = new Canvas(texture);
+        }
+        Canvas canvas = offscreenCanvas;
         canvas.drawColor(0, android.graphics.PorterDuff.Mode.CLEAR);
 
-        Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
         paint.setShader(new LinearGradient(0f, 0f, 0f, TEX_H,
                 new int[]{sky.top, sky.mid, sky.bottom},
                 new float[]{0f, 0.55f, 1f}, Shader.TileMode.CLAMP));
@@ -113,6 +141,7 @@ public class SkyView extends View {
 
         if (drawable == null) {
             drawable = new BitmapDrawable(getResources(), texture);
+            drawable.setFilterBitmap(true);
             drawable.setGravity(Gravity.FILL);
             setBackground(drawable);
         }

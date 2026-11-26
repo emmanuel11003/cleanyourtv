@@ -1,0 +1,54 @@
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    namespace 'com.gathin.wallpapersync'
+    compileSdk 34
+
+    defaultConfig {
+        applicationId 'com.emmanuel.wallpapersync'
+        minSdk 26
+        targetSdk 34
+        versionCode 1
+        versionName '1.0'
+    }
+
+    dependenciesInfo {
+        includeInApk false
+        includeInBundle false
+    }
+    buildFeatures {
+        buildConfig false
+        aidl false
+        renderScript false
+        shaders false
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.debug
+        }
+    }
+
+    packagingOptions {
+        resources {
+            excludes += ['META-INF/*.version', 'DebugProbesKt.bin', 'kotlin/**',
+                         'META-INF/**/*.properties', 'META-INF/**/LICENSE*', 'META-INF/**/NOTICE*',
+                         'META-INF/proguard/**', 'META-INF/com.android.tools/**', '**/*.txt.gz']
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+}
+
+dependencies {
+    implementation 'androidx.dynamicanimation:dynamicanimation:1.0.0'
+    testImplementation 'junit:junit:4.13.2'
+}

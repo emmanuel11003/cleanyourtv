@@ -1,0 +1,23 @@
+tvhome-order 1
+dock org.smarttube.stable,com.google.android.youtube.tv,in.startv.hotstar,com.sonyliv,com.android.vending
+docked 5
+org.smarttube.stable/com.liskovsoft.smartyoutubetv2.tv.ui.main.SplashActivity
+com.google.android.youtube.tv/com.google.android.apps.youtube.tv.activity.ShellActivity
+in.startv.hotstar/com.hotstar.MainActivity
+com.sonyliv/.ui.splash.SplashActivity
+com.android.vending/com.google.android.finsky.tvmainactivity.TvMainActivity
+com.amazon.amazonvideo.livingroom/com.amazon.ignition.IgnitionActivity
+com.discoveryplus.tv.android/.DPlusAndroidTvActivity
+com.alphainventor.filemanager/.activity.MainActivity
+com.mediatek.miracast/.MiracastPlayer1Activity
+com.rma.speedtesttv/.ui.SplashActivity
+com.jio.media.jiotvplus/com.jio.jioplay.jiotvplustwo.MainActivity
+com.cltv.hybrid/com.iwedia.cltv.MainActivity
+org.localsend.localsend_app/.MainActivity
+com.mediatek.wwtv.mediaplayer/.mmp.MediaMainActivity
+app.netmirror.newtv/.MainActivity
+com.telink.lt/.BtOtaUpdate
+com.android.tv.settings/.MainSettings
+com.netflix.ninja/.MainActivity
+com.suntv.sunnxt/com.androidtv.myplex.ui.activity.SPlashActivity
+com.haier.tvhousekeeper/.app.activity.MainActivity

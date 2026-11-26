@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.gathin.tvhome.RaceWeekendTest" tests="5" skipped="0" failures="0" errors="0" timestamp="2026-11-13T11:55:42" hostname="POOMATTATHIL" time="0.003">
+  <properties/>
+  <testcase name="opensTwelveHoursBeforeFirstPractice" classname="com.gathin.tvhome.RaceWeekendTest" time="0.001"/>
+  <testcase name="aSessionOnTrackIsLiveAndTheNextOneIsCountedDown" classname="com.gathin.tvhome.RaceWeekendTest" time="0.001"/>
+  <testcase name="closesFourHoursAfterTheRaceStarts" classname="com.gathin.tvhome.RaceWeekendTest" time="0.0"/>
+  <testcase name="theRaceIsLiveForTwoHoursThenFinished" classname="com.gathin.tvhome.RaceWeekendTest" time="0.0"/>
+  <testcase name="nothingBeforeTheWeekendOpens" classname="com.gathin.tvhome.RaceWeekendTest" time="0.001"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

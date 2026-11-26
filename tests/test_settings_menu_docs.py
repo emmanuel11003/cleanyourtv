@@ -21,15 +21,15 @@ import unittest
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-MAIN_ACTIVITY = ROOT / "launcher" / "app" / "src" / "main" / "java" / "com" / "gathin" / "tvhome" / "MainActivity.java"
+MAIN_ACTIVITY = ROOT / "launcher" / "app" / "src" / "main" / "java" / "com" / "gathin" / "tvhome" / "HomeMenus.java"
 STRINGS = ROOT / "launcher" / "app" / "src" / "main" / "res" / "values" / "strings.xml"
 GUIDE = ROOT / "docs" / "launcher.md"
 VENDOR_NOTE = ROOT / "docs" / "devices" / "xiaomi-mitv-mteq0" / "xiaomi-mitv-mteq0.md"
 
-METHOD = "private void showSettingsMenu()"
+METHOD = "static void showSettingsMenu(MainActivity host)"
 BLOCK = "## Launcher settings and the default home"
-# addSettingsMenuRow(rows, popup, R.string.<name>, ...), however the call is wrapped.
-ROW = re.compile(r"addSettingsMenuRow\(\s*rows,\s*popup,\s*R\.string\.([a-z_]+)")
+# addSettingsMenuRow([inflater, ]rows, popup, R.string.<name>, ...), however the call is wrapped.
+ROW = re.compile(r"addSettingsMenuRow\(\s*(?:inflater,\s*)?rows,\s*popup,\s*R\.string\.([a-z_]+)")
 
 
 def method_body(text, name=METHOD):

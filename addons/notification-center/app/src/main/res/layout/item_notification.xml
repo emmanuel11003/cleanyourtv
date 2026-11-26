@@ -56,7 +56,7 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
                 android:textSize="10sp"
-                android:textColor="@color/quick_tile_icon_color"
+                android:textColor="@color/quick_tile_sub_color"
                 android:fontFamily="@string/font_body"
                 android:singleLine="true"
                 android:duplicateParentState="true" />
@@ -68,7 +68,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="2dp"
             android:textSize="11sp"
-            android:textColor="@color/quick_tile_icon_color"
+            android:textColor="@color/quick_tile_sub_color"
             android:fontFamily="@string/font_body"
             android:singleLine="true"
             android:ellipsize="end"

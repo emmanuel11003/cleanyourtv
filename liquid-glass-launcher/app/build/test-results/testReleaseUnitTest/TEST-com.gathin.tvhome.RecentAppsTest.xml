@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.gathin.tvhome.RecentAppsTest" tests="19" skipped="0" failures="0" errors="0" timestamp="2026-11-13T11:55:42" hostname="POOMATTATHIL" time="0.011">
+  <properties/>
+  <testcase name="dismissJsonNonExistentPackage" classname="com.gathin.tvhome.RecentAppsTest" time="0.002"/>
+  <testcase name="buttonMapperActionRecentsConstant" classname="com.gathin.tvhome.RecentAppsTest" time="0.001"/>
+  <testcase name="canForceStopDefaultReturnsFalse" classname="com.gathin.tvhome.RecentAppsTest" time="0.0"/>
+  <testcase name="emptyAndCorruptJsonHandling" classname="com.gathin.tvhome.RecentAppsTest" time="0.0"/>
+  <testcase name="isValidPackageFilter" classname="com.gathin.tvhome.RecentAppsTest" time="0.0"/>
+  <testcase name="recordJsonExcludesInvalidAndSelfPackages" classname="com.gathin.tvhome.RecentAppsTest" time="0.001"/>
+  <testcase name="appInfoUriValid" classname="com.gathin.tvhome.RecentAppsTest" time="0.0"/>
+  <testcase name="pruneJsonRemovesPackages" classname="com.gathin.tvhome.RecentAppsTest" time="0.0"/>
+  <testcase name="dismissToastDoesNotClaimProcessTermination" classname="com.gathin.tvhome.RecentAppsTest" time="0.0"/>
+  <testcase name="dismissJsonRemovesExistingPackage" classname="com.gathin.tvhome.RecentAppsTest" time="0.0"/>
+  <testcase name="recordJsonDeduplicatesAndUpdateTimestamp" classname="com.gathin.tvhome.RecentAppsTest" time="0.0"/>
+  <testcase name="recordJsonMaxRecentsLimit" classname="com.gathin.tvhome.RecentAppsTest" time="0.005"/>
+  <testcase name="recordJsonAddsNewEntry" classname="com.gathin.tvhome.RecentAppsTest" time="0.0"/>
+  <testcase name="maxRecentsBound" classname="com.gathin.tvhome.RecentAppsTest" time="0.0"/>
+  <testcase name="nativeRecentsInitiallyUntested" classname="com.gathin.tvhome.RecentAppsTest" time="0.0"/>
+  <testcase name="nativeRecentsWithoutServiceReturnsFalse" classname="com.gathin.tvhome.RecentAppsTest" time="0.001"/>
+  <testcase name="mergeUsageEventSupplementsWithoutOverwritingLabel" classname="com.gathin.tvhome.RecentAppsTest" time="0.0"/>
+  <testcase name="isServiceBoundWithoutServiceReturnsFalse" classname="com.gathin.tvhome.RecentAppsTest" time="0.0"/>
+  <testcase name="appInfoUriNullOrEmpty" classname="com.gathin.tvhome.RecentAppsTest" time="0.0"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

@@ -128,8 +128,20 @@ public final class PetalShowerView extends View {
     }
 
     @Override
+    protected void onVisibilityChanged(View changedView, int visibility) {
+        super.onVisibilityChanged(changedView, visibility);
+        if (playing && isShown()) postInvalidateOnAnimation();
+    }
+
+    @Override
+    protected void onWindowVisibilityChanged(int visibility) {
+        super.onWindowVisibilityChanged(visibility);
+        if (playing && isShown()) postInvalidateOnAnimation();
+    }
+
+    @Override
     protected void onDraw(Canvas c) {
-        if (!playing) return;
+        if (!playing || !isShown()) return;
         long now = SystemClock.uptimeMillis();
         float elapsed = (now - start) / (float) duration;
         float secs = (now - start) / 1000f;

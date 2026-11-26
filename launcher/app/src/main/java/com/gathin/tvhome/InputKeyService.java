@@ -2,6 +2,8 @@ package com.gathin.tvhome;
 
 import android.accessibilityservice.AccessibilityService;
 import android.content.ActivityNotFoundException;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
 import android.view.KeyEvent;
 import android.view.accessibility.AccessibilityEvent;
@@ -33,6 +35,7 @@ public class InputKeyService extends AccessibilityService {
     private GamepadPassthrough gamepads;
     /** This helper while Android has it bound (SleepTimer puts the TV in standby through it). */
     private static InputKeyService running;
+    private BroadcastReceiver unlockReceiver;
 
     static InputKeyService bound() {
         return running;
@@ -42,6 +45,18 @@ public class InputKeyService extends AccessibilityService {
     protected void onServiceConnected() {
         super.onServiceConnected();
         running = this;
+        unlockReceiver = DirectBoot.runWhenUnlocked(this, () -> {
+            unlockReceiver = null;
+            loadConfig();
+        });
+    }
+
+    private void stopWaitingForUnlock() {
+        DirectBoot.cancel(this, unlockReceiver);
+        unlockReceiver = null;
+    }
+
+    private void loadConfig() {
         // From config.xml or a theme's config.json; theme.sh rebinds this service after a push.
         Config config = Config.load(this);
         // restore_key_services: note that this helper runs, so Home can put it back after a force stop.
@@ -70,7 +85,6 @@ public class InputKeyService extends AccessibilityService {
     @Override
     protected boolean onKeyEvent(KeyEvent event) {
         if (consumeVolumeKeys && VolumeKeys.handle(this, event)) return true;
-        if (ButtonMapper.handleKeyEvent(this, event)) return true;
         // A scancode entry is more specific than any keycode, so it goes first.
         if (RemoteKeys.handle(this, event, appScancodes.get(event.getScanCode()),
                 holdAppScancodes.get(event.getScanCode()))) return true;
@@ -97,6 +111,7 @@ public class InputKeyService extends AccessibilityService {
     @Override
     public void onDestroy() {
         if (running == this) running = null;
+        stopWaitingForUnlock();
         RemoteKeys.release(this);
         if (gamepads != null) gamepads.stop();
         if (consumeVolumeKeys) VolumeKeys.stop();

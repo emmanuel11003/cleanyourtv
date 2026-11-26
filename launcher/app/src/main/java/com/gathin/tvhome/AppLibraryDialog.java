@@ -77,12 +77,9 @@ final class AppLibraryDialog {
     private final Predicate<String> onHome;
     private final Runnable changed;
     private final FrameLayout scrim;
+    private final View scrimBackdrop;
     private final LinearLayout panel;
-    private WindowMorph morph;
-    private final Rect anchorRect = new Rect();
-    private float anchorRadius;
     private boolean dismissingNow;
-    private boolean closingWithMorph;
     private final boolean reducedMotion;
     private final boolean selectionMode;
     /** library_ok_opens without app_library_selection: OK opens every app, Add to Home is in the hold menu. */
@@ -163,13 +160,7 @@ final class AppLibraryDialog {
         panel.setLayoutParams(lp);
     }
 
-    /** Anchor the iOS morph animation on the button or pill that opened the library. */
     void setMorphAnchor(View anchor) {
-        if (WindowMorph.captureScreenRect(anchor, anchorRect)) {
-            anchorRadius = Math.min(anchorRect.width(), anchorRect.height()) * 0.5f;
-        } else {
-            anchorRect.setEmpty();
-        }
     }
 
     /** library_excluded_apps (config.xml), never offered in the catalogue; empty by default, so existing
@@ -189,9 +180,13 @@ final class AppLibraryDialog {
         this.excludedApps = excludedApps;
         density = activity.getResources().getDisplayMetrics().density;
         scrim = new FrameLayout(activity);
-        scrim.setBackgroundColor(0x8C000000);
         scrim.setClipChildren(false);
         scrim.setOnClickListener(v -> close());
+        scrimBackdrop = new View(activity);
+        scrimBackdrop.setBackgroundColor(0x8C000000);
+        scrimBackdrop.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
+        scrim.addView(scrimBackdrop, new FrameLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         panel = new LinearLayout(activity);
         panel.setLayoutDirection(rtl ? View.LAYOUT_DIRECTION_RTL : View.LAYOUT_DIRECTION_LTR);
         panel.setOrientation(LinearLayout.VERTICAL);
@@ -218,8 +213,6 @@ final class AppLibraryDialog {
         popup.setAnimationStyle(0);
         popup.setOnDismissListener(() -> {
             closed = true;
-            closingWithMorph = false;
-            if (morph != null) morph.cancelAndReset();
             dismissActions();
             stopHighlight();
             icons.clear();
@@ -230,12 +223,7 @@ final class AppLibraryDialog {
     void close() {
         dismissActions();
         if (popup.isShowing()) {
-            if (morph != null && animations && !reducedMotion && !closingWithMorph) {
-                closingWithMorph = true;
-                morph.playExit(true, this::dismissNow);
-            } else if (!closingWithMorph) {
-                dismissNow();
-            }
+            dismissNow();
         } else if (!closed) {
             closed = true;   // still loading: it never shows
             dismissed.run();
@@ -244,8 +232,6 @@ final class AppLibraryDialog {
 
     void closeImmediate() {
         dismissActions();
-        closingWithMorph = false;
-        if (morph != null) morph.cancelAndReset();
         if (popup.isShowing()) {
             dismissNow();
         } else if (!closed) {
@@ -269,14 +255,6 @@ final class AppLibraryDialog {
 
     private void reveal() {
         popup.showAtLocation(activity.getWindow().getDecorView(), Gravity.CENTER, 0, 0);
-        if (morph == null) {
-            morph = new WindowMorph(panel, scrim);
-            morph.setTargetCornerRadius(20f * density);
-        }
-        if (!anchorRect.isEmpty()) {
-            morph.setSource(anchorRect, anchorRadius);
-        }
-        morph.playEnter(animations && !reducedMotion, null);
     }
 
     /** Called by the activity's existing package receiver; an uninstall cannot leave a stale action. */
@@ -473,7 +451,7 @@ final class AppLibraryDialog {
         list.setAdapter(new Catalog());
         shelf.addView(list, new FrameLayout.LayoutParams(-1, -1));
         highlight = new GlassView(activity, null);
-        highlight.setRadius(dp(20));
+        highlight.setRadius(dp(18));
         highlight.setAlpha(0f);
         highlight.setFocusable(false);
         highlight.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
@@ -652,8 +630,7 @@ final class AppLibraryDialog {
         menuPanel.setScaleY(0.92f);
         menuPanel.setTranslationY(-dp(8));
         menu.showAtLocation(activity.getWindow().getDecorView(), Gravity.TOP | Gravity.START, x, y);
-        menuPanel.animate().alpha(1f).scaleY(1f).translationY(0f).setDuration(reducedMotion ? Motion.REDUCED_MS : 220)
-                .setInterpolator(new android.view.animation.DecelerateInterpolator(1.6f)).start();
+        HomeMenus.springIn(menuPanel, reducedMotion);
         rows.getChildAt(0).requestFocus();
     }
 

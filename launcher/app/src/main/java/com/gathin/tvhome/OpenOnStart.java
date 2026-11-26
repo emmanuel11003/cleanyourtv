@@ -36,7 +36,7 @@ final class OpenOnStart {
 
     /** A pick takes effect from the next boot: the Home that follows the pick stays Home. */
     static void skipThisBoot(Context ctx) {
-        ctx.getSharedPreferences(BOOT_PREFS, Context.MODE_PRIVATE).edit().putInt(BOOT_KEY, boot(ctx)).commit();
+        ctx.getSharedPreferences(BOOT_PREFS, Context.MODE_PRIVATE).edit().putInt(BOOT_KEY, boot(ctx)).apply();
     }
 
     /** open_on_start_network_wait: the app opens once the network is validated, or when the wait is over. */

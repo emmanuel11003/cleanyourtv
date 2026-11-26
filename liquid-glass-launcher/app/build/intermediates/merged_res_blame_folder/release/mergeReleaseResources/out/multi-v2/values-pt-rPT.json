@@ -1,0 +1,43 @@
+{
+    "logs": [
+        {
+            "outputFile": "com.gathin.tvhome.app-mergeReleaseResources-8:/values-pt-rPT/values-pt-rPT.xml",
+            "map": [
+                {
+                    "source": "D:\\emmanuel\\new tv app\\liquid-glass-launcher\\app\\src\\main\\res\\values-pt-rPT\\strings.xml",
+                    "from": {
+                        "startLines": "12,13,11,4,5,6,9,10,7,8",
+                        "startColumns": "4,4,4,4,4,4,4,4,4,4",
+                        "startOffsets": "865,917,810,218,270,379,641,762,505,567",
+                        "endColumns": "51,51,54,51,108,125,120,47,61,73",
+                        "endOffsets": "912,964,860,265,374,500,757,805,562,636"
+                    },
+                    "to": {
+                        "startLines": "2,3,4,5,6,7,8,9,11,12",
+                        "startColumns": "4,4,4,4,4,4,4,4,4,4",
+                        "startOffsets": "55,107,159,214,266,375,501,622,771,833",
+                        "endColumns": "51,51,54,51,108,125,120,47,61,73",
+                        "endOffsets": "102,154,209,261,370,496,617,665,828,902"
+                    }
+                },
+                {
+                    "source": "C:\\Users\\johnj\\.gradle\\caches\\8.9\\transforms\\3afe7fa58a47c7b182ae0caccac05374\\transformed\\core-1.7.0\\res\\values-pt-rPT\\values-pt-rPT.xml",
+                    "from": {
+                        "startLines": "2",
+                        "startColumns": "4",
+                        "startOffsets": "55",
+                        "endColumns": "100",
+                        "endOffsets": "151"
+                    },
+                    "to": {
+                        "startLines": "10",
+                        "startColumns": "4",
+                        "startOffsets": "670",
+                        "endColumns": "100",
+                        "endOffsets": "766"
+                    }
+                }
+            ]
+        }
+    ]
+}

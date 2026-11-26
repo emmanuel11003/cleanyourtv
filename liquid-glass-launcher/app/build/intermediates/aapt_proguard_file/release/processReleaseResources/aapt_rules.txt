@@ -1,0 +1,27 @@
+-keep class androidx.core.app.CoreComponentFactory { <init>(); }
+-keep class com.gathin.tvhome.AppLaunchActivity { <init>(); }
+-keep class com.gathin.tvhome.ClockActivity { <init>(); }
+-keep class com.gathin.tvhome.ClockDream { <init>(); }
+-keep class com.gathin.tvhome.GuardConfig { <init>(); }
+-keep class com.gathin.tvhome.GuardRevival { <init>(); }
+-keep class com.gathin.tvhome.HomeKeyService { <init>(); }
+-keep class com.gathin.tvhome.HomeSettingsActivity { <init>(); }
+-keep class com.gathin.tvhome.InputKeyService { <init>(); }
+-keep class com.gathin.tvhome.InputsRequestActivity { <init>(); }
+-keep class com.gathin.tvhome.LauncherSettingsActivity { <init>(); }
+-keep class com.gathin.tvhome.MainActivity { <init>(); }
+-keep class com.gathin.tvhome.ProbeActivity { <init>(); }
+-keep class com.gathin.tvhome.QuickSettingsActivity { <init>(); }
+-keep class com.gathin.tvhome.RecentAppsActivity { <init>(); }
+-keep class com.gathin.tvhome.SleepTimer { <init>(); }
+-keep class com.gathin.tvhome.ThemeProvider { <init>(); }
+-keep class androidx.recyclerview.widget.RecyclerView { <init>(android.content.Context, android.util.AttributeSet); }
+
+-keep class com.gathin.tvhome.GlassView { <init>(android.content.Context, android.util.AttributeSet); }
+
+-keep class com.gathin.tvhome.LiveClockView { <init>(android.content.Context, android.util.AttributeSet); }
+
+-keep class com.gathin.tvhome.MonthCalendarView { <init>(android.content.Context, android.util.AttributeSet); }
+
+-keep class com.gathin.tvhome.SkyView { <init>(android.content.Context, android.util.AttributeSet); }
+

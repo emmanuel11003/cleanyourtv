@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.gathin.tvhome.HomeKeyServiceTest" tests="11" skipped="0" failures="0" errors="0" timestamp="2026-11-13T11:55:42" hostname="POOMATTATHIL" time="0.006">
+  <properties/>
+  <testcase name="otherAppsAndInputsAreLeftAlone" classname="com.gathin.tvhome.HomeKeyServiceTest" time="0.005"/>
+  <testcase name="aTapIsAShortPress" classname="com.gathin.tvhome.HomeKeyServiceTest" time="0.0"/>
+  <testcase name="aRebindInTheSameBootDoesNot" classname="com.gathin.tvhome.HomeKeyServiceTest" time="0.0"/>
+  <testcase name="alwaysGoesHomeAfterScreenOnUntilAKey" classname="com.gathin.tvhome.HomeKeyServiceTest" time="0.0"/>
+  <testcase name="firstBindOfANewBootProbes" classname="com.gathin.tvhome.HomeKeyServiceTest" time="0.0"/>
+  <testcase name="offMeansNothing" classname="com.gathin.tvhome.HomeKeyServiceTest" time="0.0"/>
+  <testcase name="afterAKeyOrTheWindowLiveTvStays" classname="com.gathin.tvhome.HomeKeyServiceTest" time="0.0"/>
+  <testcase name="noBootCountMeansNoProbe" classname="com.gathin.tvhome.HomeKeyServiceTest" time="0.0"/>
+  <testcase name="holdingPastTheTimeoutIsALongPress" classname="com.gathin.tvhome.HomeKeyServiceTest" time="0.0"/>
+  <testcase name="liveTvBeforeAnyKeyGoesHome" classname="com.gathin.tvhome.HomeKeyServiceTest" time="0.0"/>
+  <testcase name="aBindLongAfterBootDoesNot" classname="com.gathin.tvhome.HomeKeyServiceTest" time="0.0"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

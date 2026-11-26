@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.gathin.tvhome.WallpaperMoodTest" tests="3" skipped="0" failures="0" errors="0" timestamp="2026-11-13T11:55:42" hostname="POOMATTATHIL" time="0.002">
+  <properties/>
+  <testcase name="timeOfDayFollowsSunriseNoonAndDusk" classname="com.gathin.tvhome.WallpaperMoodTest" time="0.0"/>
+  <testcase name="selectKeepsTheCollectionsOrderAndFallsBackToAll" classname="com.gathin.tvhome.WallpaperMoodTest" time="0.001"/>
+  <testcase name="sunComesFromTheConfiguredPlaceOrTheDefaults" classname="com.gathin.tvhome.WallpaperMoodTest" time="0.001"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

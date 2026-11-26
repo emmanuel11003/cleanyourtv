@@ -2,6 +2,7 @@ package io.github.emmanuel11003.tvnotifications;
 
 import android.app.Activity;
 import android.app.PendingIntent;
+import android.content.ComponentName;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
@@ -16,6 +17,8 @@ import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
+import java.text.DateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -50,18 +53,31 @@ public final class PanelActivity extends Activity implements Notifications.Callb
         viewAccessOff = findViewById(R.id.viewAccessOff);
         btnClearAll = findViewById(R.id.btnClearAll);
 
-        // Scrim click closes the panel
-        findViewById(R.id.scrim).setOnClickListener(v -> finish());
-        findViewById(R.id.panel).setOnClickListener(v -> {});
+        // Header date (matches Quick Toggle)
+        TextView txtDate = findViewById(R.id.txtDate);
+        if (txtDate != null) {
+            txtDate.setText(DateFormat.getDateInstance(DateFormat.FULL).format(new Date()));
+        }
+
+        // Scrim click closes the panel (keep non-focusable so D-pad stays inside the panel)
+        View scrim = findViewById(R.id.scrim);
+        scrim.setOnClickListener(v -> finish());
+        scrim.setFocusable(false);
+        View panel = findViewById(R.id.panel);
+        panel.setOnClickListener(v -> {});
+        panel.setFocusable(false);
 
         // Clear all button
+        attachFocusScale(btnClearAll);
         btnClearAll.setOnClickListener(v -> {
             Notifications.dismissAll();
             finish();
         });
 
         // Grant access card
-        findViewById(R.id.cardGrantAccess).setOnClickListener(v -> {
+        View cardGrant = findViewById(R.id.cardGrantAccess);
+        attachFocusScale(cardGrant);
+        cardGrant.setOnClickListener(v -> {
             try {
                 Intent settingsIntent = new Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS);
                 settingsIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -109,9 +125,15 @@ public final class PanelActivity extends Activity implements Notifications.Callb
             return true;
         }
         String enabled = Settings.Secure.getString(getContentResolver(), "enabled_notification_listeners");
-        if (enabled != null) {
+        if (enabled != null && !enabled.isEmpty()) {
             String pkg = getPackageName();
-            return enabled.contains(pkg + "/" + Notifications.class.getName()) || enabled.contains(pkg);
+            String cls = Notifications.class.getName();
+            for (String entry : enabled.split(":")) {
+                ComponentName cn = ComponentName.unflattenFromString(entry.trim());
+                if (cn != null && pkg.equals(cn.getPackageName()) && cls.equals(cn.getClassName())) {
+                    return true;
+                }
+            }
         }
         return false;
     }
@@ -200,7 +222,8 @@ public final class PanelActivity extends Activity implements Notifications.Callb
                 txtBody.setVisibility(View.GONE);
             }
 
-            // D-pad Actions
+            // D-pad Actions & Quick Toggle-style focus scale
+            attachFocusScale(row);
             row.setOnClickListener(v -> launchNotification(item));
             row.setOnLongClickListener(v -> {
                 Notifications.dismiss(item.key);
@@ -216,6 +239,14 @@ public final class PanelActivity extends Activity implements Notifications.Callb
         if (firstView != null) {
             firstView.requestFocus();
         }
+    }
+
+    private static void attachFocusScale(View view) {
+        if (view == null) return;
+        view.setOnFocusChangeListener((v, focused) -> {
+            float target = focused ? 1.03f : 1f;
+            v.animate().scaleX(target).scaleY(target).setDuration(110).start();
+        });
     }
 
     private void launchNotification(NotificationItem item) {

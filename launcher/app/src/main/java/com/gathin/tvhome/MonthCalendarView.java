@@ -24,6 +24,10 @@ import java.util.Locale;
 public final class MonthCalendarView extends View {
 
     private static final String[] DEFAULT_WEEKDAYS = {"S", "M", "T", "W", "T", "F", "S"};
+    private static final String[] DAY_STRINGS = new String[32];
+    static {
+        for (int i = 1; i <= 31; i++) DAY_STRINGS[i] = Integer.toString(i);
+    }
 
     private final Paint titlePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final Paint headerPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -35,9 +39,12 @@ public final class MonthCalendarView extends View {
 
     private final String[] weekdayLabels = new String[7];
     private String titleText = "";
+    private int cachedYear = -1;
+    private int cachedMonth = -1;
     private int daysInMonth;
     private int startColumn;
-    private int todayDayOfMonth;
+    private int todayDayOfMonth = -1;
+    private float cachedVerticalOffset;
 
     private float density;
     private float titleY;
@@ -69,20 +76,20 @@ public final class MonthCalendarView extends View {
         titlePaint.setColor(0xFFFFFFFF);
         titlePaint.setTextSize(16f * density);
         titlePaint.setTextAlign(Paint.Align.CENTER);
-        titlePaint.setTypeface(Typeface.create("sans-serif-medium", Typeface.NORMAL));
+        titlePaint.setTypeface(Typeface.create("sans-serif", Typeface.NORMAL));
         titlePaint.setLetterSpacing(0.08f);
 
-        headerPaint.setColor(0x80FFFFFF); // 50% white
+        headerPaint.setColor(0xFFFFFFFF); // 50% white
         headerPaint.setTextSize(12f * density);
         headerPaint.setTextAlign(Paint.Align.CENTER);
         headerPaint.setTypeface(Typeface.create("sans-serif", Typeface.NORMAL));
 
-        dayPaint.setColor(0xCCFFFFFF); // 80% white
+        dayPaint.setColor(0xFFFFFFFF); // 80% white
         dayPaint.setTextSize(13f * density);
         dayPaint.setTextAlign(Paint.Align.CENTER);
         dayPaint.setTypeface(Typeface.create("sans-serif", Typeface.NORMAL));
 
-        weekendPaint.setColor(0x80FFFFFF); // 50% white for weekends
+        weekendPaint.setColor(0xFFFFFFFF); // 50% white for weekends
         weekendPaint.setTextSize(13f * density);
         weekendPaint.setTextAlign(Paint.Align.CENTER);
         weekendPaint.setTypeface(Typeface.create("sans-serif", Typeface.NORMAL));
@@ -93,9 +100,11 @@ public final class MonthCalendarView extends View {
         todayTextPaint.setColor(0xFFFFFFFF); // 100% white bold
         todayTextPaint.setTextSize(13f * density);
         todayTextPaint.setTextAlign(Paint.Align.CENTER);
-        todayTextPaint.setTypeface(Typeface.create("sans-serif", Typeface.BOLD));
+        todayTextPaint.setTypeface(Typeface.create("sans-serif", Typeface.NORMAL));
 
         todayPillRadius = 14f * density;
+        Paint.FontMetrics fm = dayPaint.getFontMetrics();
+        cachedVerticalOffset = -(fm.ascent + fm.descent) / 2f;
 
         initWeekdayLabels();
         updateCalendarData();
@@ -122,12 +131,18 @@ public final class MonthCalendarView extends View {
         }
     }
 
-    /** Recomputes current month parameters (called on start and every tick). */
+    /** Recomputes current month parameters (short-circuits when date is unchanged). */
     public void updateCalendarData() {
         LocalDate today = LocalDate.now();
         int year = today.getYear();
         int month = today.getMonthValue();
-        todayDayOfMonth = today.getDayOfMonth();
+        int day = today.getDayOfMonth();
+        if (year == cachedYear && month == cachedMonth && day == todayDayOfMonth) {
+            return;
+        }
+        cachedYear = year;
+        cachedMonth = month;
+        todayDayOfMonth = day;
 
         Locale locale = Locale.getDefault();
         String monthName = today.getMonth().getDisplayName(TextStyle.FULL, locale).toUpperCase(locale);
@@ -182,9 +197,8 @@ public final class MonthCalendarView extends View {
             canvas.drawText(weekdayLabels[col], cx, headerY, headerPaint);
         }
 
-        // 3. Draw Days Grid
-        Paint.FontMetrics fm = dayPaint.getFontMetrics();
-        float verticalOffset = -(fm.ascent + fm.descent) / 2f;
+        // 3. Draw Days Grid (zero allocations)
+        float verticalOffset = cachedVerticalOffset;
 
         for (int day = 1; day <= daysInMonth; day++) {
             int index = startColumn + day - 1;
@@ -193,17 +207,17 @@ public final class MonthCalendarView extends View {
 
             float cx = (col + 0.5f) * colWidth;
             float cy = gridTop + (row + 0.5f) * rowHeight;
+            String label = day < DAY_STRINGS.length ? DAY_STRINGS[day] : Integer.toString(day);
 
             if (day == todayDayOfMonth) {
-                // Highlight today with an accent pill background
                 float radius = Math.min(todayPillRadius, Math.min(colWidth, rowHeight) * 0.44f);
                 todayRect.set(cx - radius, cy - radius, cx + radius, cy + radius);
                 canvas.drawRoundRect(todayRect, radius, radius, todayBgPaint);
 
-                canvas.drawText(Integer.toString(day), cx, cy + verticalOffset, todayTextPaint);
+                canvas.drawText(label, cx, cy + verticalOffset, todayTextPaint);
             } else {
                 boolean isWeekend = (col == 0 || col == 6);
-                canvas.drawText(Integer.toString(day), cx, cy + verticalOffset, isWeekend ? weekendPaint : dayPaint);
+                canvas.drawText(label, cx, cy + verticalOffset, isWeekend ? weekendPaint : dayPaint);
             }
         }
     }

@@ -1,5 +1,6 @@
 package com.gathin.tvhome;
 
+import android.app.AppOpsManager;
 import android.app.usage.UsageStats;
 import android.app.usage.UsageStatsManager;
 import android.content.Context;
@@ -12,7 +13,7 @@ import java.util.Locale;
 /**
  * Tracks when an app was last used (using its exit / closed timestamp).
  *
- * 1. When Home or Recents launches an app, it notes the pending active package.
+ * 1. When Home launches an app, it notes the pending active package.
  * 2. When the user exits the app and returns to Home (onResume), the moment of return
  *    is recorded as that app's closed timestamp.
  * 3. When PACKAGE_USAGE_STATS is available, background synchronization reconciles
@@ -26,7 +27,7 @@ final class LastOpened {
     private LastOpened() {
     }
 
-    /** Notes that an app has been launched from Home or Recents. */
+    /** Notes that an app has been launched from Home. */
     static void record(Context ctx, String pkg) {
         if (ctx == null || pkg == null || pkg.isEmpty()) return;
         SharedPreferences p = prefs(ctx);
@@ -74,7 +75,7 @@ final class LastOpened {
         if (lastSyncAt != 0 && started - lastSyncAt < SYNC_INTERVAL_MS) return;
         // The application context: the thread must not keep a finished Activity alive.
         final Context ctx = context.getApplicationContext();
-        if (!RecentApps.hasUsageStatsPermission(ctx)) return;
+        if (!hasUsageStatsPermission(ctx)) return;
         lastSyncAt = started;
         syncing = true;
         Thread t = new Thread(() -> {
@@ -91,7 +92,7 @@ final class LastOpened {
                 for (UsageStats stat : list) {
                     if (stat == null) continue;
                     String pkg = stat.getPackageName();
-                    if (!RecentApps.isValidPackage(pkg, ctx.getPackageName())) continue;
+                    if (!isValidPackage(pkg, ctx.getPackageName())) continue;
                     long lastClosed = stat.getLastTimeUsed();
                     if (lastClosed > 0) {
                         long current = p.getLong(pkg, 0L);
@@ -137,5 +138,29 @@ final class LastOpened {
 
     private static SharedPreferences prefs(Context ctx) {
         return ctx.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
+    }
+
+    static boolean hasUsageStatsPermission(Context ctx) {
+        if (ctx == null) return false;
+        try {
+            AppOpsManager appOps = (AppOpsManager) ctx.getSystemService(Context.APP_OPS_SERVICE);
+            if (appOps == null) return false;
+            int mode = appOps.checkOpNoThrow(
+                    AppOpsManager.OPSTR_GET_USAGE_STATS,
+                    android.os.Process.myUid(),
+                    ctx.getPackageName()
+            );
+            return mode == AppOpsManager.MODE_ALLOWED;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    static boolean isValidPackage(String pkg, String selfPackage) {
+        if (pkg == null) return false;
+        String trimmed = pkg.trim();
+        if (trimmed.isEmpty()) return false;
+        if (trimmed.equals(selfPackage)) return false;
+        return !"android".equals(trimmed) && !"com.android.systemui".equals(trimmed);
     }
 }

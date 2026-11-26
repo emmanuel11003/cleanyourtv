@@ -78,7 +78,7 @@ public class LiveClockView extends TextView {
 
     private final SpannableStringBuilder spanBuilder = new SpannableStringBuilder();
     private final RelativeSizeSpan sizeSpan = new RelativeSizeSpan(0.62f);
-    private final StyleSpan boldSpan = new StyleSpan(Typeface.BOLD);
+    private final StyleSpan boldSpan = new StyleSpan(Typeface.NORMAL);
     private final StyleSpan normalSpan = new StyleSpan(Typeface.NORMAL);
     private ForegroundColorSpan colorSpan;
     private int cachedColor;
@@ -96,6 +96,8 @@ public class LiveClockView extends TextView {
     private int lastSec = -1;
     private int lastTextColor = 0;
     private boolean lastIs24 = false;
+    private int lockedDigitBucket = -1;
+    private float lockedTextSize = -1f;
 
     private final Runnable ticker = new Runnable() {
         @Override
@@ -145,6 +147,7 @@ public class LiveClockView extends TextView {
 
     public LiveClockView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+        setSingleLine(true);
         setFontFeatureSettings("tnum");
         updateTime();
     }
@@ -273,13 +276,23 @@ public class LiveClockView extends TextView {
     public void updateTime() {
         calendar.setTimeInMillis(System.currentTimeMillis());
         if (cachedIs24 == null) {
-            try {
-                if (cachedClockFormat == null) {
-                    cachedClockFormat = Config.load(getContext()).clockFormat;
-                }
+            if (cachedClockFormat != null) {
                 cachedIs24 = ClockFormat.is24(getContext(), cachedClockFormat);
-            } catch (Exception e) {
+            } else {
                 cachedIs24 = DateFormat.is24HourFormat(getContext());
+                final Context appCtx = getContext().getApplicationContext();
+                LauncherExecutors.io().execute(() -> {
+                    try {
+                        String fmt = Config.load(appCtx).clockFormat;
+                        LauncherExecutors.main().post(() -> {
+                            if (cachedClockFormat == null) {
+                                cachedClockFormat = fmt;
+                                cachedIs24 = ClockFormat.is24(appCtx, fmt);
+                                updateTime();
+                            }
+                        });
+                    } catch (Exception ignored) {}
+                });
             }
         }
         boolean is24 = cachedIs24 != null ? cachedIs24 : DateFormat.is24HourFormat(getContext());
@@ -306,7 +319,10 @@ public class LiveClockView extends TextView {
         if (is24 && hour < 10) {
             spanBuilder.append('0');
         }
-        spanBuilder.append(Integer.toString(hour));
+        if (hour >= 10) {
+            spanBuilder.append((char) ('0' + (hour / 10)));
+        }
+        spanBuilder.append((char) ('0' + (hour % 10)));
         spanBuilder.append(':');
         spanBuilder.append((char) ('0' + (min / 10)));
         spanBuilder.append((char) ('0' + (min % 10)));
@@ -331,6 +347,27 @@ public class LiveClockView extends TextView {
         spanBuilder.setSpan(sizeSpan, secStart, secEnd, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         spanBuilder.setSpan(colorSpan, secStart, secEnd, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
 
-        setText(new SpannableString(spanBuilder));
+        // Lock exact tabular width when digit count changes so AOSP TextView.checkForRelayout()
+        // takes the zero-relayout invalidate() fast path on every 1-second tick.
+        int bucket = (is24 || hour >= 10) ? 2 : 1;
+        float textSize = getTextSize();
+        android.view.ViewGroup.LayoutParams lp = getLayoutParams();
+        if (lp != null && (bucket != lockedDigitBucket || Math.abs(textSize - lockedTextSize) > 0.5f)) {
+            lockedDigitBucket = bucket;
+            lockedTextSize = textSize;
+            SpannableStringBuilder probe = new SpannableStringBuilder(bucket == 2 ? "88:88:88" : "8:88:88");
+            int probeSecStart = bucket == 2 ? 5 : 4;
+            probe.setSpan(boldSpan, 0, probeSecStart, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            probe.setSpan(normalSpan, probeSecStart, probe.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            probe.setSpan(sizeSpan, probeSecStart, probe.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            float desired = android.text.Layout.getDesiredWidth(probe, getPaint());
+            int exactW = (int) Math.ceil(desired) + getCompoundPaddingLeft() + getCompoundPaddingRight() + 4;
+            if (exactW > 0 && lp.width != exactW) {
+                lp.width = exactW;
+                setLayoutParams(lp);
+            }
+        }
+
+        setText(spanBuilder, BufferType.SPANNABLE);
     }
 }

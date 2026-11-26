@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.gathin.tvhome.MemInfoTest" tests="5" skipped="0" failures="0" errors="0" timestamp="2026-11-13T11:55:42" hostname="POOMATTATHIL" time="0.002">
+  <properties/>
+  <testcase name="freeAloneIsEnoughForTheFallback" classname="com.gathin.tvhome.MemInfoTest" time="0.001"/>
+  <testcase name="nullWithoutTotalOrAnyAvailableFigure" classname="com.gathin.tvhome.MemInfoTest" time="0.001"/>
+  <testcase name="neverReportsMoreAvailableThanTotal" classname="com.gathin.tvhome.MemInfoTest" time="0.0"/>
+  <testcase name="usesMemAvailableWhenTheKernelHasIt" classname="com.gathin.tvhome.MemInfoTest" time="0.0"/>
+  <testcase name="fallsBackToFreeBuffersAndCachedBefore314" classname="com.gathin.tvhome.MemInfoTest" time="0.0"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

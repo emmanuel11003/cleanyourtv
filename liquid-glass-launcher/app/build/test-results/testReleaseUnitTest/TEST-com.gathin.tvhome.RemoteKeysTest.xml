@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.gathin.tvhome.RemoteKeysTest" tests="29" skipped="0" failures="0" errors="0" timestamp="2026-11-13T11:55:42" hostname="POOMATTATHIL" time="0.022">
+  <properties/>
+  <testcase name="holdScancodeEntries" classname="com.gathin.tvhome.RemoteKeysTest" time="0.003"/>
+  <testcase name="keyNamesWorkLikeNumbers" classname="com.gathin.tvhome.RemoteKeysTest" time="0.001"/>
+  <testcase name="anUpWithoutItsDownUsesTheEventsDownTime" classname="com.gathin.tvhome.RemoteKeysTest" time="0.006"/>
+  <testcase name="actionWordsAreTargets" classname="com.gathin.tvhome.RemoteKeysTest" time="0.0"/>
+  <testcase name="bothServicesAnswerEachPressOnce" classname="com.gathin.tvhome.RemoteKeysTest" time="0.002"/>
+  <testcase name="aCanceledUpOpensNothingAndDropsTheHold" classname="com.gathin.tvhome.RemoteKeysTest" time="0.001"/>
+  <testcase name="losingOneHelperLeavesTheHoldWithTheOther" classname="com.gathin.tvhome.RemoteKeysTest" time="0.001"/>
+  <testcase name="holdTimePicksTheHoldApp" classname="com.gathin.tvhome.RemoteKeysTest" time="0.0"/>
+  <testcase name="scancodeEntries" classname="com.gathin.tvhome.RemoteKeysTest" time="0.0"/>
+  <testcase name="losingOneHelperKeepsTheOthersTap" classname="com.gathin.tvhome.RemoteKeysTest" time="0.0"/>
+  <testcase name="holdsOnTwoDevicesStayApart" classname="com.gathin.tvhome.RemoteKeysTest" time="0.0"/>
+  <testcase name="aHelperThatStopsFilteringReleasesItsHold" classname="com.gathin.tvhome.RemoteKeysTest" time="0.0"/>
+  <testcase name="anInputTargetIsNotAnActivity" classname="com.gathin.tvhome.RemoteKeysTest" time="0.0"/>
+  <testcase name="inputTargets" classname="com.gathin.tvhome.RemoteKeysTest" time="0.0"/>
+  <testcase name="theLastEntryForAKeycodeWins" classname="com.gathin.tvhome.RemoteKeysTest" time="0.0"/>
+  <testcase name="badEntriesAreSkipped" classname="com.gathin.tvhome.RemoteKeysTest" time="0.0"/>
+  <testcase name="channelKeysAreChannelUpAndDownOnly" classname="com.gathin.tvhome.RemoteKeysTest" time="0.001"/>
+  <testcase name="menuReleasedTakesXiaomisInjectedShortPress" classname="com.gathin.tvhome.RemoteKeysTest" time="0.0"/>
+  <testcase name="inFrontMatchesTheTargetsPackageOnly" classname="com.gathin.tvhome.RemoteKeysTest" time="0.0"/>
+  <testcase name="chordedKeysKeepTheirOwnHold" classname="com.gathin.tvhome.RemoteKeysTest" time="0.0"/>
+  <testcase name="keycodeAndPackage" classname="com.gathin.tvhome.RemoteKeysTest" time="0.0"/>
+  <testcase name="anUpAfterTheHoldWasReleasedOpensNothing" classname="com.gathin.tvhome.RemoteKeysTest" time="0.0"/>
+  <testcase name="aHelperUnboundBeforeTheHoldCancelsIt" classname="com.gathin.tvhome.RemoteKeysTest" time="0.0"/>
+  <testcase name="guideTargetNamesItsPackage" classname="com.gathin.tvhome.RemoteKeysTest" time="0.0"/>
+  <testcase name="inputsTargetKeptForAScancode" classname="com.gathin.tvhome.RemoteKeysTest" time="0.0"/>
+  <testcase name="globalActions" classname="com.gathin.tvhome.RemoteKeysTest" time="0.001"/>
+  <testcase name="frontEntriesAreReadApartFromTheRest" classname="com.gathin.tvhome.RemoteKeysTest" time="0.0"/>
+  <testcase name="holdEntriesGetTheirOwnMap" classname="com.gathin.tvhome.RemoteKeysTest" time="0.001"/>
+  <testcase name="releasingAHelperLeavesAnotherButtonsHoldAlone" classname="com.gathin.tvhome.RemoteKeysTest" time="0.0"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

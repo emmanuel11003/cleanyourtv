@@ -36,13 +36,12 @@ public final class LauncherSettingsActivity extends Activity {
     }
 
     private static final int PICK_WALLPAPER_REQUEST = 43;
+    private static final int PICK_SCREENSAVER_WALLPAPER_REQUEST = 44;
     private static final long MAX_WALLPAPER_BYTES = 15L * 1024L * 1024L;
     static final String EXTRA_REORDER = "com.gathin.tvhome.extra.REORDER_FROM_SETTINGS";
     private SharedPreferences choices;
-    private ExecutorService wallpaperExecutor;
     private volatile boolean wallpaperBusy;
     private final TextView[] columnChoices = new TextView[4];
-    private final TextView[] rowChoices = new TextView[4];
     private static final int[] DOCK_OPACITIES = {100, 70, 50, 30};
     private final TextView[] dockChoices = new TextView[DOCK_OPACITIES.length];
     private static final String[] CLOCK_FORMATS = {"system", "12", "24"};
@@ -65,36 +64,24 @@ public final class LauncherSettingsActivity extends Activity {
     private TextView statsSwitch;
     private LinearLayout inputsPillRow;
     private TextView inputsPillSwitch;
-    private LinearLayout recentsPillRow;
-    private TextView recentsPillSwitch;
     private LinearLayout networkPillRow;
     private TextView networkPillSwitch;
+    private LinearLayout uiSoundsRow;
+    private TextView uiSoundsSwitch;
+    private TextView hiddenAppsSummary;
     private TextView followThemeChoice;
     private TextView openOnStartChoice;
-    private TextView buttonMapperSummary;
     private int columns;
-    private int rowsBelowDock;
     private int dockOpacity;
     private boolean animations;
     private boolean advancedEffects;
-    private WindowMorph morph;
     private boolean animateTransitions;
-    private boolean finishing;
 
     @Override
     protected void onCreate(Bundle state) {
         super.onCreate(state);
-        overridePendingTransition(0, 0);
         Config config = Config.load(this);
-        animateTransitions = config.animations && !config.reducedMotion;
         setContentView(R.layout.activity_launcher_settings);
-        View surface = findViewById(R.id.settingsRoot);
-        View content = surface instanceof ViewGroup && ((ViewGroup) surface).getChildCount() > 0
-                ? ((ViewGroup) surface).getChildAt(0) : null;
-        morph = new WindowMorph(surface, null, content);
-        morph.attachSource(getIntent());
-        morph.setTargetCornerRadius(0f);
-        morph.playEnter(animateTransitions, null);
         choices = getSharedPreferences(Config.SETTINGS_NAME, MODE_PRIVATE);
         View reorderChoice = findViewById(R.id.reorderChoice);
         if (reorderChoice != null) {
@@ -104,14 +91,7 @@ public final class LauncherSettingsActivity extends Activity {
                 finishWithMorph();
             });
         }
-        View buttonMapperChoice = findViewById(R.id.buttonMapperChoice);
-        buttonMapperSummary = findViewById(R.id.buttonMapperSummary);
-        if (buttonMapperChoice != null) {
-            buttonMapperChoice.setVisibility(View.VISIBLE);
-            buttonMapperChoice.setOnClickListener(v -> ButtonMapper.showButtonMapperMenu(this, this::refresh));
-        }
         columns = config.columns;
-        rowsBelowDock = config.rowsBelowDock;
         dockOpacity = config.dockOpacity;
         animations = config.animations;
         advancedEffects = config.animations && config.advancedEffects;
@@ -124,18 +104,6 @@ public final class LauncherSettingsActivity extends Activity {
                 if (columns == value) return;
                 columns = value;
                 choices.edit().putInt("columns", value).apply();
-                changed();
-                refresh();
-            });
-        }
-        int[] rowIds = {R.id.rows0, R.id.rows1, R.id.rows2, R.id.rows3};
-        for (int i = 0; i < rowIds.length; i++) {
-            final int value = i;
-            rowChoices[i] = findViewById(rowIds[i]);
-            rowChoices[i].setOnClickListener(v -> {
-                if (rowsBelowDock == value) return;
-                rowsBelowDock = value;
-                choices.edit().putInt(Config.ROWS_BELOW_DOCK_KEY, value).apply();
                 changed();
                 refresh();
             });
@@ -173,7 +141,6 @@ public final class LauncherSettingsActivity extends Activity {
         }
         if (getResources().getBoolean(R.bool.rtl_app_grid)) {
             reverseRow(columnChoices);
-            reverseRow(rowChoices);
             reverseRow(dockChoices);
             reverseRow(clockChoices);
         }
@@ -310,7 +277,7 @@ public final class LauncherSettingsActivity extends Activity {
             if (advancedEffects) {
                 setAdvanced(false);
             } else {
-                new AlertDialog.Builder(this)
+                new AlertDialog.Builder(this, android.R.style.Theme_Material_Dialog_Alert)
                         .setTitle(R.string.advanced_effects)
                         .setMessage(R.string.advanced_effects_warning)
                         .setPositiveButton(R.string.enable, (dialog, which) -> setAdvanced(true))
@@ -357,22 +324,6 @@ public final class LauncherSettingsActivity extends Activity {
             inputsPillSwitch.setOnClickListener(inputsToggle);
         }
 
-        // 8. Recent Apps Pill Row & Switch
-        recentsPillRow = findViewById(R.id.recentsPillRow);
-        recentsPillSwitch = findViewById(R.id.recentsPillSwitch);
-        View.OnClickListener recentsToggle = v -> {
-            boolean recentsOn = choices.getBoolean("show_recents_pill", config.showRecentsPill);
-            choices.edit().putBoolean("show_recents_pill", !recentsOn).apply();
-            changed();
-            refresh();
-        };
-        if (recentsPillRow != null) {
-            recentsPillRow.setOnClickListener(recentsToggle);
-        }
-        if (recentsPillSwitch != null) {
-            recentsPillSwitch.setOnClickListener(recentsToggle);
-        }
-
         // 9. Network Pill Row & Switch
         networkPillRow = findViewById(R.id.networkPillRow);
         networkPillSwitch = findViewById(R.id.networkPillSwitch);
@@ -388,6 +339,44 @@ public final class LauncherSettingsActivity extends Activity {
         if (networkPillSwitch != null) {
             networkPillSwitch.setOnClickListener(networkToggle);
         }
+
+        // 10. Focus Parallax Tilt Row hidden (upstream animations only)
+        View tiltRow = findViewById(R.id.tiltFocusRow);
+        if (tiltRow != null) tiltRow.setVisibility(View.GONE);
+
+        // 11. Navigation Click Sounds Row & Switch (Feature #10)
+        uiSoundsRow = findViewById(R.id.uiSoundsRow);
+        uiSoundsSwitch = findViewById(R.id.uiSoundsSwitch);
+        View.OnClickListener soundsToggle = v -> {
+            boolean cur = UiFeedback.isSoundsEnabled(this);
+            choices.edit().putBoolean(UiFeedback.KEY_UI_SOUNDS, !cur).apply();
+            UiFeedback.refresh(this);
+            if (!cur) UiFeedback.playClick(v);
+            changed();
+            refresh();
+        };
+        if (uiSoundsRow != null) uiSoundsRow.setOnClickListener(soundsToggle);
+        if (uiSoundsSwitch != null) uiSoundsSwitch.setOnClickListener(soundsToggle);
+
+        // 12. Built-in Wi-Fi Wallpaper & Backup Sync (Consolidated app)
+        View wifiSyncRow = findViewById(R.id.wifiSyncRow);
+        if (wifiSyncRow != null) {
+            wifiSyncRow.setOnClickListener(v -> startActivity(new Intent(this, WallpaperSyncActivity.class)));
+        }
+
+        // 13. Hidden Apps Manager (Feature #4)
+        View hiddenAppsRow = findViewById(R.id.hiddenAppsRow);
+        hiddenAppsSummary = findViewById(R.id.hiddenAppsSummary);
+        if (hiddenAppsRow != null) {
+            hiddenAppsRow.setOnClickListener(v -> showHiddenAppsDialog());
+        }
+
+        // 14. Backup & Restore Settings JSON (Feature #9)
+        View backupRow = findViewById(R.id.backupRow);
+        if (backupRow != null) {
+            backupRow.setOnClickListener(v -> showBackupDialog());
+        }
+
         openOnStartChoice = findViewById(R.id.openOnStartChoice);
         if (config.openOnStartChoice) {
             openOnStartChoice.setVisibility(View.VISIBLE);
@@ -399,7 +388,6 @@ public final class LauncherSettingsActivity extends Activity {
             Config.clearOnTvChoices(choices.edit()).apply();
             Config current = Config.load(this);
             columns = current.columns;
-            rowsBelowDock = current.rowsBelowDock;
             dockOpacity = current.dockOpacity;
             clockFormat = current.clockFormat;
             animations = current.animations;
@@ -413,9 +401,33 @@ public final class LauncherSettingsActivity extends Activity {
         });
         findViewById(R.id.tvSettingsChoice).setOnClickListener(v ->
                 open(SystemSettings.intent(this, Settings.ACTION_SETTINGS)));
+
+        boolean smoothFocus = animations && !config.reducedMotion;
+        animateTransitions = smoothFocus;
+        Motion.applyFadeTransition(this, smoothFocus);
+        int[] smoothRows = {
+                R.id.reorderChoice, R.id.wallpaperChoice, R.id.chooseWallpaperRow,
+                R.id.screensaverRow, R.id.screensaverCalendarRow, R.id.animationsChoice,
+                R.id.advancedChoice, R.id.statsRow, R.id.inputsPillRow,
+                R.id.networkPillRow, R.id.uiSoundsRow,
+                R.id.wifiSyncRow, R.id.hiddenAppsRow, R.id.backupRow,
+                R.id.openOnStartChoice, R.id.followThemeChoice,
+                R.id.defaultHomeChoice, R.id.tvSettingsChoice
+        };
+        for (int id : smoothRows) {
+            Motion.attachSmoothFocus(findViewById(id), smoothFocus, 1.02f);
+        }
+        for (TextView chip : columnChoices) Motion.attachSmoothFocus(chip, smoothFocus, 1.05f);
+        for (TextView chip : dockChoices) Motion.attachSmoothFocus(chip, smoothFocus, 1.05f);
+        for (TextView chip : clockChoices) Motion.attachSmoothFocus(chip, smoothFocus, 1.05f);
         refresh(config);
-        if (config.launcherSettingsButton) reorderChoice.requestFocus();
+        if (config.launcherSettingsButton && reorderChoice != null) reorderChoice.requestFocus();
         else columnChoices[Math.max(0, Math.min(columns - 4, 3))].requestFocus();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
     }
 
     private void reverseRow(TextView[] views) {
@@ -425,10 +437,7 @@ public final class LauncherSettingsActivity extends Activity {
     }
 
     private ExecutorService executor() {
-        if (wallpaperExecutor == null || wallpaperExecutor.isShutdown()) {
-            wallpaperExecutor = Executors.newSingleThreadExecutor();
-        }
-        return wallpaperExecutor;
+        return LauncherExecutors.io();
     }
 
     private List<File> collectWallpaperFiles() {
@@ -439,6 +448,10 @@ public final class LauncherSettingsActivity extends Activity {
         if (custom != null && custom.isFile() && !images.contains(custom)) images.add(0, custom);
         File single = dir == null ? null : new File(dir, Config.WALLPAPER_NAME);
         if (single != null && single.isFile() && !images.contains(single)) images.add(0, single);
+        File customSs = dir == null ? null : new File(dir, "custom_screensaver_wallpaper.jpg");
+        if (customSs != null && customSs.isFile() && !images.contains(customSs)) images.add(0, customSs);
+        File bridgeSs = dir == null ? null : new File(dir, "screensaver_wallpaper.jpg");
+        if (bridgeSs != null && bridgeSs.isFile() && !images.contains(bridgeSs)) images.add(0, bridgeSs);
 
         File extRoot = Environment.getExternalStorageDirectory();
         scanImages(new File(extRoot, "Pictures"), images);
@@ -448,7 +461,97 @@ public final class LauncherSettingsActivity extends Activity {
         return images;
     }
 
+    private Intent wallpaperSyncIntent() {
+        return new Intent(this, WallpaperSyncActivity.class);
+    }
+
+    private void showHiddenAppsDialog() {
+        java.util.Set<String> hidden = AppCustomizations.loadHidden(this);
+        if (hidden.isEmpty()) {
+            Toast.makeText(this, R.string.hidden_apps_none, Toast.LENGTH_SHORT).show();
+            return;
+        }
+        List<String> pkgs = new ArrayList<>(hidden);
+        Collections.sort(pkgs);
+        PackageManager pm = getPackageManager();
+        String[] labels = new String[pkgs.size()];
+        for (int i = 0; i < pkgs.size(); i++) {
+            String p = pkgs.get(i);
+            try {
+                labels[i] = pm.getApplicationLabel(pm.getApplicationInfo(p, 0)).toString();
+            } catch (Exception e) {
+                labels[i] = p;
+            }
+        }
+        new AlertDialog.Builder(this, android.R.style.Theme_Material_Dialog_Alert)
+                .setTitle(R.string.hidden_apps_label)
+                .setItems(labels, (d, which) -> {
+                    String pkg = pkgs.get(which);
+                    if (AppCustomizations.setHidden(this, pkg, false)) {
+                        changed();
+                        Toast.makeText(this, getString(R.string.unhide_toast, labels[which]), Toast.LENGTH_SHORT).show();
+                        refresh();
+                    }
+                })
+                .setNegativeButton(android.R.string.cancel, null)
+                .show();
+    }
+
+    private void showBackupDialog() {
+        String[] actions = {
+                getString(R.string.backup_export),
+                getString(R.string.backup_restore),
+                getString(R.string.wallpaper_sync_open)
+        };
+        new AlertDialog.Builder(this, android.R.style.Theme_Material_Dialog_Alert)
+                .setTitle(R.string.backup_label)
+                .setItems(actions, (d, which) -> {
+                    if (which == 0) {
+                        executor().execute(() -> {
+                            SettingsBackup.Summary s = SettingsBackup.exportToDisk(this);
+                            runOnUiThread(() -> {
+                                if (isFinishing() || isDestroyed()) return;
+                                Toast.makeText(this,
+                                        s.ok ? getString(R.string.backup_saved, s.settingCount, s.orderCount)
+                                                : getString(R.string.backup_failed, s.error),
+                                        Toast.LENGTH_LONG).show();
+                            });
+                        });
+                    } else if (which == 1) {
+                        executor().execute(() -> {
+                            SettingsBackup.Summary s = SettingsBackup.restoreFromDisk(this);
+                            runOnUiThread(() -> {
+                                if (isFinishing() || isDestroyed()) return;
+                                if (s.ok) {
+                                    Config cur = Config.load(this);
+                                    columns = cur.columns;
+                                    dockOpacity = cur.dockOpacity;
+                                    clockFormat = cur.clockFormat;
+                                    animations = cur.animations;
+                                    advancedEffects = cur.animations && cur.advancedEffects;
+                                    changed();
+                                    refresh(cur);
+                                    Toast.makeText(this, getString(R.string.backup_restored, s.settingCount, s.orderCount),
+                                            Toast.LENGTH_LONG).show();
+                                } else {
+                                    Toast.makeText(this, getString(R.string.backup_failed, s.error),
+                                            Toast.LENGTH_LONG).show();
+                                }
+                            });
+                        });
+                    } else {
+                        startActivity(new Intent(this, WallpaperSyncActivity.class));
+                    }
+                })
+                .setNegativeButton(android.R.string.cancel, null)
+                .show();
+    }
+
     private void showWallpaperPicker() {
+        showWallpaperPicker(false);
+    }
+
+    private void showWallpaperPicker(final boolean forScreensaver) {
         if (wallpaperBusy) return;
         wallpaperBusy = true;
         executor().execute(() -> {
@@ -460,70 +563,100 @@ public final class LauncherSettingsActivity extends Activity {
                 runOnUiThread(() -> {
                     wallpaperBusy = false;
                     if (isFinishing() || isDestroyed()) return;
-                    showWallpaperDialog(resolved);
+                    showWallpaperDialog(resolved, forScreensaver);
                 });
             }
         });
     }
 
     private void showWallpaperDialog(List<File> images) {
-        String current = choices.getString(Config.WALLPAPER_CHOICE_KEY, null);
-        int totalItems = images.size() + 2;
+        showWallpaperDialog(images, false);
+    }
+
+    private void showWallpaperDialog(List<File> images, boolean forScreensaver) {
+        String current = forScreensaver
+                ? choices.getString(Config.SCREENSAVER_WALLPAPER_KEY, null)
+                : choices.getString(Config.WALLPAPER_CHOICE_KEY, null);
+        Intent syncIntent = forScreensaver ? null : wallpaperSyncIntent();
+        int prefixCount = syncIntent != null ? 2 : 1;
+        int tailCount = forScreensaver ? 0 : 1;
+        int totalItems = prefixCount + images.size() + tailCount;
         String[] labels = new String[totalItems];
         labels[0] = getString(R.string.wallpaper_custom_browse);
+        if (syncIntent != null) {
+            labels[1] = getString(R.string.wallpaper_sync_open);
+        }
         for (int i = 0; i < images.size(); i++) {
             File f = images.get(i);
             String parent = f.getParentFile() != null ? f.getParentFile().getName() : "";
-            if ("wallpapers".equalsIgnoreCase(parent)) labels[i + 1] = f.getName() + " (Theme)";
-            else if ("Pictures".equalsIgnoreCase(parent)) labels[i + 1] = f.getName() + " (Pictures)";
-            else if ("Download".equalsIgnoreCase(parent)) labels[i + 1] = f.getName() + " (Download)";
-            else if ("Wallpapers".equalsIgnoreCase(parent)) labels[i + 1] = f.getName() + " (Wallpapers)";
-            else labels[i + 1] = f.getName();
+            if ("wallpapers".equalsIgnoreCase(parent)) labels[i + prefixCount] = f.getName() + " (Theme)";
+            else if ("Pictures".equalsIgnoreCase(parent)) labels[i + prefixCount] = f.getName() + " (Pictures)";
+            else if ("Download".equalsIgnoreCase(parent)) labels[i + prefixCount] = f.getName() + " (Download)";
+            else if ("Wallpapers".equalsIgnoreCase(parent)) labels[i + prefixCount] = f.getName() + " (Wallpapers)";
+            else labels[i + prefixCount] = f.getName();
         }
-        labels[totalItems - 1] = getString(R.string.wallpaper_none);
+        if (!forScreensaver) {
+            labels[totalItems - 1] = getString(R.string.wallpaper_none);
+        }
 
-        if (images.isEmpty()) {
+        if (images.isEmpty() && syncIntent == null) {
             Toast.makeText(this, R.string.wallpaper_folder_hint, Toast.LENGTH_LONG).show();
         }
 
         int checked = -1;
-        if ("none".equals(current)) {
+        if (!forScreensaver && "none".equals(current)) {
             checked = totalItems - 1;
         } else if (current != null) {
             int idx = indexOf(images, current);
-            if (idx >= 0) checked = idx + 1;
+            if (idx >= 0) checked = idx + prefixCount;
         }
 
-        new AlertDialog.Builder(this)
-                .setTitle(R.string.wallpaper_label)
+        AlertDialog.Builder builder = new AlertDialog.Builder(this, android.R.style.Theme_Material_Dialog_Alert)
+                .setTitle(forScreensaver ? R.string.screensaver_label : R.string.wallpaper_label)
                 .setSingleChoiceItems(labels, checked, (dialog, which) -> {
                     dialog.dismiss();
                     if (which == 0) {
                         Intent intent = new Intent(Intent.ACTION_GET_CONTENT).setType("image/*");
+                        int req = forScreensaver ? PICK_SCREENSAVER_WALLPAPER_REQUEST : PICK_WALLPAPER_REQUEST;
                         try {
-                            startActivityForResult(Intent.createChooser(intent, getString(R.string.wallpaper_label)), PICK_WALLPAPER_REQUEST);
+                            startActivityForResult(Intent.createChooser(intent, getString(R.string.wallpaper_label)), req);
                         } catch (ActivityNotFoundException e) {
                             Toast.makeText(this, R.string.not_available, Toast.LENGTH_SHORT).show();
                         }
-                    } else if (which == totalItems - 1) {
+                    } else if (syncIntent != null && which == 1) {
+                        try {
+                            startActivity(syncIntent);
+                        } catch (ActivityNotFoundException | SecurityException e) {
+                            Toast.makeText(this, R.string.not_available, Toast.LENGTH_SHORT).show();
+                        }
+                    } else if (!forScreensaver && which == totalItems - 1) {
                         choices.edit().putString(Config.WALLPAPER_CHOICE_KEY, "none").apply();
                         changed();
                         refresh();
                     } else {
-                        File picked = images.get(which - 1);
-                        choices.edit().putString(Config.WALLPAPER_CHOICE_KEY, picked.getAbsolutePath()).apply();
+                        File picked = images.get(which - prefixCount);
+                        if (forScreensaver) {
+                            choices.edit()
+                                    .putString(Config.SCREENSAVER_WALLPAPER_KEY, picked.getAbsolutePath())
+                                    .putString(Config.SCREENSAVER_BG_KEY, "wallpaper")
+                                    .apply();
+                        } else {
+                            choices.edit().putString(Config.WALLPAPER_CHOICE_KEY, picked.getAbsolutePath()).apply();
+                        }
                         changed();
                         Toast.makeText(this, R.string.wallpaper_applied, Toast.LENGTH_SHORT).show();
                         refresh();
                     }
                 })
-                .setNeutralButton(R.string.wallpaper_theme_default, (dialog, which) -> {
-                    choices.edit().remove(Config.WALLPAPER_CHOICE_KEY).apply();
-                    changed();
-                    refresh();
-                })
-                .setNegativeButton(android.R.string.cancel, null)
-                .show();
+                .setNegativeButton(android.R.string.cancel, null);
+        if (!forScreensaver) {
+            builder.setNeutralButton(R.string.wallpaper_theme_default, (dialog, which) -> {
+                choices.edit().remove(Config.WALLPAPER_CHOICE_KEY).apply();
+                changed();
+                refresh();
+            });
+        }
+        builder.show();
     }
 
     private void showScreensaverPicker() {
@@ -531,16 +664,21 @@ public final class LauncherSettingsActivity extends Activity {
         String defaultBg = cfg.clockWallpaper ? "wallpaper" : (cfg.clockGlow ? "glow" : "black");
         String currentStyle = choices.getString(Config.SCREENSAVER_STYLE_KEY, "calendar");
         String currentBg = choices.getString(Config.SCREENSAVER_BG_KEY, defaultBg);
+        boolean hasCustomSs = choices.contains(Config.SCREENSAVER_WALLPAPER_KEY);
 
-        String[] items = {
-                getString(R.string.screensaver_style_calendar) + ("calendar".equals(currentStyle) ? "  ✓" : ""),
-                getString(R.string.screensaver_style_clock) + ("clock".equals(currentStyle) ? "  ✓" : ""),
-                getString(R.string.screensaver_bg_wallpaper) + ("wallpaper".equals(currentBg) ? "  ✓" : ""),
-                getString(R.string.screensaver_bg_glow) + ("glow".equals(currentBg) ? "  ✓" : ""),
-                getString(R.string.screensaver_bg_black) + ("black".equals(currentBg) ? "  ✓" : "")
-        };
+        List<String> list = new ArrayList<>();
+        list.add(getString(R.string.screensaver_style_calendar) + ("calendar".equals(currentStyle) ? "  ✓" : ""));
+        list.add(getString(R.string.screensaver_style_clock) + ("clock".equals(currentStyle) ? "  ✓" : ""));
+        list.add(getString(R.string.screensaver_bg_wallpaper) + ("wallpaper".equals(currentBg) ? "  ✓" : ""));
+        list.add(getString(R.string.screensaver_bg_glow) + ("glow".equals(currentBg) ? "  ✓" : ""));
+        list.add(getString(R.string.screensaver_bg_black) + ("black".equals(currentBg) ? "  ✓" : ""));
+        list.add("Choose screensaver wallpaper…");
+        if (hasCustomSs) {
+            list.add("Clear custom screensaver wallpaper");
+        }
+        String[] items = list.toArray(new String[0]);
 
-        new AlertDialog.Builder(this)
+        new AlertDialog.Builder(this, android.R.style.Theme_Material_Dialog_Alert)
                 .setTitle(R.string.screensaver_label)
                 .setItems(items, (dialog, which) -> {
                     dialog.dismiss();
@@ -554,6 +692,14 @@ public final class LauncherSettingsActivity extends Activity {
                         choices.edit().putString(Config.SCREENSAVER_BG_KEY, "glow").apply();
                     } else if (which == 4) {
                         choices.edit().putString(Config.SCREENSAVER_BG_KEY, "black").apply();
+                    } else if (which == 5) {
+                        showWallpaperPicker(true);
+                        return;
+                    } else if (hasCustomSs && which == 6) {
+                        choices.edit()
+                                .remove(Config.SCREENSAVER_WALLPAPER_KEY)
+                                .remove(Config.SCREENSAVER_BG_KEY)
+                                .apply();
                     }
                     changed();
                     refresh();
@@ -597,7 +743,7 @@ public final class LauncherSettingsActivity extends Activity {
             labels[i + 1] = apps.get(i)[0];
             if (apps.get(i)[1].equals(current)) checked = i + 1;
         }
-        new AlertDialog.Builder(this)
+        new AlertDialog.Builder(this, android.R.style.Theme_Material_Dialog_Alert)
                 .setTitle(R.string.open_on_start_label)
                 .setSingleChoiceItems(labels, checked, (dialog, which) -> {
                     dialog.dismiss();
@@ -627,18 +773,20 @@ public final class LauncherSettingsActivity extends Activity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == PICK_WALLPAPER_REQUEST && resultCode == RESULT_OK
-                && data != null && data.getData() != null) {
+        if ((requestCode == PICK_WALLPAPER_REQUEST || requestCode == PICK_SCREENSAVER_WALLPAPER_REQUEST)
+                && resultCode == RESULT_OK && data != null && data.getData() != null) {
             final android.net.Uri sourceUri = data.getData();
             final File dir = Config.dir(this);
             if (dir == null) return;
-            executor().execute(() -> copyCustomWallpaper(sourceUri, dir));
+            final boolean forScreensaver = (requestCode == PICK_SCREENSAVER_WALLPAPER_REQUEST);
+            executor().execute(() -> copyCustomWallpaper(sourceUri, dir, forScreensaver));
         }
     }
 
-    private void copyCustomWallpaper(android.net.Uri sourceUri, File dir) {
-        File customFile = new File(dir, "custom_wallpaper.jpg");
-        File tmpFile = new File(dir, "custom_wallpaper.jpg.tmp");
+    private void copyCustomWallpaper(android.net.Uri sourceUri, File dir, boolean forScreensaver) {
+        String name = forScreensaver ? "custom_screensaver_wallpaper.jpg" : "custom_wallpaper.jpg";
+        File customFile = new File(dir, name);
+        File tmpFile = new File(dir, name + ".tmp");
         try {
             try (InputStream in = getContentResolver().openInputStream(sourceUri)) {
                 if (in == null) {
@@ -666,7 +814,14 @@ public final class LauncherSettingsActivity extends Activity {
             }
             runOnUiThread(() -> {
                 if (isFinishing() || isDestroyed()) return;
-                choices.edit().putString(Config.WALLPAPER_CHOICE_KEY, customFile.getAbsolutePath()).apply();
+                if (forScreensaver) {
+                    choices.edit()
+                            .putString(Config.SCREENSAVER_WALLPAPER_KEY, customFile.getAbsolutePath())
+                            .putString(Config.SCREENSAVER_BG_KEY, "wallpaper")
+                            .apply();
+                } else {
+                    choices.edit().putString(Config.WALLPAPER_CHOICE_KEY, customFile.getAbsolutePath()).apply();
+                }
                 changed();
                 Toast.makeText(this, R.string.wallpaper_applied, Toast.LENGTH_SHORT).show();
                 refresh();
@@ -686,7 +841,6 @@ public final class LauncherSettingsActivity extends Activity {
 
     @Override
     public boolean dispatchKeyEvent(KeyEvent event) {
-        if (finishing) return true;
         return super.dispatchKeyEvent(event);
     }
 
@@ -697,27 +851,15 @@ public final class LauncherSettingsActivity extends Activity {
     }
 
     private void finishWithMorph() {
-        if (finishing || isFinishing()) return;
-        finishing = true;
-        if (morph != null) {
-            morph.playExit(animateTransitions, () -> {
-                if (!isFinishing()) super.finish();
-                overridePendingTransition(0, 0);
-            });
-        } else {
-            super.finish();
-            overridePendingTransition(0, 0);
+        if (!isFinishing()) {
+            finish();
+            Motion.applyFadeTransition(this, animateTransitions);
         }
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (morph != null) morph.cancelAndReset();
-        if (wallpaperExecutor != null) {
-            wallpaperExecutor.shutdownNow();
-            wallpaperExecutor = null;
-        }
     }
 
     private static int indexOf(List<File> images, String current) {
@@ -737,6 +879,7 @@ public final class LauncherSettingsActivity extends Activity {
         setResult(RESULT_OK);
         choices.edit().putLong(Config.SETTINGS_REVISION_KEY,
                 choices.getLong(Config.SETTINGS_REVISION_KEY, 0) + 1).apply();
+        Config.invalidateCache();
     }
 
     private void setAdvanced(boolean enabled) {
@@ -751,11 +894,11 @@ public final class LauncherSettingsActivity extends Activity {
         if (isOn) {
             switchView.setText(R.string.switch_on_badge);
             switchView.setBackgroundResource(R.drawable.switch_on_bg);
-            switchView.setTextColor(0xFFFFFFFF);
+            switchView.setTextColor(0xFF062E6F);
         } else {
             switchView.setText(R.string.switch_off_badge);
             switchView.setBackgroundResource(R.drawable.switch_off_bg);
-            switchView.setTextColor(0xFF9CA3AF);
+            switchView.setTextColor(0xFFC4C6D0);
         }
     }
 
@@ -766,9 +909,6 @@ public final class LauncherSettingsActivity extends Activity {
     private void refresh(Config config) {
         for (int i = 0; i < columnChoices.length; i++) {
             columnChoices[i].setSelected(columns == i + 4);
-        }
-        for (int i = 0; i < rowChoices.length; i++) {
-            rowChoices[i].setSelected(rowsBelowDock == i);
         }
         for (int i = 0; i < dockChoices.length; i++) {
             dockChoices[i].setSelected(dockOpacity == DOCK_OPACITIES[i]);
@@ -833,13 +973,20 @@ public final class LauncherSettingsActivity extends Activity {
         boolean inputsOn = choices.getBoolean("show_inputs_pill", config.showInputsPill);
         updateSwitch(inputsPillSwitch, inputsOn);
 
-        // 8. Recent Apps Pill Switch
-        boolean recentsOn = choices.getBoolean("show_recents_pill", config.showRecentsPill);
-        updateSwitch(recentsPillSwitch, recentsOn);
-
         // 9. Network Pill Switch
         boolean networkOn = choices.getBoolean("show_network_pill", config.showNetworkPill);
         updateSwitch(networkPillSwitch, networkOn);
+
+        // 10. Navigation Click Sounds
+        updateSwitch(uiSoundsSwitch, UiFeedback.isSoundsEnabled(this));
+
+        // Hidden Apps count summary
+        if (hiddenAppsSummary != null) {
+            int hiddenCount = AppCustomizations.loadHidden(this).size();
+            hiddenAppsSummary.setText(hiddenCount == 0
+                    ? getString(R.string.hidden_apps_summary)
+                    : getString(R.string.hidden_apps_summary) + " (" + hiddenCount + ")");
+        }
 
         // Open on start
         if (openOnStartChoice != null) {
@@ -849,16 +996,6 @@ public final class LauncherSettingsActivity extends Activity {
         // Follow theme
         if (followThemeChoice != null) {
             followThemeChoice.setSelected(!hasOnTvChoices());
-        }
-
-        // Button Mapper
-        if (buttonMapperSummary != null) {
-            int mappedCount = ButtonMapper.getMappedCount(this);
-            if (mappedCount > 0) {
-                buttonMapperSummary.setText(getString(R.string.button_mapper_mapped, mappedCount));
-            } else {
-                buttonMapperSummary.setText(R.string.button_mapper_summary);
-            }
         }
     }
 

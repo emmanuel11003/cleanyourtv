@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="settings">Configuración</string>
+    <string name="not_connected">Sin dispositivo conectado</string>
+    <string name="good_forenoon">Buenos días</string>
+    <string name="not_available">No disponible en este televisor</string>
+    <string name="shamsi_month_farvardin">Farvardín</string>
+    <string name="shamsi_month_khordad">Jordad</string>
+    <string name="shamsi_month_aban">Abán</string>
+    <string name="shamsi_month_bahman">Bahmán</string>
+    <string name="home_settings">Elegir pantalla de inicio predeterminada</string>
+    <string name="home_settings_help">Elige la pantalla de inicio original para dejar de usar CleanYourTV, o elige CleanYourTV para volver a usarlo. El launcher original debe estar activado y el televisor debe ofrecer un selector de inicio; si estaba desactivado, ejecuta primero el script de restauración.</string>
+    <string name="launcher_settings">Configuración del launcher</string>
+    <string name="native_settings">Configuración del fabricante</string>
+    <string name="rows_below_dock_label">Filas debajo de la barra de favoritos</string>
+    <string name="dock_opacity_label">Opacidad de la barra de favoritos</string>
+    <string name="follow_theme">Usar el tema (restablecer configuración)</string>
+    <string name="follow_theme_hint">Usa el diseño y los efectos del tema actual o los valores predeterminados. Aplicar o restablecer un tema también borra esta configuración.</string>
+    <string name="tv_settings">Configuración del televisor</string>
+    <string name="on">Activado</string>
+    <string name="off">Desactivado</string>
+    <string name="input_key_service_description">Abre el selector de entradas al presionar el botón Entrada del control remoto.</string>
+    <string name="home_key_description">Hace que el botón Inicio del control remoto abra este launcher.</string>
+    <string name="card_prompt_resigned">%1$s se actualizó con otra clave de firma, por lo que tu respuesta anterior ya no es válida. Vuelve a decidir si quieres mostrar su tarjeta.</string>
+    <string name="card_prompt_relabelled">%1$s cambió el nombre de su tarjeta desde tu última elección. Vuelve a decidir si quieres mostrarla.</string>
+    <string name="card_prompt_hint">Puedes cambiarlo después: mantén presionado OK sobre Configuración y elige Tarjetas de módulos.</string>
+    <string name="dock_edit">Editar la barra de favoritos</string>
+    <string name="dock_edit_hint">Elige el espacio de la barra de favoritos que quieres cambiar y presiona OK. Presiona Atrás para terminar.</string>
+    <string name="dock_edit_pick_app">Ahora elige la aplicación que quieres colocar ahí y presiona OK. Presiona Atrás para elegir otro espacio.</string>
+    <string name="tile_add_to_dock">Agregar a favoritos</string>
+    <string name="tile_replace_in_dock">Reemplazar por otra aplicación</string>
+    <string name="dock_edit_pick_place">Elige el espacio de la barra de favoritos para esta aplicación y presiona OK. Presiona Atrás para cancelar.</string>
+    <string name="reorder">Reordenar aplicaciones</string>
+    <string name="reorder_hint">Presiona OK para seleccionar una aplicación, usa las flechas para moverla y presiona Atrás para colocarla. Presiona Atrás otra vez para terminar.</string>
+    <string name="library_add_home">Agregar a Inicio</string>
+    <string name="library_recent">Nueva · Agregar a Inicio</string>
+    <string name="library_hint_add">Presiona para agregar a Inicio · Mantén presionado para ver opciones</string>
+    <string name="library_hint_open">Presiona para abrir · Mantén presionado para ver opciones</string>
+    <plurals name="library_app_count">
+        <item quantity="one">%1$d aplicación</item>
+        <item quantity="other">%1$d aplicaciones</item>
+    </plurals>
+    <string name="race_lights_out">Inicio en %1$s</string>
+    <string name="race_live">%1$s · en vivo</string>
+    <string name="race_practice_1">Práctica 1</string>
+    <string name="race_practice_2">Práctica 2</string>
+    <string name="race_practice_3">Práctica 3</string>
+    <string name="race_practice_1_short">PL1</string>
+    <string name="race_practice_2_short">PL2</string>
+    <string name="race_practice_3_short">PL3</string>
+    <string name="race_sprint_qualifying_short">CS</string>
+    <string name="race_qualifying_short">CLAS.</string>
+    <string name="race_race_short">CARRERA</string>
+    <string name="last_opened">Última apertura: %1$s</string>
+</resources>

@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<incidents format="6" by="lint 8.5.2" type="partial_results">
+    <map id="UnsafeIntentLaunch">
+            <map id="unprotected">
+                <entry
+                    name="com.gathin.tvhome.InputsRequestActivity"
+                    boolean="true"/>
+                <entry
+                    name="com.gathin.tvhome.ClockActivity"
+                    boolean="true"/>
+                <entry
+                    name="com.gathin.tvhome.RecentAppsActivity"
+                    boolean="true"/>
+                <entry
+                    name="com.gathin.tvhome.QuickSettingsActivity"
+                    boolean="true"/>
+                <entry
+                    name="com.gathin.tvhome.AppLaunchActivity"
+                    boolean="true"/>
+                <entry
+                    name="com.gathin.tvhome.MainActivity"
+                    boolean="true"/>
+                <entry
+                    name="com.gathin.tvhome.LauncherSettingsActivity"
+                    boolean="true"/>
+            </map>
+    </map>
+    <map id="UnsafeImplicitIntentLaunch">
+            <map id="actionsSent">
+                    <map id="android.settings.HOME_SETTINGS (used to start an activity)">
+                        <location id="0"
+                            file="${:app*release*MAIN*sourceProvider*0*javaDir*0}/com/gathin/tvhome/HomeSettingsActivity.java"
+                            line="26"
+                            column="27"
+                            startOffset="903"
+                            endLine="26"
+                            endColumn="68"
+                            endOffset="944"/>
+                    </map>
+                    <map id="android.settings.APPLICATION_DETAILS_SETTINGS (used to start an activity)">
+                        <location id="0"
+                            file="${:app*release*MAIN*sourceProvider*0*javaDir*0}/com/gathin/tvhome/AppAdapter.java"
+                            line="1098"
+                            column="24"
+                            startOffset="55350"
+                            endLine="1098"
+                            endColumn="111"
+                            endOffset="55437"/>
+                    </map>
+                    <map id="android.intent.action.VIEW (used to start an activity)">
+                        <location id="0"
+                            file="${:app*release*MAIN*sourceProvider*0*javaDir*0}/com/gathin/tvhome/MainActivity.java"
+                            line="3625"
+                            column="19"
+                            startOffset="183268"
+                            endLine="3625"
+                            endColumn="49"
+                            endOffset="183298"/>
+                        <location id="1"
+                            file="${:app*release*MAIN*sourceProvider*0*javaDir*0}/com/gathin/tvhome/MainActivity.java"
+                            line="3626"
+                            column="19"
+                            startOffset="183372"
+                            endLine="3626"
+                            endColumn="97"
+                            endOffset="183450"/>
+                        <location id="2"
+                            file="${:app*release*MAIN*sourceProvider*0*javaDir*0}/com/gathin/tvhome/RemoteKeys.java"
+                            line="446"
+                            column="27"
+                            startOffset="21713"
+                            endLine="446"
+                            endColumn="57"
+                            endOffset="21743"/>
+                    </map>
+                    <map id="com.android.tv.action.VIEW_INPUTS (used to start an activity)">
+                        <location id="0"
+                            file="${:app*release*MAIN*sourceProvider*0*javaDir*0}/com/gathin/tvhome/InputKeyService.java"
+                            line="81"
+                            column="31"
+                            startOffset="4247"
+                            endLine="81"
+                            endColumn="61"
+                            endOffset="4277"/>
+                        <location id="1"
+                            file="${:app*release*MAIN*sourceProvider*0*javaDir*0}/com/gathin/tvhome/RemoteKeys.java"
+                            line="422"
+                            column="33"
+                            startOffset="20543"
+                            endLine="422"
+                            endColumn="80"
+                            endOffset="20590"/>
+                    </map>
+            </map>
+    </map>
+    <map id="ProviderReadPermissionOnly">
+            <map id="com.gathin.tvhome.ThemeProvider">
+                <location id="location"
+                    file="${:app*release*MAIN*sourceProvider*0*javaDir*0}/com/gathin/tvhome/ThemeProvider.java"
+                    line="22"
+                    column="14"
+                    startOffset="982"
+                    endLine="22"
+                    endColumn="27"
+                    endOffset="995"/>
+                <entry
+                    name="implementedWriteMethods"
+                    string="{`delete`}"/>
+            </map>
+    </map>
+    <map id="AppBundleLocaleChanges">
+        <location id="localeChangeLocation"
+            file="${:app*release*MAIN*sourceProvider*0*javaDir*0}/com/gathin/tvhome/LauncherLocale.java"
+            line="33"
+            column="9"
+            startOffset="1517"
+            endLine="33"
+            endColumn="28"
+            endOffset="1536"/>
+    </map>
+    <map id="UnusedResources">
+        <location id="R.string.wallpaper_state"
+            file="${:app*release*MAIN*sourceProvider*0*resDir*0}/values/strings.xml"
+            line="57"
+            column="13"
+            startOffset="3284"
+            endLine="57"
+            endColumn="35"
+            endOffset="3306"/>
+        <location id="R.string.standby"
+            file="${:app*release*MAIN*sourceProvider*0*resDir*0}/values/strings.xml"
+            line="9"
+            column="13"
+            startOffset="336"
+            endLine="9"
+            endColumn="27"
+            endOffset="350"/>
+        <location id="R.string.on"
+            file="${:app*release*MAIN*sourceProvider*0*resDir*0}/values/strings.xml"
+            line="96"
+            column="13"
+            startOffset="6584"
+            endLine="96"
+            endColumn="22"
+            endOffset="6593"/>
+        <location id="R.string.quick_picture"
+            file="${:app*release*MAIN*sourceProvider*0*resDir*0}/values/strings.xml"
+            line="92"
+            column="13"
+            startOffset="6386"
+            endLine="92"
+            endColumn="33"
+            endOffset="6406"/>
+        <location id="R.string.animations_state"
+            file="${:app*release*MAIN*sourceProvider*0*resDir*0}/values/strings.xml"
+            line="83"
+            column="13"
+            startOffset="5572"
+            endLine="83"
+            endColumn="36"
+            endOffset="5595"/>
+        <location id="R.drawable.quick_settings_all_settings_bg"
+            file="${:app*release*MAIN*sourceProvider*0*resDir*0}/drawable/quick_settings_all_settings_bg.xml"
+            line="2"
+            column="1"
+            startOffset="39"
+            endLine="2"
+            endColumn="580"
+            endOffset="618"/>
+        <location id="R.string.quick_apps_hint"
+            file="${:app*release*MAIN*sourceProvider*0*resDir*0}/values/strings.xml"
+            line="95"
+            column="13"
+            startOffset="6530"
+            endLine="95"
+            endColumn="35"
+            endOffset="6552"/>
+        <location id="R.string.quick_apps"
+            file="${:app*release*MAIN*sourceProvider*0*resDir*0}/values/strings.xml"
+            line="94"
+            column="13"
+            startOffset="6486"
+            endLine="94"
+            endColumn="30"
+            endOffset="6503"/>
+        <location id="R.drawable.quick_settings_card_bg"
+            file="${:app*release*MAIN*sourceProvider*0*resDir*0}/drawable/quick_settings_card_bg.xml"
+            line="2"
+            column="1"
+            startOffset="39"
+            endLine="2"
+            endColumn="523"
+            endOffset="561"/>
+        <location id="R.string.screensaver_state"
+            file="${:app*release*MAIN*sourceProvider*0*resDir*0}/values/strings.xml"
+            line="63"
+            column="13"
+            startOffset="3713"
+            endLine="63"
+            endColumn="37"
+            endOffset="3737"/>
+        <location id="R.string.quick_settings_footer"
+            file="${:app*release*MAIN*sourceProvider*0*resDir*0}/values/strings.xml"
+            line="196"
+            column="13"
+            startOffset="13103"
+            endLine="196"
+            endColumn="41"
+            endOffset="13131"/>
+        <entry
+            name="model"
+            string="anim[app_close_enter(U),app_close_exit(U),app_open_enter(U),app_open_exit(U),tile_enter(U)],array[settings_fallback_components(U),dock_apps(U),hidden_apps(U),launch_actions(U),app_labels(U),app_banners(U),input_sources(U),settings_key_scancodes(U),settings_key_keycodes(U),input_key_keycodes(U),app_keys(U),top_bar_apps(U),library_apps(U),library_excluded_apps(U),icon_tiles(U),lunar_stems(U),lunar_branches(U)],bool[date_single_line(U),rtl_app_grid(U),rtl_menu_bar(U),fill_dock(U),boot_to_live_tv(U),open_on_start_choice(U),open_on_start_on_wake(U),coocaa_sources(U),key_filter(U),gamepad_passthrough(U),consume_volume_keys(U),home_ignore_channel_keys(U),settings_key_panel(U),restore_key_services(U),handle_view_inputs(U),power_on_home(U),power_on_home_always(U),home_long_press_home(U),shamsi_date(U),lunar_date(U),date_below_clock(U),show_greeting(U),header_white(U),vpn_pill(U),dock_row(U),top_menu(U),launcher_settings_button(U),dock_glass(U),dock_band(U),single_row(U),dock_band_all(U),dock_even_padding(U),reorder_button(U),icon_only_buttons(U),icon_only_inputs(U),icon_only_vpn(U),wifi_status_color(U),wifi_status_warnings(U),library_button(U),show_library_pill(U),show_network_pill(U),show_inputs_pill(U),show_recents_pill(U),inputs_connected_only(U),inputs_cec_state_only(U),always_show_names(U),wallpaper_true_color(U),wallpaper_captions(U),tile_menu(U),dock_title(U),animations(U),advanced_effects(U),show_home_settings_shortcut(U),app_library(U),uniform_tiles(U),app_library_selection(U),library_ok_opens(U),module_cards(U),reduced_motion(U),focus_overshoot(U),show_stats(U),cinematic_home(U),cinematic_dots(U),cinematic_white_focus(U),ambient_glow(U),glow_snap(U),app_glow(U),fade_rows(U),back_opens_clock(U),clock_wallpaper(U),clock_glow(U),liquid_glass(U),dock_frost(U),focus_outline(U)],color[pill_icon_no_internet(U),pill_icon_offline(U),pill_icon_online(U),quick_tile_icon_color(U),quick_tile_sub_color(U),quick_tile_text_color(U)],drawable[banner(U),banner_tv(U),ic_livetv(U),glass_panel(U),ic_apps(U),ic_apps_pill(U),ic_av(U),ic_back(U),ic_bluetooth(U),ic_ethernet(U),ic_home_settings(U),ic_home_settings_pill(U),ic_input(U),ic_lock(U),ic_lock_open(U),ic_notifications(U),ic_picture(U),ic_recents(U),ic_remote(U),ic_screensaver(U),ic_settings(U),ic_sound(U),ic_swap_vert(U),ic_timer(U),ic_wifi(U),input_row_bg(U),library_check(U),pill_bg(U),pill_text(U),pill_text_dim(U),pill_text_mid(U),quick_settings_all_settings_bg(D),quick_settings_card_bg(D),quick_settings_circle_bg(U),quick_settings_panel_bg(U),quick_settings_tile_bg(U),race_bar(U),recent_card_bg(U),row_gap(U),settings_choice_bg(U),status_dot(U),switch_off_bg(U),switch_on_bg(U),tile_bg(U),halloween_bat(U),halloween_ghost(U),halloween_pumpkin_dark(U),halloween_pumpkin_lit(U),banner_*(R)],font[outfit_extralight(U),outfit(R),outfit_light(U),outfit_medium(U),outfit_regular(U)],id[settingsClock(D),reorderChoice(U),buttonMapperChoice(U),buttonMapperSummary(U),columns4(U),columns5(U),columns6(U),columns7(U),rows0(U),rows1(U),rows2(U),rows3(U),dock100(U),dock70(U),dock50(U),dock30(U),clockSystem(U),clock12(U),clock24(U),wallpaperChoice(U),wallpaperSummary(U),wallpaperSwitch(U),chooseWallpaperRow(U),screensaverRow(U),screensaverSummary(U),screensaverSwitch(U),screensaverCalendarRow(U),screensaverCalendarSwitch(U),liquidGlassRow(U),liquidGlassSwitch(U),animationsChoice(U),animationsSwitch(U),advancedChoice(U),advancedSwitch(U),statsRow(U),statsSwitch(U),inputsPillRow(U),inputsPillSwitch(U),recentsPillRow(U),recentsPillSwitch(U),networkPillRow(U),networkPillSwitch(U),openOnStartChoice(U),followThemeChoice(U),defaultHomeChoice(U),tvSettingsChoice(U),root(U),sky(U),heroArt(U),ambient(U),racePanel(U),raceBar(U),raceKicker(U),raceHeadline(U),raceSessions(U),racePager(U),heroScrim(U),hero(U),heroName(U),heroMeta(U),heroDots(U),leftBlock(U),topButtons(U),greeting(U),clock(U),ampm(U),clockDivider(U),shamsiDate(U),date(U),lunarDate(U),stats(U),btnInputs(U),grid(U),btnRecents(U),btnWifi(U),btnVpn(U),btnReorder(U),btnLibraryTop(U),btnSettings(U),glass(U),scrim(U),panel(D),layoutMainPanel(U),quickDate(U),quickClock(U),quickAmPm(D),btnAllSettings(U),tileScreensaver(U),tileInputs(U),tileDisplay(U),tileSound(U),tileWifi(U),tileBluetooth(U),tileSleepTimer(U),sleepTimerLabel(U),tileRearrange(U),tileNotifications(U),recentRoot(D),headerLayout(D),txtHeaderTitle(D),txtHeaderSubtitle(D),recentsClock(D),recentsAmPm(D),contentLayout(U),recentsRecycler(U),actionBarLayout(D),btnActionOpen(U),btnActionDismiss(U),btnActionForceStop(U),btnActionAppInfo(U),emptyLayout(U),btnEmptyHome(U),title(U),body(U),names(U),hint(D),identity(U),btnKeep(U),btnShow(U),dreamAmbient(U),dreamContent(U),dreamClockGroup(D),dreamClock(D),dreamSeconds(D),dreamCalendarDivider(U),dreamCalendar(U),card(U),banner(U),icon(U),label(U),name(U),state(U),app(U),pkg(U),digest(U),dot(U),status(U),cardContainer(D),cardInner(D),imgBanner(U),imgIcon(U),txtAppName(U),txtAppTime(U),rows(U),btnLibrary(U),dreamAmPm(D),dreamDate(D)],integer[open_on_start_network_wait(U),wifi_label_width(U),rows_below_dock(U),columns(U),dock_opacity(U),sky_intensity(U),cinematic_scrim(U),cinematic_art(U),home_idle_clock_minutes(U),clock_wallpaper_dim(U)],interpolator[apple_decelerate(U),apple_accelerate(U)],layout[activity_launcher_settings(U),activity_main(U),activity_quick_settings(U),activity_recent_apps(U),dialog_card_prompt(U),dream_clock(U),item_app(U),item_card_row(U),item_input(U),item_recent_card(U),popup_cards(U),popup_inputs(U),row_app_library(U),top_app_button(U)],mipmap[ic_launcher(U)],plurals[library_app_count(U)],raw[keep(U)],string[app_name(U),home_key_name(U),dream_name(U),launcher_settings(U),font_light(U),reorder(U),reorder_apps(U),reorder_apps_summary(U),button_mapper(U),button_mapper_summary(U),columns_label(U),rows_below_dock_label(U),dock_opacity_label(U),clock_format_system(U),clock_format_12(U),clock_format_24(U),wallpaper_label(U),switch_on_badge(U),choose_wallpaper(U),screensaver_label(U),screensaver_summary(U),screensaver_calendar_label(U),screensaver_calendar_summary(U),liquid_glass_label(U),liquid_glass_summary(U),animations(U),animations_summary(U),advanced_effects(U),advanced_effects_summary(U),stats_label(U),stats_summary(U),inputs_pill_label(U),inputs_pill_summary(U),recents_pill_label(U),recents_pill_summary(U),network_pill_label(U),network_pill_summary(U),follow_theme(U),follow_theme_hint(U),home_settings(U),home_settings_help(U),tv_settings(U),font_medium(U),font_regular(U),date_format_home(U),inputs(U),recents(U),wifi(U),vpn(U),app_library(U),settings(U),font_body(U),all_settings(U),tile_screensaver(U),tile_inputs(U),tile_display(U),tile_sound(U),tile_wifi(U),tile_bluetooth(U),tile_sleep_timer(U),tile_notifications(U),recent_apps_title(U),recent_apps_subtitle(U),recents_action_open(U),recents_action_dismiss(U),recents_action_force_stop(U),recents_action_app_info(U),recents_empty_title(U),recents_empty_message(U),recents_empty_return(U),card_prompt_hint(U),card_keep_hidden(U),card_show(U),font_extralight(U),date_format(U),module_cards(U),live_tv_package(U),live_tv_action(U),live_tv_input_id(U),source_panel_service(U),source_panel_action(U),source_panel_extra(U),input_action(U),input_uri_scheme(U),stock_home_redirect(U),locale(U),greeting_name(U),vpn_app(U),clock_format(U),wallpaper_moods(U),background_color(U),animation_scale(U),game_day(U),latitude(U),longitude(U),glow_style(U),glass_style(U),lunar_date_format(U),lunar_month_leap(U),lunar_year(U),choose_input(U),connected(U),standby(D),not_connected(U),live_tv(U),no_inputs(U),more_inputs(U),good_morning(U),good_afternoon(U),good_evening(U),good_forenoon(U),good_night(U),festival_dussehra_greeting(U),festival_diwali_greeting(U),festival_halloween_greeting(U),ethernet(U),offline(U),not_available(U),cant_open(U),shamsi_month_farvardin(U),shamsi_month_ordibehesht(U),shamsi_month_khordad(U),shamsi_month_tir(U),shamsi_month_mordad(U),shamsi_month_shahrivar(U),shamsi_month_mehr(U),shamsi_month_aban(U),shamsi_month_azar(U),shamsi_month_dey(U),shamsi_month_bahman(U),shamsi_month_esfand(U),stats_cpu(U),stats_memory(U),stats_storage(U),storage_gb_whole(U),storage_gb_decimal(U),vpn_off(U),native_settings(U),wallpaper_state(D),wallpaper_none(U),wallpaper_applied(U),wallpaper_theme_default(U),wallpaper_custom_browse(U),screensaver_state(D),screensaver_style_calendar(U),screensaver_style_clock(U),screensaver_bg_wallpaper(U),screensaver_bg_glow(U),screensaver_bg_black(U),switch_off_badge(U),animations_state(D),advanced_effects_state(D),open_on_start_label(U),open_on_start_state(U),advanced_effects_warning(U),quick_picture(D),quick_network(U),quick_apps(D),quick_apps_hint(D),on(D),off(U),enable(U),input_key_service_description(U),home_key_description(U),card_prompt_title(U),card_prompt_body(U),card_prompt_names(U),card_prompt_resigned(U),card_prompt_relabelled(U),card_prompt_identity(U),card_not_saved(U),no_module_cards(U),card_app_name(U),card_state_shown(U),card_state_over_limit(U),card_state_hidden(U),card_state_new(U),card_state_new_key(U),card_state_new_label(U),dock_edit(U),power_menu(U),dock_edit_hint(U),dock_edit_pick_app(U),tile_add_to_dock(U),tile_replace_in_dock(U),dock_edit_pick_place(U),tile_move(U),reorder_hint(U),reorder_not_saved(U),library_empty(U),library_on_home(U),library_add_home(U),library_remove_shortcut(U),library_open(U),library_app_info(U),library_save_failed(U),library_recent(U),library_hint_add(U),library_hint_open(U),greeting_with_name(U),race_kicker(U),race_kicker_no_place(U),race_next(U),race_lights_out(U),race_live(U),race_finished(U),race_practice_1(U),race_practice_2(U),race_practice_3(U),race_sprint_qualifying(U),race_sprint(U),race_qualifying(U),race_race(U),race_practice_1_short(U),race_practice_2_short(U),race_practice_3_short(U),race_sprint_qualifying_short(U),race_sprint_short(U),race_qualifying_short(U),race_race_short(U),race_countdown_minutes(U),race_countdown_hours(U),race_countdown_days(U),last_opened(U),game_live(U),quick_settings_footer(D),sleep_timer_left(U),sleep_timer_set(U),sleep_timer_off(U),sleep_timer_no_helper(U),notifications_addon_help(U),button_mapper_mapped(U),button_mapper_learn(U),button_mapper_learn_prompt(U),button_mapper_reset(U),button_mapper_clear_all(U),button_mapper_clear_all_confirm(U),button_mapper_action_quick_settings(U),button_mapper_action_inputs(U),button_mapper_action_reorder(U),button_mapper_action_screensaver(U),button_mapper_action_library(U),button_mapper_action_tv_settings(U),button_mapper_action_recents(U),button_mapper_launch_app(U),button_mapper_key_cannot_remap(U),recents_dismissed_toast(U),recents_force_stop_requires_auth(U)],style[Theme_TvHome(U),Theme_TvHome_Translucent(U),SettingsRow(U),SettingsColumnChoice(U),TopButton(U),TopButtonIcon(U),Animation_TvHome_AppTransition(U),TopButtonBase(U)],xml[locales_config(U),home_key_service(U),input_key_service(U)];0^139,1^13a,2^139,3^139,67^68,6b^6a,97^98,99^98,9a^98,9b^98,13b^14f^150^151^246^7c^152^153^78^154^155^156^247^157^158^14e^159^15a^15b^15c^90^15d^76^15e^15f^160^161^162^163^164^165^166^167^168^169^16a^16b^16c^16d^16e^16f^170^171^172^173^174^175,13c^8a^176^150^da^177^178^16^d9^72^e4^179^248^77^17a^7e^17b^17c^151^7c^249^17d^6b^7a^17e^196^6a,13d^88^17f^176^87^7a^63^180^64^89^79^181^65^72^182^76^183^7b^184^7e^185^6e^186^7d^187^7c^151^75^188,13e^176^189^177^18a^150^6a^107^104^18b^248^6d^106^108^18c^7a^109^18d^18e^77^18f^190^191,13f^69^176^17f^192^111^112^193^248^194,140^195^150^176^177^196,141^91^17f^176,142^7f^176^82^17f^84,143^7f^82^176^8e^17f^83,144^8b^176^177,145^69^176^197^8c,146^69^8c,147^6b^17d^248,148^e4^249,14b^96,150^99,176^9a,177^9b,178^196,17f^98,195^97,245^24a,246^8d,247^246,248^24b,249^24b,24a^2^3^0^1,24b^81^82^176,24d^1ef,24e^1ee;@drawable/banner_*,@drawable/banner_*;;"/>
+        <location id="R.string.advanced_effects_state"
+            file="${:app*release*MAIN*sourceProvider*0*resDir*0}/values/strings.xml"
+            line="85"
+            column="13"
+            startOffset="5696"
+            endLine="85"
+            endColumn="42"
+            endOffset="5725"/>
+    </map>
+
+</incidents>

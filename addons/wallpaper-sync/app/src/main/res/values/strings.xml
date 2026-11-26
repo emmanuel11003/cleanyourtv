@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Wallpaper Sync</string>
+    <string name="subtitle">Change Home &amp; Screensaver wallpapers over Wi-Fi without ADB</string>
+    <string name="server_running">Wi-Fi Server Running</string>
+    <string name="server_stopped">Wi-Fi Server Stopped</string>
+    <string name="btn_start_server">Start Wi-Fi Server</string>
+    <string name="btn_stop_server">Stop Wi-Fi Server</string>
+    <string name="btn_new_pin">New PIN</string>
+    <string name="btn_clear_home">Clear Home</string>
+    <string name="btn_clear_screensaver">Clear Screensaver</string>
+    <string name="pin_label">Pairing PIN: %1$s</string>
+    <string name="scan_hint">Scan the QR code or open this address on your phone or laptop:</string>
+    <string name="no_wifi">Connect this TV to Wi-Fi or Ethernet to start.</string>
+    <string name="launcher_missing">Launcher bridge not found. Install the updated tvhome launcher first.</string>
+    <string name="home_status_set">Home Wallpaper: Custom image active</string>
+    <string name="home_status_default">Home Wallpaper: Theme default</string>
+    <string name="ss_status_set">Screensaver Wallpaper: Custom image active</string>
+    <string name="ss_status_default">Screensaver Wallpaper: Follows Home / theme</string>
+    <string name="notif_channel">Wallpaper Sync Server</string>
+    <string name="notif_title">Wallpaper Sync is listening</string>
+    <string name="notif_body">Open %1$s on your phone to change wallpapers</string>
+</resources>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.gathin.tvhome.OrderTest" tests="10" skipped="0" failures="0" errors="0" timestamp="2026-11-13T11:55:42" hostname="POOMATTATHIL" time="0.006">
+  <properties/>
+  <testcase name="dockedFollowsTheDockAppsCheck" classname="com.gathin.tvhome.OrderTest" time="0.002"/>
+  <testcase name="rejectsABadDockedLine" classname="com.gathin.tvhome.OrderTest" time="0.0"/>
+  <testcase name="dockedRoundTrips" classname="com.gathin.tvhome.OrderTest" time="0.0"/>
+  <testcase name="savedTilesComeFirstAndNewOnesKeepTheirOrderAfter" classname="com.gathin.tvhome.OrderTest" time="0.002"/>
+  <testcase name="roundTrips" classname="com.gathin.tvhome.OrderTest" time="0.0"/>
+  <testcase name="ranksFollowTheSavedOrder" classname="com.gathin.tvhome.OrderTest" time="0.0"/>
+  <testcase name="changedDockAppsDropTheSavedOrder" classname="com.gathin.tvhome.OrderTest" time="0.001"/>
+  <testcase name="anOrderWithoutDockedLeavesTheDockToDockApps" classname="com.gathin.tvhome.OrderTest" time="0.0"/>
+  <testcase name="emptyOrderRoundTrips" classname="com.gathin.tvhome.OrderTest" time="0.001"/>
+  <testcase name="rejectsWhatIsNotAnOrder" classname="com.gathin.tvhome.OrderTest" time="0.0"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>
