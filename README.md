@@ -5,7 +5,8 @@
 # CleanYourTV — Optimised Version (v6.3)
 
 > [!TIP]
-> **High-Performance Optimised Edition (v6.3)**  
+> **High-Performance Optimised Edition (v8.0)**  
+> Forked from and built on the original **[CleanYourTV](https://github.com/Gathin23/cleanyourtv)** by **[@Gathin23](https://github.com/Gathin23)** — full credit to Gathin for creating the core launcher, debloat tools, safety architecture, and TV compatibility list.  
 > Maintained by [@emmanuel11003](https://github.com/emmanuel11003). Thoroughly optimized, tested, and verified on real hardware (**Haier MatrixTV DE 55" Google TV**, Android 14, MediaTek MT9676).  
 > 
 > 📖 **Full Release Notes & Telemetry**: [V6_2_RELEASE_NOTES.md](V6_2_RELEASE_NOTES.md) | [V6_1_RELEASE_NOTES.md](V6_1_RELEASE_NOTES.md) | [V6_RELEASE_NOTES.md](V6_RELEASE_NOTES.md)
