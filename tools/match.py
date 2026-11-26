@@ -4,13 +4,17 @@
     match.py <saved pm list packages> [--examples <folder>]
 
 Save the TV's packages once (`tools/venv/bin/python -I tools/tv.py 'pm list packages' > packages.txt`),
-then run this: for every package in that file it prints how many examples/*/debloat.txt disable it, how
-many name it commented out (kept on), and the trailing comment those lines give it most often. A package
-that disable.sh refuses as one of Android's core packages (#884) is marked `never`, whatever any list
-says.
+then run this: for every package in that file it prints how many of the lists in examples/ disable it,
+how many name it commented out (kept on), and the trailing comment those lines give it most often. A
+folder can hold a second list beside its debloat.txt - google-chromecast-gtv-4k/debloat-keep-cast.txt,
+sony-bravia-4k-ur3/debloat-display-only.txt - and tools/disable.sh applies one like any other, so every
+debloat*.txt is read rather than the first only: a package that one of them alone disables is a package
+some tested set turned off, and counting it as 0 would read as no list having tried it. A package that
+disable.sh refuses as one of Android's core packages (#884) is marked `never`, whatever any list says.
 
 It reads files only: no TV, no ADB client, nothing written. It ranks nothing and suggests no list; the
 counts are what the lists say, not a verdict for this TV.
+Package files may be UTF-8 (with or without a BOM), or BOM-marked UTF-16 as Windows PowerShell writes.
 
 Exit codes: 0 the table was printed, 2 the packages file, the examples folder or a list in it could not
 be read.
@@ -30,19 +34,30 @@ EXAMPLES = Path(__file__).resolve().parents[1] / "examples"
 def read_packages(path):
     """The package names in a saved `pm list packages` answer, sorted and without repeats.
 
-    `package:<name>` lines are what pm prints; with -f the line is `package:<apk path>=<name>`. A bare
-    name on its own line is taken too, so a hand-trimmed file works.
+    `package:<name>` lines are what pm prints; with -f the line is `package:<apk path>=<name>`, and -i
+    and -U add `installer=<package>` and `uid:<n>` after the name. A bare
+    name on its own line is taken too, so a hand-trimmed file works. `android` itself is the one name
+    that needs that: it is a package with no dot (the framework package, `package:android`), so the
+    name test below would not take it and its row - the `never` this tool promises for every core
+    package - would be missing from the table.
     """
     try:
-        text = Path(path).read_text(encoding="utf-8-sig", errors="replace")
+        data = Path(path).read_bytes()
     except OSError as e:
         raise SystemExit(f"could not read {path} ({e.strerror or e}): pass a saved `pm list packages`")
+    # PowerShell 5.1 redirection writes UTF-16; its BOM identifies the byte order.
+    encoding = "utf-16" if data.startswith((b"\xff\xfe", b"\xfe\xff")) else "utf-8-sig"
+    text = data.decode(encoding, errors="replace")
     names = set()
     for line in text.splitlines():
         line = line.strip()
         if line.startswith("package:"):
-            line = line[len("package:"):].rsplit("=", 1)[-1].strip()
-        if recovery.PACKAGE_RE.fullmatch(line):
+            # -i and -U add words after the name (`installer=...`, `uid:...`); the name is the first.
+            words = line[len("package:"):].split()
+            line = words[0].rsplit("=", 1)[-1] if words else ""
+        # A name without a dot is taken only when disable.sh would refuse it anyway (the one such name
+        # in CORE_RE is `android`), so a stray word such as `Total` or `not_a_package` is still skipped.
+        if recovery.PACKAGE_RE.fullmatch(line) or recovery.CORE_RE.match(line):
             names.add(line)
     if not names:
         raise SystemExit(f"{path}: no package names in it: pass a saved `pm list packages`")
@@ -76,10 +91,24 @@ def read_list(text):
 
 
 def tally(packages, examples):
-    """{package: (disabled, commented, most common note)} over every examples/*/debloat.txt."""
-    lists = sorted(Path(examples).glob("*/debloat.txt"))
+    """{package: (disabled, commented, most common note)} over every examples/*/debloat*.txt."""
+    # The same discovery tests/test_examples.py and tests/test_stock_launcher_undo.py sweep with: a folder
+    # may ship a second list beside debloat.txt, and tools/disable.sh takes it like the first.
+    # glob() suppresses directory read errors, which would silently produce a partial tally.
+    lists = []
+    root = Path(examples)
+    try:
+        with os.scandir(root) as folders:
+            for folder in folders:
+                if folder.is_dir():
+                    with os.scandir(folder.path) as entries:
+                        lists.extend(Path(entry.path) for entry in entries
+                                     if Path(entry.name).match("debloat*.txt"))
+    except OSError as e:
+        raise SystemExit(f"could not read {e.filename or examples} ({e.strerror or e}): no counts printed")
+    lists.sort()
     if not lists:
-        raise SystemExit(f"{examples}: no */debloat.txt lists in it")
+        raise SystemExit(f"{examples}: no */debloat*.txt lists in it")
     wanted = set(packages)
     disabled, commented = Counter(), Counter()
     notes = {name: Counter() for name in packages}
@@ -105,6 +134,12 @@ def tally(packages, examples):
 
 
 def main(argv=None):
+    # A console code page such as cp1252 cannot print every note; print a replacement character instead of stopping.
+    for stream in (sys.stdout, sys.stderr):
+        try:
+            stream.reconfigure(errors="replace")
+        except (AttributeError, ValueError):
+            pass
     parser = argparse.ArgumentParser(
         description="For each package in a saved `pm list packages`, how many tested lists in examples/ "
                     "disable it or keep it commented out. Reads files only.")

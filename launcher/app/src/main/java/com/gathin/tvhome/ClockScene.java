@@ -91,8 +91,10 @@ final class ClockScene {
     }
     private int colorIndex;
     private int glowColor;
-    /** clock_wallpaper or clock_glow false: something else (a picture, or plain black) replaced the coloured glow. */
+    /** clock_wallpaper: a picture replaced the coloured glow. */
     private boolean wallpaperShown;
+    /** clock_glow false: plain black behind the clock, whether or not a picture shows. */
+    private boolean glowOff;
     /** clock_wallpaper: the picture start() decodes, its darkening, and the resources to draw it with. */
     private File wallpaperFile;
     private int wallpaperShade;
@@ -159,7 +161,7 @@ final class ClockScene {
      * clock_wallpaper: put the picture Home is showing behind the clock, darkened by clock_wallpaper_dim, in
      * place of the glow, and carry a collection's rotation on while the screensaver is up. Decoded off the main
      * thread at screen size in RGB_565 (4 MB at 1080p), like Home's own; until then, or if it cannot be read,
-     * the glow stays.
+     * the glow stays, unless clock_glow is false.
      * Call before start(), which starts the decode (again after a stop() that dropped an unfinished one).
      */
     void useHomeWallpaper(Context ctx) {
@@ -310,6 +312,8 @@ final class ClockScene {
             }
             options.inPreferredConfig = Bitmap.Config.RGB_565;
             options.inMutable = shade != 0;
+            // sRGB at decode time, as WallpaperPlayer: a colour-profiled photo would be converted every frame.
+            options.inPreferredColorSpace = android.graphics.ColorSpace.get(android.graphics.ColorSpace.Named.SRGB);
             Bitmap decoded = BitmapFactory.decodeFile(file.getPath(), options);
             if (decoded == null) return null;
             if (shade != 0) new Canvas(decoded).drawColor(shade);
@@ -372,7 +376,7 @@ final class ClockScene {
     }
 
     private void shiftGlow() {
-        if (wallpaperShown) return;
+        if (wallpaperShown || glowOff) return;
         int from = glowColor;
         colorIndex = (colorIndex + 1) % PALETTE.length;
         int to = PALETTE[colorIndex];

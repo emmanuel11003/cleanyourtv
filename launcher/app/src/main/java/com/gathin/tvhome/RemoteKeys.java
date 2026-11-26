@@ -2,7 +2,6 @@ package com.gathin.tvhome;
 
 import android.accessibilityservice.AccessibilityService;
 import android.accessibilityservice.AccessibilityServiceInfo;
-import android.app.ActivityOptions;
 import android.content.ActivityNotFoundException;
 import android.content.ComponentName;
 import android.content.Context;
@@ -10,7 +9,6 @@ import android.content.Intent;
 import android.media.AudioManager;
 import android.media.tv.TvContract;
 import android.os.Build;
-import android.os.Bundle;
 import android.provider.Settings;
 import android.os.Handler;
 import android.os.Looper;
@@ -37,7 +35,8 @@ import java.util.regex.Pattern;
  * A target of "input:<input id>" switches to that TV input (an HDMI port) instead of opening an app, a target
  * of "inputs" opens the input switcher, for a remote whose source button sends a key Android does not map,
  * one of the action words (back, home, recents, mute, sleep, screensaver, settings, wifi, library) does that action, and
- * "package/.Activity" opens that activity rather than the app's launcher entry (an add-on's quick bar, say).
+ * "package/.Activity" opens that activity rather than the app's launcher entry (an add-on's quick bar, say), and
+ * "action:<intent action>" starts that action (TCL's picture panel: action:android.settings.DISPLAY_SETTINGS).
  */
 final class RemoteKeys {
 
@@ -131,8 +130,9 @@ final class RemoteKeys {
     /**
      * scancode -> package, from the "scan:490:com.wbd.hbomax" entries of the same list. For remotes that send
      * several app buttons as one keycode and tell them apart by scancode (Sony BRAVIA: YouTube, Prime Video and
-     * Disney+ are all keycode 196, scancodes 485, 490 and 491). Find it with `getevent -lt` while pressing the
-     * button: the EV_KEY code, in hex. Other entries are skipped; for a scancode listed twice the last entry wins.
+     * Disney+ are all keycode 196, scancodes 485, 490 and 491). Find it with `getevent -t` while pressing the
+     * button: the EV_KEY code, the hex number after 0001 on its line, which this list takes in decimal (01ea is 490).
+     * Other entries are skipped; for a scancode listed twice the last entry wins.
      */
     static Map<Integer, String> parseAppScancodes(Iterable<String> entries) {
         Map<Integer, String> keys = new HashMap<>();
@@ -179,6 +179,14 @@ final class RemoteKeys {
         if (target == null || front == null || front.isEmpty()) return false;
         int slash = target.indexOf('/');
         return (slash < 0 ? target : target.substring(0, slash)).equals(front);
+    }
+
+    /** The app in front, from HomeKeyService's window changes while app_keys has "front:" entries; "" otherwise. */
+    static String frontPackage = "";
+
+    /** A tap's target for both helpers: its "front:" entry while the button's own app is in front, else the usual one. */
+    static String tap(String target, String alt) {
+        return alt != null && inFront(target, frontPackage) ? alt : target;
     }
 
     /** Created on first use: building a Handler while the class loads breaks the JVM tests. */
@@ -362,7 +370,11 @@ final class RemoteKeys {
         if (!isAction(target)) return false;
         int global = globalAction(target, Build.VERSION.SDK_INT);
         if (global != 0) {
-            if (ctx instanceof AccessibilityService) ((AccessibilityService) ctx).performGlobalAction(global);
+            // Home's own fallback path (vendor keys only the focused window gets) has no global actions: a bound helper
+            // performs them, so back, home, recents and sleep mapped to such a key are not swallowed.
+            AccessibilityService service = ctx instanceof AccessibilityService ? (AccessibilityService) ctx
+                    : HomeKeyService.running != null ? HomeKeyService.running : InputKeyService.running;
+            if (service != null) service.performGlobalAction(global);
             return true;
         }
         switch (target) {
@@ -399,40 +411,9 @@ final class RemoteKeys {
         return true;
     }
 
-    private static volatile Config cachedConfig;
-    private static volatile long cachedSettingsRev = Long.MIN_VALUE;
-
-    private static Config cachedConfig(Context ctx) {
-        long rev = ctx.getSharedPreferences(Config.SETTINGS_NAME, Context.MODE_PRIVATE)
-                .getLong(Config.SETTINGS_REVISION_KEY, 0L);
-        Config cfg = cachedConfig;
-        if (cfg != null && cachedSettingsRev == rev) return cfg;
-        cfg = Config.load(ctx);
-        cachedConfig = cfg;
-        cachedSettingsRev = rev;
-        return cfg;
-    }
-
-    private static Bundle openOpts(Context ctx) {
-        try {
-            Config cfg = cachedConfig(ctx);
-            if (cfg.animations && !cfg.reducedMotion) {
-                return ActivityOptions.makeCustomAnimation(ctx, R.anim.app_open_enter, R.anim.app_open_exit).toBundle();
-            }
-            return ActivityOptions.makeCustomAnimation(ctx, 0, 0).toBundle();
-        } catch (Throwable ignored) {}
-        return null;
-    }
-
-    private static void startWithOpts(Context ctx, Intent intent) {
-        Bundle opts = openOpts(ctx);
-        if (opts != null) ctx.startActivity(intent, opts);
-        else ctx.startActivity(intent);
-    }
-
     private static void start(Context ctx, Intent intent) {
         try {
-            startWithOpts(ctx, intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+            ctx.startActivity(intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
         } catch (ActivityNotFoundException | SecurityException ignored) {
         }
     }
@@ -451,17 +432,20 @@ final class RemoteKeys {
     static void launch(Context ctx, String pkg) {
         if (pkg == null || runAction(ctx, pkg)) return;
         if (INPUTS.equals(pkg)) {
-            Intent viewInputs = new Intent("com.android.tv.action.VIEW_INPUTS");
-            try {
-                ctx.startActivity(viewInputs.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
-                return;
-            } catch (ActivityNotFoundException | SecurityException ignored) {
-            }
+            // This launcher's own Inputs menu, as InputsRequestActivity opens it: addressed to Home directly, so a
+            // vendor input picker that also answers VIEW_INPUTS never turns it into a chooser.
             try {
                 ctx.startActivity(new Intent(ctx, MainActivity.class).setAction(MainActivity.ACTION_VIEW_INPUTS)
                         .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
-            } catch (ActivityNotFoundException | SecurityException ignored) {
+            } catch (ActivityNotFoundException ignored) {
             }
+            return;
+        }
+        if (pkg.startsWith("action:")) {
+            // An intent action, for vendor screens that close themselves unless opened by action, e.g.
+            // "action:android.settings.DISPLAY_SETTINGS" for TCL's picture panel (com.tcl.settings/.PictureActivity).
+            String action = pkg.substring("action:".length()).trim();
+            if (!action.isEmpty()) start(ctx, new Intent(action));
             return;
         }
         String guide = guidePackage(pkg);
@@ -481,7 +465,7 @@ final class RemoteKeys {
                     .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             // Aimed at the Live TV app first, as the Inputs menu does: an app that also claims the channel URI
             // (the Fluffy file manager on a TCL G03) turned the press into a chooser.
-            String liveTv = cachedConfig(ctx).liveTvPackage;
+            String liveTv = Config.load(ctx).liveTvPackage;
             if (liveTv != null && !liveTv.isEmpty()) {
                 try {
                     ctx.startActivity(new Intent(view).setPackage(liveTv));
@@ -498,26 +482,16 @@ final class RemoteKeys {
         ComponentName activity = isActivity(pkg) ? ComponentName.unflattenFromString(pkg) : null;
         if (activity != null) {
             try {
-                Bundle opts = openOpts(ctx);
-                if (opts != null) {
-                    ctx.startActivity(new Intent().setComponent(activity).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK), opts);
-                } else {
-                    ctx.startActivity(new Intent().setComponent(activity).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
-                }
+                ctx.startActivity(new Intent().setComponent(activity).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
             } catch (ActivityNotFoundException | SecurityException ignored) {
             }
             return;
         }
         Intent open = ctx.getPackageManager().getLeanbackLaunchIntentForPackage(pkg);
         if (open == null) open = ctx.getPackageManager().getLaunchIntentForPackage(pkg);
-        if (open == null) {
-            if ("com.mediatek.wwtv.tvcenter".equals(pkg) || "com.mediatek.tv.oneworld.tvcenter".equals(pkg)) {
-                launch(ctx, "input:com.mediatek.dtv.tvinput.dvbtuner/.DvbTvInputService/HW0");
-            }
-            return;
-        }
+        if (open == null) return;
         try {
-            startWithOpts(ctx, open.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+            ctx.startActivity(open.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
         } catch (ActivityNotFoundException | SecurityException ignored) {
         }
     }

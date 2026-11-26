@@ -12,19 +12,22 @@ Set TV_HOST to the TV's IP (or IP:port). Usage:
     tv.py --reboot                     return once the reboot request is accepted; the TV may still be restarting
     tv.py --help                       this text; needs neither the venv nor a TV
 
-Exit status: 0 the command ran (the TV's own answer is in its output), 1 the screenshot came back
-empty or failed, a pull the TV did not send (the local file is left as it was), a push the TV refused
-(what it said, and that the file there may be incomplete), or a command's answer was lost when the TV
-dropped the connection,
+Exit status: 0 the command ran (the TV's own answer is in its output), or the reader stopped reading that
+answer before it was all out (a pager, `head`: the run printed as far as they read, which is not a
+failure), 1 the screenshot came back empty or failed, a pull the TV did not send (the local file is left
+as it was), a push the TV refused (what it said, and that the file there may be incomplete), or a
+command's answer was lost when the TV dropped the connection,
 2 it was refused before anything ran on the TV - a flag it does not have, one of its own with the wrong
 number of words, a local path that cannot be used, a port it could not open, or a TV_HOST that is a URL
 or a path instead of the TV's address. A flag and its count are
 judged before TV_HOST is read, so a typo names the usage instead of the TV's address.
+Batch input must be UTF-8 without NUL bytes; the whole list is checked before connecting.
 
 Set TV_ADB_BINARY to the Google adb executable to use an already connected, paired transport
 (including encrypted Wireless debugging). See tools/native-adb.md.
 """
 import errno
+import io
 import os
 import re
 import shutil
@@ -32,11 +35,46 @@ import subprocess
 import sys
 import time
 
+
+def stopped_reading():
+    """What a run answers when the reader closed the pipe before the answer was all out.
+
+    `tv.py <command> | head` or `| less` quits at the first screen, and the answer here is the TV's own
+    output, which for dumpsys or logcat is longer than the pipe the two share: the write then fails with
+    BrokenPipeError, which used to leave the reader a traceback and exit 1 - the status this docstring
+    keeps for a command whose answer was lost, or a screenshot or push that failed, none of which
+    happened. The command had already run on the TV and its answer was printed as far as the reader read,
+    so this is the 0 the docstring gives a command that ran.
+
+    stdout is pointed at /dev/null before returning, because the interpreter flushes it again at exit and
+    would print "Exception ignored in: ... BrokenPipeError" onto the stderr of a run that went fine.
+    """
+    try:
+        os.dup2(os.open(os.devnull, os.O_WRONLY), sys.stdout.fileno())
+    except (AttributeError, OSError, ValueError):
+        pass
+    return 0
+
+
+WINDOWS = os.name == "nt"
+
+
+def reader_gone(e):
+    """True when e is the reader of stdout having gone: BrokenPipeError, or EINVAL from a pipe on Windows."""
+    return isinstance(e, BrokenPipeError) or (WINDOWS and getattr(e, "errno", None) == errno.EINVAL)
+
+
 # -h/--help before the adb_shell imports and before TV_HOST is read: the usage is the first thing a
 # reader types at a script they do not know, and it needs neither the venv nor a TV. The TV_HOST check
 # below exits at import time, so a flag handled after it could never print anything but that error.
 if sys.argv[1:2] and sys.argv[1] in ("-h", "--help"):
-    print((__doc__ or "").strip())
+    try:
+        print((__doc__ or "").strip())
+        sys.stdout.flush()
+    except OSError as e:
+        if not reader_gone(e):
+            raise
+        sys.exit(stopped_reading())
     sys.exit(0)
 
 USAGE = """usage:
@@ -126,25 +164,6 @@ for _stream in (sys.stdout, sys.stderr):
     except (AttributeError, ValueError):
         pass
 
-_adb_device = sys.modules.get("adb_shell.adb_device")
-if _adb_device and hasattr(_adb_device, "get_files_to_push"):
-    _orig_get_files_to_push = _adb_device.get_files_to_push
-
-    def _get_files_to_push(local_path, device_path):
-        is_dir, local_paths, device_paths = _orig_get_files_to_push(local_path, device_path)
-        if not is_dir:
-            return is_dir, local_paths, device_paths
-        prefix = "" if device_path == "/" else device_path.rstrip("/")
-        # adb_shell 0.4.4 returns bare os.listdir() names without joining local_path.
-        pairs = []
-        for entry in local_paths:
-            full = entry if os.path.dirname(entry) else os.path.join(local_path, entry)
-            if not os.path.isdir(full):
-                pairs.append((full, f"{prefix}/{os.path.basename(full)}"))
-        return True, [p[0] for p in pairs], [p[1] for p in pairs]
-
-    _adb_device.get_files_to_push = _get_files_to_push
-
 def split_host_port(endpoint):
     """Split host:port or [ipv6]:port into (host, port_or_none)."""
     if endpoint.startswith("["):
@@ -179,7 +198,9 @@ def address_problem(raw):
     return None
 
 
-_raw_host = os.environ.get("TV_HOST")
+# Stripped: an address copied off a page or out of a file often carries a space or a newline, and the
+# socket read "192.168.1.50 " as a host name it could not find, so the TV and its network were blamed.
+_raw_host = (os.environ.get("TV_HOST") or "").strip()
 if not _raw_host:
     sys.exit("Set TV_HOST to your TV's IP address, e.g.  TV_HOST=192.168.1.50 tools/tv.py --probe\n"
              "(find it under Settings → Network, or look for the TV in `arp -a`)")
@@ -191,6 +212,12 @@ if _problem:
                      f"TV_HOST=192.168.1.50 tools/tv.py --probe\n")
     sys.exit(2)
 HOST, _endpoint_port = split_host_port(_raw_host)
+if not HOST:
+    # `:5555` or `[]:5555`: a port with no address in front of it, which the socket answered as a TV it
+    # could not reach.
+    sys.stderr.write(f"TV_HOST={_raw_host!r} has no address before the port. Pass the TV's IP, e.g.  "
+                     f"TV_HOST=192.168.1.50:5555 tools/tv.py --probe\n")
+    sys.exit(2)
 _port_str = _endpoint_port or os.environ.get("TV_PORT") or "5555"
 try:
     PORT = int(_port_str)
@@ -280,6 +307,8 @@ class NativeAdbDevice:
     # b64push sizes its shell commands from this payload bound. A small value also
     # keeps adb's command-line arguments below Windows' process argument limit.
     max_chunk_size = 4096
+    # A shell OPEN also carries the service prefix and its terminating NUL.
+    max_shell_command_size = max_chunk_size - len(b"shell:\0")
 
     def __init__(self, binary, host, port, timeout):
         self.binary = binary
@@ -431,22 +460,6 @@ def lost_connection(e, command, position=None):
             f"packages a debloat batch disabled). See docs/TROUBLESHOOTING.md#connecting.")
 
 
-class _ConnectionLost(Exception):
-    """Sentinel raised after lost_connection() has printed its diagnostic."""
-
-
-def _shell_or_report(dev, command, position=None, **kwargs):
-    """Run a shell command on `dev`, translating transport drops via lost_connection()."""
-    try:
-        return dev.shell(command, **kwargs)
-    except Exception as e:
-        why = lost_connection(e, command, position)
-        if why is None:
-            raise
-        print(why, file=sys.stderr)
-        raise _ConnectionLost from e
-
-
 # screencap writes the PNG on the TV and we pull the file afterwards: adb_shell's shell() decodes
 # what comes back as text, which corrupts an image, and `exec-out screencap -p` returns a broken
 # PNG on some MediaTek sets (docs/TROUBLESHOOTING.md). /data/local/tmp is writable from shell.
@@ -518,6 +531,14 @@ def transfer_args(args):
         usage_error("--pull needs the path on the TV to read")
     if not local:
         usage_error("--pull needs the local file to save to")
+    # The three shapes screenshot_target() refuses for the same reason: a blank name was written as a
+    # file called "   " and the run said "pulled", and a name ending in a separator, `.` or `..` was only
+    # found out by os.replace() after the TV had sent the whole file.
+    if not local.strip():
+        usage_error(f"--pull's local file is blank ({local!r}): name the file to save to")
+    if local.endswith(("/", os.sep)) or os.path.basename(local) in (".", ".."):
+        path_error(f"{local} names a folder, and --pull writes the file to the name it is given: give a "
+                   f"file name. Nothing was pulled.")
     folder = os.path.dirname(os.path.abspath(local))
     if not os.path.isdir(folder):
         path_error(f"there is no folder {folder} for {local}: create it, or pull into a folder that is "
@@ -559,20 +580,21 @@ def screenshot_target(local):
     if not local.strip():
         usage_error(f"--screenshot's file is blank ({local!r}): name the file to save to, such as "
                     f"shots/01-home.png")
-    if os.path.basename(local) in (".", ".."):
-        # `--screenshot newshots/.` names that folder itself (and `newshots/..` its parent), and the folder
-        # is not there yet: check the dot before os.path.isdir() because Windows resolves `..` in paths to an
-        # existing parent directory, and os.path.abspath() drops the tail on both platforms.
-        path_error(f"{local} ends in {os.path.basename(local)!r}, which names a folder rather than a file, "
-                   f"and --screenshot saves the PNG to a file: give the file a name such as "
-                   f"{os.path.join(local, '01-home.png')}. Nothing was captured.")
     if os.path.isdir(local):
         path_error(f"{local} is a folder, and --screenshot saves the PNG to a file: give a file name, such "
                    f"as {os.path.join(local, '01-home.png')}. Nothing was captured.")
-    if local.endswith(("/", os.sep)) or (os.altsep and local.endswith(os.altsep)):
+    if local.endswith(("/", os.sep)):
         path_error(f"{local} ends with a separator, so it names a folder, and --screenshot saves the PNG "
                    f"to a file: give a file name such as {os.path.join(local, '01-home.png')}. "
                    f"Nothing was captured.")
+    if os.path.basename(local) in (".", ".."):
+        # `--screenshot newshots/.` names that folder itself (and `newshots/..` its parent), and the folder
+        # is not there yet: os.path.isdir() answers no, the check above sees a dot rather than a separator,
+        # and os.path.abspath() drops the tail, so the parent was made, `screencap` ran on the TV, and the
+        # pull's open() of the destination - a path with no such folder - was the first thing to fail.
+        path_error(f"{local} ends in {os.path.basename(local)!r}, which names a folder rather than a file, "
+                   f"and --screenshot saves the PNG to a file: give the file a name such as "
+                   f"{os.path.join(local, '01-home.png')}. Nothing was captured.")
     folder = os.path.dirname(os.path.abspath(local))
     if os.path.exists(folder) and not os.path.isdir(folder):
         path_error(f"{folder} is a file, not a folder: --screenshot cannot save {local} inside it. "
@@ -657,42 +679,35 @@ def screenshot(dev, local, keys=(), wait=0.0):
 
     A picture the TV does not send is pull()'s failure, not an empty screenshot: it answers in words,
     exit 1, and the file that was already there is left as it was."""
-    try:
-        for i, key in enumerate(keys):
-            if i:
-                time.sleep(KEY_GAP_S)
-            _shell_or_report(dev, f"input keyevent {keyevent(key)}")
-        if wait:
-            time.sleep(wait)
-        # The exit status tells a capture that failed (no file to pull) from one that came back empty: with
-        # Netflix in front a TCL C755 exits 1 and leaves a 0-byte file, which is the empty case below.
-        said = _shell_or_report(dev, f"rm -f {SHOT_REMOTE}; screencap -p {SHOT_REMOTE}; echo rc=$?",
-                                read_timeout_s=120.0)
-        rc = next((int(line.strip()[3:]) for line in said.splitlines() if re.fullmatch(r"rc=-?\d+", line.strip())), None)
-        if rc not in (None, 0, 1):
-            other = " ".join(line.strip() for line in said.splitlines() if line.strip() and not line.strip().startswith("rc="))
-            try:
-                dev.shell(f"rm -f {SHOT_REMOTE}", read_timeout_s=60.0)
-            except Exception:
-                pass
-            print(f"screencap failed on the TV (exit status {rc}): {other or 'no output'}", file=sys.stderr)
-            return 1
-        # The pull is the other half of a capture, and it fails the way --pull's does: adb_shell opens the
-        # local path before it asks the TV, so a dropped connection emptied the picture that was already
-        # there - the one the reader was about to compare against - and ended in a traceback out of a
-        # command PROMPT.md, AGENTS.md and CONTRIBUTING.md all hand out. pull() answers that, and answers
-        # it before this run says anything about a picture it did not get.
-        if pull(dev, SHOT_REMOTE, local, announce=False) != 0:
-            # What usually failed is the transport, so the capture nobody will read is worth one attempt
-            # only, and that attempt cannot raise on top of the failure the pull just reported.
-            try:
-                dev.shell(f"rm -f {SHOT_REMOTE}", read_timeout_s=60.0)
-            except Exception:
-                pass
-            return 1
-        _shell_or_report(dev, f"rm -f {SHOT_REMOTE}", read_timeout_s=60.0)   # leave nothing behind on the TV
-    except _ConnectionLost:
+    for i, key in enumerate(keys):
+        if i:
+            time.sleep(KEY_GAP_S)
+        dev.shell(f"input keyevent {keyevent(key)}")
+    if wait:
+        time.sleep(wait)
+    # The exit status tells a capture that failed (no file to pull) from one that came back empty: with
+    # Netflix in front a TCL C755 exits 1 and leaves a 0-byte file, which is the empty case below.
+    said = dev.shell(f"rm -f {SHOT_REMOTE}; screencap -p {SHOT_REMOTE}; echo rc=$?", read_timeout_s=120.0)
+    rc = next((int(line.strip()[3:]) for line in said.splitlines() if re.fullmatch(r"rc=-?\d+", line.strip())), None)
+    if rc not in (None, 0, 1):
+        other = " ".join(line.strip() for line in said.splitlines() if line.strip() and not line.strip().startswith("rc="))
+        dev.shell(f"rm -f {SHOT_REMOTE}", read_timeout_s=60.0)
+        print(f"screencap failed on the TV (exit status {rc}): {other or 'no output'}", file=sys.stderr)
         return 1
+    # The pull is the other half of a capture, and it fails the way --pull's does: adb_shell opens the
+    # local path before it asks the TV, so a dropped connection emptied the picture that was already
+    # there - the one the reader was about to compare against - and ended in a traceback out of a
+    # command PROMPT.md, AGENTS.md and CONTRIBUTING.md all hand out. pull() answers that, and answers
+    # it before this run says anything about a picture it did not get.
+    if pull(dev, SHOT_REMOTE, local, announce=False) != 0:
+        # What usually failed is the transport, so the capture nobody will read is worth one attempt
+        # only, and that attempt cannot raise on top of the failure the pull just reported.
+        try:
+            dev.shell(f"rm -f {SHOT_REMOTE}", read_timeout_s=60.0)
+        except Exception:
+            pass
+        return 1
+    dev.shell(f"rm -f {SHOT_REMOTE}", read_timeout_s=60.0)   # leave nothing behind on the TV
     size = os.path.getsize(local) if os.path.exists(local) else 0
     if size == 0:
         # 0 bytes means the input, not the connection: Live TV and HDMI captures come back empty on
@@ -730,13 +745,16 @@ def pull(dev, remote, local, announce=True):
 
     `announce=False` is for a caller that prints its own line about the file, as a capture does; a
     failure is reported either way, because it is the run's answer rather than a note about it."""
-    folder, name = os.path.split(os.path.abspath(local))
+    # open(local, "wb") follows a file symlink. Stage beside its target and replace that target,
+    # rather than replacing the link and leaving the file the reader meant unchanged.
+    destination = os.path.realpath(local) if os.path.islink(local) else local
+    folder, name = os.path.split(os.path.abspath(destination))
     part = os.path.join(folder, f".{name}.{os.getpid()}.part")
     try:
         dev.pull(remote, part, transport_timeout_s=300.0, read_timeout_s=300.0)
-        if os.path.exists(local):
-            shutil.copymode(local, part)
-        os.replace(part, local)
+        if os.path.exists(destination):
+            shutil.copymode(destination, part)
+        os.replace(part, destination)
     except Exception as e:
         try:
             os.remove(part)
@@ -791,8 +809,50 @@ def push(dev, local, remote):
 
 
 def main():
+    # A reader who closed the pipe is not a failed command: _run answers the status the work deserves, and
+    # this is the one place that turns the reader going away into the 0 stopped_reading() explains. The
+    # flush is here because a short answer stays in the buffer until the interpreter's own last flush,
+    # where the same BrokenPipeError arrives as "Exception ignored in: ... BrokenPipeError" and status 120
+    # instead of a status this docstring defines. A reader gone at that flush leaves the run's own status.
+    try:
+        code = _run()
+    except BrokenPipeError:
+        return stopped_reading()
+    try:
+        sys.stdout.flush()
+    except OSError as e:
+        if not reader_gone(e):
+            raise
+        stopped_reading()
+    return code
+
+
+def _run():
     args = sys.argv[1:]
     check_arity(args)
+    batch_lines = None
+    if args and args[0] == "--batch":
+        # The whole list is decoded before the TV is contacted, so a bad byte refuses the run instead of
+        # stopping it half way. utf-8-sig drops the BOM Windows PowerShell may prepend to piped stdin.
+        raw = sys.stdin.buffer.read()
+        try:
+            text = raw.decode("utf-8-sig")
+        except UnicodeDecodeError as e:
+            # e.start counts from after a BOM; a lone CR ends a line too, as it does in the loop below.
+            head = raw[:e.start + (3 if raw.startswith(b"\xef\xbb\xbf") else 0)]
+            bad_line = head.replace(b"\r\n", b"\n").replace(b"\r", b"\n").count(b"\n") + 1
+            print(f"--batch: line {bad_line} of the list is not UTF-8; nothing was sent to the TV. "
+                  f"Save the file as UTF-8 and run it again.", file=sys.stderr)
+            return 2
+        # NUL is valid UTF-8 but cannot be passed as a command argument to native ADB. In particular,
+        # BOM-less UTF-16 made from ASCII commands decodes as UTF-8 with NULs between the letters.
+        if "\0" in text:
+            head = text.split("\0", 1)[0]
+            bad_line = head.replace("\r\n", "\n").replace("\r", "\n").count("\n") + 1
+            print(f"--batch: line {bad_line} of the list contains a NUL byte; nothing was sent to the TV. "
+                  "Check the file encoding and save it as UTF-8 without NUL bytes.", file=sys.stderr)
+            return 2
+        batch_lines = io.StringIO(text, newline=None)
     try:
         dev = connect()
     except Exception as e:
@@ -810,43 +870,65 @@ def main():
         print("Reboot request accepted; wait for the TV to restart before reconnecting.")
         return 0
     status = 0
-    try:
-        if not args or args == ["--probe"]:
-            for p in ("ro.product.model", "ro.product.device", "ro.build.version.release",
-                      "ro.build.version.sdk", "ro.build.display.id", "ro.product.manufacturer",
-                      "ro.adb.secure", "service.adb.tcp.port"):
-                val = _shell_or_report(dev, f"getprop {p}").strip()
-                print(f"{p} = {val}")
-        elif args[0] == "--screenshot":
-            local, keys, wait = screenshot_args(args[1:])
+    if not args or args == ["--probe"]:
+        for p in ("ro.product.model", "ro.product.device", "ro.build.version.release",
+                  "ro.build.version.sdk", "ro.build.display.id", "ro.product.manufacturer",
+                  "ro.adb.secure", "service.adb.tcp.port"):
+            try:
+                got = dev.shell(f'getprop {p}').strip()
+            except Exception as e:
+                why = lost_connection(e, f"getprop {p}")
+                if why is None:
+                    raise
+                print(why, file=sys.stderr)
+                return 1
+            print(f"{p} = {got}")
+    elif args[0] == "--screenshot":
+        local, keys, wait = screenshot_args(args[1:])
+        try:
             status = screenshot(dev, local, keys, wait)
-        elif args[0] == "--push" and len(args) == 3:
-            status = push(dev, args[1], args[2])
-        elif args[0] == "--pull" and len(args) == 3:
-            status = pull(dev, args[1], args[2])
-        elif args[0] == "--batch":
-            # one shell command per stdin line, each run separately on the same connection.
-            # utf-8-sig drops the BOM Windows PowerShell may prepend to piped stdin.
-            sys.stdin.reconfigure(encoding="utf-8-sig")
-            sent = 0
-            for line in sys.stdin:
-                line = line.strip()
-                if not line or line.startswith("#"):
-                    continue
-                sent += 1
-                out = _shell_or_report(dev, line, sent, read_timeout_s=120.0)
-                sys.stdout.write(f"$ {line}\n{out}")
-                if out and not out.endswith("\n"):
-                    sys.stdout.write("\n")
-                sys.stdout.flush()
-        else:
-            line = " ".join(args)
-            out = _shell_or_report(dev, line, read_timeout_s=120.0)
-            sys.stdout.write(out)
-    except _ConnectionLost:
-        return 1
-    finally:
-        dev.close()
+        except Exception as e:
+            why = lost_connection(e, " ".join(args))
+            if why is None:
+                raise
+            print(why, file=sys.stderr)
+            return 1
+    elif args[0] == "--push" and len(args) == 3:
+        status = push(dev, args[1], args[2])
+    elif args[0] == "--pull" and len(args) == 3:
+        status = pull(dev, args[1], args[2])
+    elif args[0] == "--batch":
+        # one shell command per stdin line, each run separately on the same connection.
+        sent = 0
+        for line in batch_lines:
+            line = line.strip()
+            if not line or line.startswith("#"):
+                continue
+            sent += 1
+            try:
+                out = dev.shell(line, read_timeout_s=120.0)
+            except Exception as e:
+                why = lost_connection(e, line, sent)
+                if why is None:
+                    raise
+                print(why, file=sys.stderr)
+                return 1
+            sys.stdout.write(f"$ {line}\n{out}")
+            if out and not out.endswith("\n"):
+                sys.stdout.write("\n")
+            sys.stdout.flush()
+    else:
+        line = " ".join(args)
+        try:
+            out = dev.shell(line, read_timeout_s=120.0)
+        except Exception as e:
+            why = lost_connection(e, line)
+            if why is None:
+                raise
+            print(why, file=sys.stderr)
+            return 1
+        sys.stdout.write(out)
+    dev.close()
     return status
 
 

@@ -10,6 +10,10 @@
 # and the remote's app, Input and Settings buttons work. On this firmware
 # com.google.android.tvrecommendations comes back enabled at every boot (see its line below).
 #
+# Third unit: Turbo-X TXV-AU4395SMT (Greece), the same shandao board and build (UKNV.260304.001)
+# under the Turbo-X brand. It has its own list, debloat-turbo-x-txv-au4395smt.txt, because it keeps
+# fusion.android.tv.demo (see that line below) and other owner's choices; README.md covers it.
+#
 # Apply:   TV_HOST=<tv ip> tools/disable.sh examples/cecotec-shandao/debloat.txt
 # Undo:    TV_HOST=<tv ip> tools/restore.sh examples/cecotec-shandao/debloat.txt
 # Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
@@ -48,9 +52,10 @@
 # _airplay._tcp and _raop._tcp through NsdManager and listens on 7000. It is useless on a managed
 # network that isolates clients, though, because mDNS never reaches the other devices. Check with
 # `arp -n <tv ip>`: a placeholder MAC means proxy ARP and no AirPlay discovery, whatever you install.
-# Toshiba owner's choices: Netflix, Prime Video, Disney+, YouTube, Chromecast and the aerial
-# screensaver (com.google.android.backdrop, kept) stay; Assistant (katniss) off as below, which
-# leaves that remote's microphone button doing nothing; RiksTV off (commented line below).
+# Toshiba owner's choices: Netflix, Prime Video, Disney+, YouTube and Chromecast stay; the aerial
+# screensaver does not, since com.google.android.backdrop is disabled below - comment that line out
+# to keep it. Assistant (katniss) off as below, which leaves that remote's microphone button doing
+# nothing; RiksTV off (commented line below).
 
 # Vestel telemetry, logging and "cleaner"
 com.vestel.vestelreporter                        # Vestel reporter: INTERNET + BOOT_COMPLETED, no UI
@@ -81,6 +86,8 @@ com.google.android.katniss                       # Google Assistant and voice se
                                                  # SEARCH_LONG_PRESS; casting and the phone remote live in
                                                  # mediashell, tv.remote.service and GMS, all left enabled.
 fusion.android.tv.demo                           # shop-floor retail demo mode
+                                                 # On the Turbo-X unit it also declares a receiver for
+                                                 # the remote's Input key; that list keeps it (README.md).
 com.mediatek.tv.freeviewplay                     # Freeview Play (UK only, useless outside the UK)
 com.smartdevice.tv.aircast                       # Coocaa iCast AirPlay/mirroring app, starts at boot.
                                                  # Off by choice. Keep it if you want AirPlay without

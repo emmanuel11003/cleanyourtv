@@ -304,6 +304,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     private int[] settingsKeycodes = new int[0];
     private boolean settingsKeyPanel;
     private boolean restoreKeyServices;
+    private boolean settingsKeyClearTask;
     /** Calmer motion for weak GPUs (config.xml, reduced_motion): stiff spring, short fades, no replay. */
     boolean reducedMotion;
     /** config.xml dock_row: the first row is a separate dock (band, parked low, top shelf) rather than plain grid. */
@@ -325,6 +326,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     private static LocalDate lastPetalShower;
     /** boot_to_live_tv: open the Live TV app on the first Home of each boot. */
     boolean bootToLiveTv;
+    /** The input in the Live TV tile's launch_actions ("input:<id>"), opened at power-on instead of the Live TV app. */
+    String bootInputId;
     /** open_on_start_choice: the app picked in Launcher settings may open on the first Home of each boot. */
     boolean openOnStartChoice;
     /** open_on_start_network_wait, in ms; the boot's app while it waits for the network, and until when. */
@@ -535,6 +538,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         applyViewInputsHandler(cfg.handleViewInputs);
         settingsKeycodes = cfg.settingsKeycodes;
         settingsKeyPanel = cfg.settingsKeyPanel;
+        settingsKeyClearTask = cfg.settingsKeyClearTask;
+        settingsKeyClearTask = cfg.settingsKeyClearTask;
         COLUMNS = cfg.columns;
         animations = cfg.animations;
         advancedEffects = cfg.animations && cfg.advancedEffects;
@@ -549,6 +554,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         idleClockMs = cfg.homeIdleClockMinutes * MINUTE_MS;
         backOpensClock = cfg.backOpensClock;
         bootToLiveTv = cfg.bootToLiveTv;
+        bootInputId = LaunchActions.inputId(cfg.launchActions.get(cfg.liveTvPackage));
         openOnStartChoice = cfg.openOnStartChoice;
         openOnStartWaitMs = cfg.openOnStartNetworkWait * 1000L;
         openOnStartOnWake = OpenOnStart.onWake(cfg.openOnStartChoice, cfg.openOnStartOnWake);
@@ -846,6 +852,18 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             grid.post(this::refitGlass);
         });
 
+        // The wallpaper caption sits on the screen, not in the grid: fade it while the grid is scrolled away from
+        // the dock, so its text never lies over the tiles.
+        final int captionScrollSlop = Math.round(12 * density);
+        grid.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(@NonNull RecyclerView rv, int dx, int dy) {
+                if (wallpaperPlayer == null) return;
+                wallpaperPlayer.scrolledAway(rv.canScrollVertically(-1)
+                        && rv.computeVerticalScrollOffset() > captionScrollSlop);
+            }
+        });
+
         // Keep the glass glued to its tile while the grid scrolls.
         grid.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
@@ -1057,10 +1075,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         if (festive) applyFestiveSkin((TextView) btnInputs, (TextView) btnSettings);
 
         // Hide the glass when focus leaves the tiles.
-        getWindow().getDecorView().getViewTreeObserver().addOnGlobalFocusChangeListener((oldF, newF) -> {
-            boolean onTile = newF != null && newF.getId() == R.id.card;
-            if (!onTile) hideGlass();
-        });
+        // Taken off in onDestroy: recreate() keeps the window, and a listener left on it held every earlier Home.
+        getWindow().getDecorView().getViewTreeObserver().addOnGlobalFocusChangeListener(glassFocusListener);
 
         packageFilter.addAction(Intent.ACTION_PACKAGE_ADDED);
         packageFilter.addAction(Intent.ACTION_PACKAGE_REMOVED);
@@ -1088,7 +1104,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         } catch (RuntimeException ignored) {
         }
 
-        ConnectivityManager cm = getSystemService(ConnectivityManager.class);
+        // From the application, not this activity: on Android 12 a ConnectivityManager keeps the context it was
+        // made with (its static sInstance, and the callback Messenger the system holds), so every recreate() left
+        // the previous Home and its bitmaps behind.
+        ConnectivityManager cm = getApplicationContext().getSystemService(ConnectivityManager.class);
         TvInputManager tim = (TvInputManager) getSystemService(TV_INPUT_SERVICE);
         if (tim != null) {
             try {
@@ -1654,6 +1673,12 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         }
     }
 
+    /** Hides the glass when focus leaves the tiles (added in onCreate, removed in onDestroy). */
+    private final ViewTreeObserver.OnGlobalFocusChangeListener glassFocusListener = (oldF, newF) -> {
+        boolean onTile = newF != null && newF.getId() == R.id.card;
+        if (!onTile) hideGlass();
+    };
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -1681,7 +1706,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         }
         wallpaperPlayer.close();
         releaseSinglePassBackdrop();
-        ConnectivityManager cm = getSystemService(ConnectivityManager.class);
+        ConnectivityManager cm = getApplicationContext().getSystemService(ConnectivityManager.class);
         TvInputManager tim = (TvInputManager) getSystemService(TV_INPUT_SERVICE);
         if (tim != null && inputCallbackRegistered) {
             try {
@@ -1722,7 +1747,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                     openOwnedActivity(new Intent(this, QuickSettingsActivity.class),
                             findViewById(R.id.btnSettings), -1);
                 } else {
-                    open(systemIntent(Settings.ACTION_SETTINGS));
+                    Intent settings = systemIntent(Settings.ACTION_SETTINGS);
+                    if (settingsKeyClearTask) settings.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    open(settings);
                 }
             }
             return true;
@@ -1744,6 +1771,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
      */
     @Override
     public boolean dispatchKeyEvent(KeyEvent event) {
+        // A real key, not onUserInteraction: that also runs when the firmware starts Live TV over Home at power-on.
+        if (event.getAction() == KeyEvent.ACTION_DOWN) HomeKeyService.keyOnHome();
         if (homeIgnoreChannelKeys && RemoteKeys.isChannelKey(event.getKeyCode())) return true;
         // Vendor keys (TCL Netflix button, 4062) never reach the key services, only the focused window, so their
         // "hold:" entries run here too or nowhere. Only while resumed: onPause releases Home's holds, and a DOWN
@@ -1963,7 +1992,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         dimOthers();
     }
 
-    /** While a tile is carried, every other tile is dimmed so the carried one stands out; otherwise all are full. */
+    /** Applies tileAlpha to every attached tile (carried tile bright; the rest dim while reordering). */
     private void dimOthers() {
         for (int i = 0; i < grid.getChildCount(); i++) {
             View item = grid.getChildAt(i);
@@ -1971,13 +2000,13 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         }
     }
 
-    /** A tile's alpha: dim unless it is the carried one, or, in edit-dock mode, a dock tile other than the chosen place. */
+    /** A tile's alpha: the carried tile stays bright; every other tile is dim while reordering, including after a
+     * drop, until Back ends the mode. In edit-dock mode, dock tiles other than the chosen place are dimmed. */
     private float tileAlpha(int pos) {
         if (movingKey != null) {
             return pos != RecyclerView.NO_POSITION && movingKey.equals(adapter.keyAt(pos)) ? 1f : 0.45f;
         }
-        if (dockEditSlot >= 0 && pos >= 0 && pos < COLUMNS && pos != dockEditSlot) return 0.45f;
-        return 1f;
+        return GridNavigation.idleAlpha(pos, COLUMNS, dockEditing, dockEditSlot, reordering);
     }
 
     /** Ends the mode and saves the order if it changed since the mode started. */
@@ -1988,6 +2017,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         dockEditAppKey = null;
         drop();
         reordering = false;
+        dimOthers();   // drop() ran while reordering was still on; restore full brightness now the mode is off
         adapter.setReordering(false);
         if (festive) {
             glassAccent = 0;
@@ -3376,7 +3406,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             button.setCompoundDrawableTintList(null);
             button.setContentDescription(label);
             Intent target = launch;
-            button.setOnClickListener(v -> open(new Intent(target)));
+            // An input: action switches the TV input, as the tile for the same app does.
+            String inputId = LaunchActions.inputId(launchActions.get(pkg));
+            if (inputId != null) button.setOnClickListener(v -> TvInputRouter.openInput(this, inputId));
+            else button.setOnClickListener(v -> open(new Intent(target)));
             // After the network pill and the VPN pill; the Hebrew bar runs the other way, so before both there.
             bar.addView(button, bar.indexOfChild(getResources().getBoolean(R.bool.rtl_menu_bar) ? btnVpn : btnWifi));
             topAppButtons.add(button);
@@ -3515,7 +3548,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             else if (hour < 21) res = R.string.good_afternoon;
             else res = R.string.good_night;
         } else if ("da".equals(lang)) {
-            // Danish day parts: "God morgen" until 11, then "God formiddag" to noon.
+            // Danish day parts: "Godmorgen" until 11, then "God formiddag" to noon.
             if (hour < 5) res = R.string.good_night;
             else if (hour < 11) res = R.string.good_morning;
             else if (hour < 12) res = R.string.good_forenoon;
@@ -3705,7 +3738,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         int flame = 0;
         boolean steady = false;
         try {
-            ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+            ConnectivityManager cm = getApplicationContext().getSystemService(ConnectivityManager.class);
             boolean wifi = false, ethernet = false;
             // All networks, not just the active one: with a VPN up the active network is the VPN itself.
             for (Network net : cm != null ? cm.getAllNetworks() : new Network[0]) {

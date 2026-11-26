@@ -1,8 +1,9 @@
-﻿# Windows version of disable.sh: disable every package listed in a debloat file on the TV
+# Windows version of disable.sh: disable every package listed in a debloat file on the TV
 # (one package per line, # comments allowed). Packages are disabled for user 0, never uninstalled.
 # Undo with tools\restore.ps1 <same file>.
 #
 # Usage: tools\disable.ps1 -TvHost 192.168.1.50 examples\xiaomi-mi-tv-4a\debloat.txt
+# The list path is taken as typed: a folder like "tv [old]" needs no backtick escaping.
 param(
     [Parameter(Mandatory = $true, Position = 0)][string]$List,
     [string]$TvHost = $env:TV_HOST
@@ -11,11 +12,11 @@ $ErrorActionPreference = 'Stop'
 # Pipe plain UTF-8 to native commands; the default here prepends a BOM that corrupts the first command.
 $OutputEncoding = New-Object System.Text.UTF8Encoding $false
 $repo = Split-Path -Parent $PSScriptRoot
-if (-not (Test-Path -LiteralPath $List -PathType Leaf)) {
-    [Console]::Error.WriteLine("cannot read the list: $List")
-    exit 1
-}
 $List = (Resolve-Path -LiteralPath $List).Path
+$py = Join-Path $repo 'tools\venv\Scripts\python.exe'
+if (-not (Test-Path -LiteralPath $py)) { throw 'run: python -m venv tools\venv; tools\venv\Scripts\python.exe -m pip install -r tools\requirements.txt' }
+if (-not $TvHost) { throw 'pass -TvHost <tv ip> or set $env:TV_HOST' }
+$env:TV_HOST = $TvHost
 
 # The four guard overrides are read once here and then removed from the process environment, so an
 # override set the way the README and the scripts' own messages suggest covers exactly this run
@@ -42,19 +43,17 @@ foreach ($name in $overrideCost.Keys) {
     Remove-Item -Path "Env:$name" -ErrorAction SilentlyContinue
 }
 
-$pkgs = @(Get-Content -LiteralPath $List | ForEach-Object { ($_ -replace '#.*$', '').Trim() } | Where-Object { $_ } | ForEach-Object { ($_ -split '\s+')[0] })
+$pkgs = Get-Content -LiteralPath $List | ForEach-Object { ($_ -replace '#.*$', '').Trim() } | Where-Object { $_ } | ForEach-Object { ($_ -split '\s+')[0] }
 # Lists come from contributors and each name is pasted into a shell command on the TV (#165).
 $bad = @($pkgs | Where-Object { $_ -notmatch '^[A-Za-z_][A-Za-z0-9_]*(\.[A-Za-z0-9_]+)+$' })
 if ($bad.Count -gt 0) {
-    [Console]::Error.WriteLine("refusing $List, not a package name: $($bad -join ', ')")
-    exit 1
+    throw "refusing $List, not a package name: $($bad -join ', ')"
 }
 # Nothing to do: a list whose entries are all commented out is what CONTRIBUTING asks for while one
 # is untested. Say it here, before a query goes to the TV, rather than letting recovery.py stop the run
 # after them with a message about the record.
 if (-not $pkgs -or $pkgs.Count -eq 0) {
-    [Console]::Error.WriteLine("refusing ${List}: no package names in it (every line is a comment or blank), so nothing was sent to the TV and no recovery record was written.")
-    exit 1
+    throw "refusing ${List}: no package names in it (every line is a comment or blank), so nothing was sent to the TV and no recovery record was written."
 }
 # Core Android packages, the same block as disable.sh: with one of these disabled Android itself can stop
 # booting (#884, an original Mi TV Stick). No switch overrides it. Ext services and ext shared also
@@ -63,23 +62,12 @@ if (-not $pkgs -or $pkgs.Count -eq 0) {
 # (com.cltv.mal, com.mediatek.tis / tv.service / tv.agent) is guarded too (#1578, a Haier boot loop).
 # Protect the exact SDK sandbox package (#2557); the reported boot-failure cause is unconfirmed.
 # And com.android.location.fused: a TCL 43S5400A (V325) boot-looped into recovery with only it off (#2803).
-$coreRe = '^(android|android\.ext\.(services|shared)|com\.android\.sdksandbox|com\.android\.location\.fused|com\.android\.systemui|com\.android\.shell|com\.android\.phone|com\.android\.settings|com\.android\.tv\.settings|com\.(google\.)?android\.(permissioncontroller|packageinstaller|ext\.services|ext\.shared|modulemetadata)|com\.google\.android\.overlay\.modules.*|com\.android\.providers\..*|com\.cltv\.mal|com\.mediatek\.(tis|tv\.service|tv\.agent))$'
+$coreRe = '^(android|android\.ext\.(services|shared)|com\.(google\.)?android\.sdksandbox|com\.android\.location\.fused|com\.android\.systemui|com\.android\.shell|com\.android\.phone|com\.android\.settings|com\.android\.tv\.settings|com\.(google\.)?android\.(permissioncontroller|packageinstaller|ext\.services|ext\.shared|modulemetadata)|com\.google\.android\.overlay\.modules.*|com\.android\.providers\..*|com\.cltv\.mal|com\.mediatek\.(tis|tv\.service|tv\.agent))$'
 $coreOk = '^com\.android\.providers\.(calendar|contacts|userdictionary|blockednumber)$'
 $core = @($pkgs | Where-Object { $_ -cmatch $coreRe -and $_ -cnotmatch $coreOk })
 if ($core.Count -gt 0) {
-    [Console]::Error.WriteLine("refusing ${List}: it disables core Android or TV middleware packages, and without them the TV may not boot again (#884, #1578): $($core -join ', '). Take these lines out of the list (or comment them) and run it again. Nothing was changed on the TV.")
-    exit 1
+    throw "refusing ${List}: it disables core Android or TV middleware packages, and without them the TV may not boot again (#884, #1578): $($core -join ', '). Take these lines out of the list (or comment them) and run it again. Nothing was changed on the TV."
 }
-$py = Join-Path $repo 'tools\venv\Scripts\python.exe'
-if (-not (Test-Path -LiteralPath $py)) {
-    [Console]::Error.WriteLine('run: python -m venv tools\venv; tools\venv\Scripts\python.exe -m pip install -r tools\requirements.txt')
-    exit 1
-}
-if (-not $TvHost) {
-    [Console]::Error.WriteLine('pass -TvHost <tv ip> or set $env:TV_HOST')
-    exit 2
-}
-$env:TV_HOST = $TvHost
 # A Wi-Fi network saved during the first-run wizard belongs to setupwraith, and Android deletes it when
 # setupwraith is disabled. Skip it while it owns the saved network; `$env:FORCE_SETUPWRAITH=1` overrides.
 $setup = 'com.google.android.tungsten.setupwraith'
@@ -90,7 +78,7 @@ if ($pkgs -contains $setup -and -not $forceSetupwraith) {
     if ($LASTEXITCODE -ne 0 -or $wifi -notmatch 'cname=') {
         Write-Warning "Skipping ${setup}: could not check which app owns the saved Wi-Fi networks (dumpsys wifi failed or showed none). Try again, or set `$env:FORCE_SETUPWRAITH=1 if the TV uses Ethernet."
         $pkgs = @($pkgs | Where-Object { $_ -ne $setup })
-    } elseif ($wifi -match 'cname=\S*setupwraith') {
+    } elseif ($wifi -match 'cname=[^ ]*setupwraith') {
         Write-Warning "Skipping ${setup}: the saved Wi-Fi network belongs to it, and disabling it would delete that network and take the TV off Wi-Fi. Forget the network and join it again in Settings > Network & Internet, then run this again (or set `$env:FORCE_SETUPWRAITH=1 on Ethernet)."
         $pkgs = @($pkgs | Where-Object { $_ -ne $setup })
     }
@@ -301,11 +289,7 @@ if (-not $handlersAllow -and $pkgs.Count -gt 0) {
 # Same as disable.sh: the state undo needs is recorded before the first command reaches the TV, and
 # a failed save leaves the TV untouched (#239).
 & $py -I (Join-Path $repo 'tools\recovery.py') --save $List
-if ($LASTEXITCODE -ne 0) {
-    $rc = $LASTEXITCODE
-    [Console]::Error.WriteLine('no recovery record was written, so nothing was disabled')
-    exit $rc
-}
+if ($LASTEXITCODE -ne 0) { throw 'no recovery record was written, so nothing was disabled' }
 
 $cmds = @($pkgs | ForEach-Object { "pm disable-user --user 0 $_" }) + 'pm list packages -d'
 $cmds | & $py -I (Join-Path $repo 'tools\tv.py') --batch

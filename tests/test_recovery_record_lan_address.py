@@ -13,6 +13,7 @@ Run from the repository root: python3 -m unittest discover -s tests -v
 import json
 import os
 from pathlib import Path
+import shutil
 import subprocess
 import sys
 import unittest
@@ -48,6 +49,10 @@ class RecordPerLanAddressTest(unittest.TestCase):
         harness.RecoveryRecordTest.setUp(self)
 
     def run_script(self, script, host, port=None):
+        # Same guard as the harness: disable.sh and restore.sh are POSIX scripts. On Windows
+        # shutil.which finds the WSL launcher, which fails when no distro is installed.
+        if os.name != "posix" or not shutil.which("bash"):
+            self.skipTest(f"{script} is a POSIX script; it needs bash")
         env = dict(os.environ, TV_HOST=host, HOME=str(self.home), FAKE_TV_STATE=str(self.state_path))
         # Path.home() reads USERPROFILE on Windows, not HOME: without it the record lands in the real ~.
         if os.name == "nt":

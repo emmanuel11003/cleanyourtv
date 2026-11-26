@@ -27,14 +27,17 @@ public class InputKeyService extends AccessibilityService {
     private Map<Integer, String> appScancodes = Collections.emptyMap();
     private Map<Integer, String> holdAppKeys = Collections.emptyMap();
     private Map<Integer, String> holdAppScancodes = Collections.emptyMap();
+    /** app_keys "front:" entries, chosen the way HomeKeyService chooses them (RemoteKeys.tap). */
+    private Map<Integer, String> frontAppKeys = Collections.emptyMap();
+    private Map<Integer, String> frontAppScancodes = Collections.emptyMap();
     /** restore_key_services was on when the config was read: this helper is noted for ServiceRepair. */
     private boolean repairRecord;
     /** consume_volume_keys: Volume Up/Down go to VolumeKeys instead of on to the firmware. */
     private boolean consumeVolumeKeys;
-    /** Stops key filtering while a game controller is connected; null unless gamepad_passthrough and key_filter. */
+    /** Stops key filtering while a game controller is connected or after a volume change; null unless gamepad_passthrough or volume_pauses_filter, and key_filter. */
     private GamepadPassthrough gamepads;
-    /** This helper while Android has it bound (SleepTimer puts the TV in standby through it). */
-    private static InputKeyService running;
+    /** The bound helper, for global actions Home's own key path asks for (RemoteKeys). */
+    static InputKeyService running;
     private BroadcastReceiver unlockReceiver;
 
     static InputKeyService bound() {
@@ -69,11 +72,10 @@ public class InputKeyService extends AccessibilityService {
         RemoteKeys.applyKeyFilter(this, config.keyFilter);
         holdAppKeys = RemoteKeys.parseHoldAppKeys(config.appKeys);
         holdAppScancodes = RemoteKeys.parseHoldAppScancodes(config.appKeys);
-        // gamepad_passthrough, off by default. Only with key_filter on: off, the service never filters keys.
-        if (config.gamepadPassthrough && config.keyFilter && gamepads == null) {
-            gamepads = new GamepadPassthrough(this);
-            gamepads.start();
-        }
+        frontAppKeys = RemoteKeys.parseFrontAppKeys(config.appKeys);
+        frontAppScancodes = RemoteKeys.parseFrontAppScancodes(config.appKeys);
+        // gamepad_passthrough and volume_pauses_filter, off by default.
+        if (gamepads == null) gamepads = GamepadPassthrough.start(this, config);
     }
 
     private boolean isInputKey(int keyCode) {
@@ -86,15 +88,17 @@ public class InputKeyService extends AccessibilityService {
     protected boolean onKeyEvent(KeyEvent event) {
         if (consumeVolumeKeys && VolumeKeys.handle(this, event)) return true;
         // A scancode entry is more specific than any keycode, so it goes first.
-        if (RemoteKeys.handle(this, event, appScancodes.get(event.getScanCode()),
+        if (RemoteKeys.handle(this, event, RemoteKeys.tap(appScancodes.get(event.getScanCode()),
+                frontAppScancodes.get(event.getScanCode())),
                 holdAppScancodes.get(event.getScanCode()))) return true;
-        if (RemoteKeys.handle(this, event, appKeys.get(event.getKeyCode()),
+        if (RemoteKeys.handle(this, event, RemoteKeys.tap(appKeys.get(event.getKeyCode()),
+                frontAppKeys.get(event.getKeyCode())),
                 holdAppKeys.get(event.getKeyCode()))) return true;
         if (!isInputKey(event.getKeyCode())) return false;
         if (event.getAction() == KeyEvent.ACTION_UP && !event.isCanceled()) {
             try {
                 startActivity(new Intent(ACTION_VIEW_INPUTS).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
-            } catch (ActivityNotFoundException ignored) {
+            } catch (ActivityNotFoundException | SecurityException ignored) {
             }
         }
         return true;

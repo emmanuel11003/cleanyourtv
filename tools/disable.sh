@@ -4,10 +4,33 @@
 #
 # Usage: TV_HOST=192.168.1.50 tools/disable.sh examples/xiaomi-mi-tv-4a/debloat.txt
 set -euo pipefail
+# The name checks below use ASCII ranges such as [A-Za-z]. In a Turkish locale GNU grep and sed leave
+# i and I out of those ranges (dotted and dotless i), so every name with an i was refused and the
+# Live TV and Settings handler lookups matched nothing (#3286). Match bytes, not the user's alphabet.
+export LC_ALL=C
 LIST="${1:?usage: disable.sh <debloat list>}"
+# One word, the list. A dash-led word (--help, -h, --reset copied over from theme.sh) went to dirname
+# as an option and came back as coreutils' own help inside a cd error; a word after the list was
+# dropped while the list went to the TV. restore.sh refuses both the same way.
+USAGE="usage: TV_HOST=<tv ip> tools/disable.sh <debloat list>"
+case "$LIST" in
+  -*)
+    echo "disable.sh takes a debloat list, and $LIST is a flag it does not have. Nothing was sent to the TV." >&2
+    echo "$USAGE" >&2
+    exit 2 ;;
+esac
+if [ "$#" -gt 1 ]; then
+  shift
+  echo "disable.sh takes one debloat list: $* would not have been used. Nothing was sent to the TV." >&2
+  echo "$USAGE" >&2
+  exit 2
+fi
 # Resolve the list against the caller's directory before moving into the repo. Git Bash's pwd says
 # /c/Users/..., which the Windows Python cannot open with MSYS_NO_PATHCONV=1 set; pwd -W gives
 # C:/Users/..., the same path (and so the same record) as the PowerShell scripts.
+# A folder that is not there keeps the path as typed, as in restore.sh: a list path one folder short
+# used to stop here on bash's "cd: <folder>: No such file or directory", and the "cannot read the
+# list" check below, written for exactly this, was never reached.
 if LIST_DIR="$(cd "$(dirname "$LIST")" 2>/dev/null && { pwd -W 2>/dev/null || pwd; })"; then
   LIST="$LIST_DIR/$(basename "$LIST")"
 fi
@@ -25,7 +48,7 @@ done
 PY=tools/venv/bin/python
 [ -x "$PY" ] || PY=tools/venv/Scripts/python.exe
 export MSYS_NO_PATHCONV=1
-[ -x "$PY" ] || { echo "run: python3 -m venv tools/venv && tools/venv/bin/pip install -r tools/requirements.txt"; exit 1; }
+[ -x "$PY" ] || { echo "run: python3 -m venv tools/venv && tools/venv/bin/pip install -r tools/requirements.txt" >&2; exit 1; }
 # Lists come from contributors, and the package name is pasted into a shell command on the TV.
 # Refuse the whole list unless every entry is a bare package name (#165).
 # A list read from a directory that is not there dies in the `cd` above; one whose file is not
@@ -66,7 +89,7 @@ fi
 # Keep CORE_RE and CORE_OK the same in disable.ps1 and recovery.py (tests/test_core_packages.py).
 # Protect the exact SDK sandbox package (#2557); the reported boot-failure cause is unconfirmed.
 # And com.android.location.fused: a TCL 43S5400A (V325) boot-looped into recovery with only it off (#2803).
-CORE_RE='^(android|android\.ext\.(services|shared)|com\.android\.sdksandbox|com\.android\.location\.fused|com\.android\.systemui|com\.android\.shell|com\.android\.phone|com\.android\.settings|com\.android\.tv\.settings|com\.(google\.)?android\.(permissioncontroller|packageinstaller|ext\.services|ext\.shared|modulemetadata)|com\.google\.android\.overlay\.modules.*|com\.android\.providers\..*|com\.cltv\.mal|com\.mediatek\.(tis|tv\.service|tv\.agent))$'
+CORE_RE='^(android|android\.ext\.(services|shared)|com\.(google\.)?android\.sdksandbox|com\.android\.location\.fused|com\.android\.systemui|com\.android\.shell|com\.android\.phone|com\.android\.settings|com\.android\.tv\.settings|com\.(google\.)?android\.(permissioncontroller|packageinstaller|ext\.services|ext\.shared|modulemetadata)|com\.google\.android\.overlay\.modules.*|com\.android\.providers\..*|com\.cltv\.mal|com\.mediatek\.(tis|tv\.service|tv\.agent))$'
 CORE_OK='^com\.android\.providers\.(calendar|contacts|userdictionary|blockednumber)$'
 CORE=$(printf '%s\n' "$PKGS" | grep -E "$CORE_RE" | grep -vE "$CORE_OK" || true)
 if [ -n "$CORE" ]; then
