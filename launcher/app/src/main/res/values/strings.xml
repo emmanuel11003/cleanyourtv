@@ -232,8 +232,16 @@
 
     <string name="tile_boost_ram" translatable="false">Free RAM</string>
     <string name="boost_ram_tile_fmt" translatable="false">Boost · %1$dM</string>
-    <string name="boost_ram_freed" translatable="false">Freed %1$d MB · %2$d MB free</string>
-    <string name="boost_ram_clean" translatable="false">Memory optimized · %1$d MB free</string>
+    <string name="boost_ram_running" translatable="false">Cleaning…</string>
+    <string name="boost_ram_freed" translatable="false">Freed %1$d MB · %2$d MB free (%3$d%% used)</string>
+    <string name="boost_ram_cache_cleared" translatable="false">Cleared %1$d KB cache · %2$d MB free (%3$d%% used)</string>
+    <string name="boost_ram_clean" translatable="false">RAM optimized · %1$d MB free (%2$d%% used)</string>
+    <string name="ram_manager_title" translatable="false">RAM Cleaner &amp; Memory</string>
+    <string name="ram_manager_boost_btn" translatable="false">Optimize RAM Now</string>
+    <string name="ram_manager_recent_apps" translatable="false">Recent Apps (OK to Force Stop / Clear Cache)</string>
+    <string name="ram_manager_app_info" translatable="false">Force Stop ›</string>
+    <string name="ram_manager_no_recent" translatable="false">No recent background apps detected.</string>
+    <string name="ram_manager_api34_note" translatable="false">Android 14 restricts auto-stopping other apps. Optimize trims launcher memory; pick an app below to Force Stop directly.</string>
 
     <string name="backup_label" translatable="false">Backup &amp; Restore</string>
     <string name="backup_summary" translatable="false">Export or restore layout, labels, hidden apps &amp; settings</string>
@@ -264,4 +272,27 @@
     <string name="sync_ss_status" translatable="false">Screensaver: %1$s</string>
     <string name="sync_custom" translatable="false">Custom</string>
     <string name="sync_follows_home" translatable="false">Follows Home</string>
+
+    <string name="button_mapper" translatable="false">Remote Button Mapper</string>
+    <string name="button_mapper_summary" translatable="false">Customize remote buttons to launch apps or actions</string>
+    <string name="button_mapper_mapped" translatable="false">%1$d buttons customized</string>
+    <string name="button_mapper_learn" translatable="false">Detect Remote Button…</string>
+    <string name="button_mapper_learn_prompt" translatable="false">Press any button on your TV remote to customize it.\n\nPress Back to cancel.</string>
+    <string name="button_mapper_reset" translatable="false">Default (Unmapped)</string>
+    <string name="button_mapper_clear_all" translatable="false">Clear All Mappings</string>
+    <string name="button_mapper_clear_all_confirm" translatable="false">Remove all custom remote button mappings?</string>
+    <string name="button_mapper_action_quick_settings" translatable="false">Quick Settings</string>
+    <string name="button_mapper_action_notifications" translatable="false">Notifications</string>
+    <string name="button_mapper_action_inputs" translatable="false">TV Inputs</string>
+    <string name="button_mapper_action_reorder" translatable="false">Rearrange Apps</string>
+    <string name="button_mapper_action_screensaver" translatable="false">Screensaver / Clock</string>
+    <string name="button_mapper_action_library" translatable="false">App Library</string>
+    <string name="button_mapper_action_tv_settings" translatable="false">TV Settings</string>
+    <string name="button_mapper_action_recents" translatable="false">Recent Apps</string>
+    <string name="button_mapper_launch_app" translatable="false">Launch App…</string>
+    <string name="button_mapper_key_cannot_remap" translatable="false">This navigation button cannot be remapped.</string>
+
+    <string name="tile_uninstall" translatable="false">Uninstall</string>
+    <string name="tile_disable" translatable="false">Disable</string>
+    <string name="tile_disable_hint" translatable="false">Select Disable in App info</string>
 </resources>

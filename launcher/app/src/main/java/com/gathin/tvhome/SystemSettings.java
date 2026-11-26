@@ -3,6 +3,7 @@ package com.gathin.tvhome;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
@@ -62,6 +63,22 @@ final class SystemSettings {
     static Intent appInfo(Context context, String pkg) {
         Intent info = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse("package:" + pkg));
         return context.getPackageManager().resolveActivity(info, PackageManager.MATCH_DEFAULT_ONLY) != null ? info : null;
+    }
+
+    /** System uninstall confirmation dialog for user-installed apps, or null if unavailable. */
+    static Intent uninstall(Context context, String pkg) {
+        Intent del = new Intent(Intent.ACTION_DELETE, Uri.parse("package:" + pkg));
+        return context.getPackageManager().resolveActivity(del, PackageManager.MATCH_DEFAULT_ONLY) != null ? del : null;
+    }
+
+    /** True when pkg is preinstalled on the system partition (cannot be uninstalled directly). */
+    static boolean isSystemApp(Context context, String pkg) {
+        try {
+            ApplicationInfo ai = context.getPackageManager().getApplicationInfo(pkg, 0);
+            return (ai.flags & ApplicationInfo.FLAG_SYSTEM) != 0;
+        } catch (PackageManager.NameNotFoundException e) {
+            return false;
+        }
     }
 
     /**

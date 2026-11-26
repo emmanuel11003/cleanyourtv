@@ -110,7 +110,55 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="2dp"
                     android:text="@string/reorder_apps_summary"
-                    android:textColor="#FFC4C6D0"
+                    android:textColor="#FFFFFFFF"
+                    android:textSize="13sp"
+                    android:duplicateParentState="true" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/buttonMapperChoice"
+            style="@style/SettingsRow"
+            android:layout_marginTop="12dp"
+            android:layout_height="wrap_content"
+            android:minHeight="56dp"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:visibility="visible">
+
+            <ImageView
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:layout_marginEnd="14dp"
+                android:src="@drawable/ic_remote"
+                android:tint="#FFA8C7FA"
+                android:duplicateParentState="true"
+                android:contentDescription="@null" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:duplicateParentState="true">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/button_mapper"
+                    android:textColor="#FFFFFFFF"
+                    android:textSize="18sp"
+                    android:duplicateParentState="true" />
+
+                <TextView
+                    android:id="@+id/buttonMapperSummary"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:text="@string/button_mapper_summary"
+                    android:textColor="#FFFFFFFF"
                     android:textSize="13sp"
                     android:duplicateParentState="true" />
             </LinearLayout>

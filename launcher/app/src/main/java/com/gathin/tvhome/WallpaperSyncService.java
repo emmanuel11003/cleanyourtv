@@ -173,7 +173,7 @@ public final class WallpaperSyncService extends Service {
     private final class DirectHandler implements WallpaperHttpServer.Handler {
         @Override
         public String statusJson() {
-            boolean[] st = WallpaperBridgeProvider.directStatus(WallpaperSyncService.this);
+            boolean[] st = WallpaperSyncService.directStatus(WallpaperSyncService.this);
             return "{\"ok\":true,\"bridgeAvailable\":true,\"homeSet\":" + st[0] + ",\"screensaverSet\":" + st[1] + "}";
         }
 
@@ -184,10 +184,10 @@ public final class WallpaperSyncService extends Service {
             }
             boolean ok = true;
             if ("home".equals(target) || "both".equals(target)) {
-                ok &= WallpaperBridgeProvider.directApply(WallpaperSyncService.this, "home", imageBytes);
+                ok &= WallpaperSyncService.directApply(WallpaperSyncService.this, "home", imageBytes);
             }
             if ("screensaver".equals(target) || "both".equals(target)) {
-                ok &= WallpaperBridgeProvider.directApply(WallpaperSyncService.this, "screensaver", imageBytes);
+                ok &= WallpaperSyncService.directApply(WallpaperSyncService.this, "screensaver", imageBytes);
             }
             notifyUi();
             return ok ? WallpaperHttpServer.Result.success()
@@ -198,10 +198,10 @@ public final class WallpaperSyncService extends Service {
         public WallpaperHttpServer.Result clearWallpaper(String target) {
             boolean ok = true;
             if ("home".equals(target) || "both".equals(target)) {
-                ok &= WallpaperBridgeProvider.directClear(WallpaperSyncService.this, "home");
+                ok &= WallpaperSyncService.directClear(WallpaperSyncService.this, "home");
             }
             if ("screensaver".equals(target) || "both".equals(target)) {
-                ok &= WallpaperBridgeProvider.directClear(WallpaperSyncService.this, "screensaver");
+                ok &= WallpaperSyncService.directClear(WallpaperSyncService.this, "screensaver");
             }
             notifyUi();
             return ok ? WallpaperHttpServer.Result.success()
@@ -221,11 +221,118 @@ public final class WallpaperSyncService extends Service {
         public WallpaperHttpServer.Result importBackupJson(String json) {
             SettingsBackup.Summary s = SettingsBackup.importJson(WallpaperSyncService.this, json);
             if (s.ok) {
-                WallpaperBridgeProvider.notifyLauncher(WallpaperSyncService.this);
+                notifyLauncher(WallpaperSyncService.this);
                 notifyUi();
                 return WallpaperHttpServer.Result.success();
             }
             return WallpaperHttpServer.Result.fail(400, s.error);
         }
+    }
+
+    static final String ACTION_WALLPAPER_UPDATED = "com.gathin.tvhome.ACTION_WALLPAPER_UPDATED";
+    static final long MAX_BYTES = 15L * 1024L * 1024L;
+    private static final String TARGET_HOME = "home";
+    private static final String TARGET_SCREENSAVER = "screensaver";
+    private static final String HOME_FILE = "home_wallpaper.jpg";
+    private static final String SCREENSAVER_FILE = "screensaver_wallpaper.jpg";
+
+    private static String fileNameFor(String target) {
+        if (TARGET_HOME.equals(target)) return HOME_FILE;
+        if (TARGET_SCREENSAVER.equals(target)) return SCREENSAVER_FILE;
+        return null;
+    }
+
+    private static java.io.File resolveStorageDir(Context ctx) {
+        java.io.File dir = Config.dir(ctx);
+        if (dir != null && (dir.isDirectory() || dir.mkdirs())) return dir;
+        java.io.File internal = ctx.getFilesDir();
+        if (internal != null && !internal.isDirectory()) internal.mkdirs();
+        return internal;
+    }
+
+    static boolean[] directStatus(Context ctx) {
+        android.content.SharedPreferences prefs = ctx.getSharedPreferences(Config.SETTINGS_NAME, Context.MODE_PRIVATE);
+        String homePath = prefs.getString(Config.WALLPAPER_CHOICE_KEY, null);
+        String ssPath = prefs.getString(Config.SCREENSAVER_WALLPAPER_KEY, null);
+        java.io.File homeFile = homePath != null && !"none".equals(homePath) ? new java.io.File(homePath) : null;
+        java.io.File ssFile = ssPath != null ? new java.io.File(ssPath) : null;
+        return new boolean[]{
+                homeFile != null && homeFile.isFile() && homeFile.length() > 0,
+                ssFile != null && ssFile.isFile() && ssFile.length() > 0
+        };
+    }
+
+    static boolean directApply(Context ctx, String target, byte[] imageBytes) {
+        String name = fileNameFor(target);
+        if (ctx == null || name == null || imageBytes == null || imageBytes.length == 0 || imageBytes.length > MAX_BYTES) {
+            return false;
+        }
+        java.io.File dir = resolveStorageDir(ctx);
+        if (dir == null) return false;
+        java.io.File tmp = new java.io.File(dir, name + ".tmp");
+        try (java.io.FileOutputStream out = new java.io.FileOutputStream(tmp)) {
+            out.write(imageBytes);
+            out.flush();
+        } catch (java.io.IOException e) {
+            if (tmp.exists()) tmp.delete();
+            return false;
+        }
+        java.io.File dest = new java.io.File(dir, name);
+        android.graphics.BitmapFactory.Options bounds = new android.graphics.BitmapFactory.Options();
+        bounds.inJustDecodeBounds = true;
+        android.graphics.BitmapFactory.decodeFile(tmp.getPath(), bounds);
+        if (bounds.outWidth <= 0 || bounds.outHeight <= 0) {
+            tmp.delete();
+            return false;
+        }
+        if (dest.exists() && !dest.delete()) {
+            tmp.delete();
+            return false;
+        }
+        if (!tmp.renameTo(dest)) {
+            tmp.delete();
+            return false;
+        }
+        android.content.SharedPreferences prefs = ctx.getSharedPreferences(Config.SETTINGS_NAME, Context.MODE_PRIVATE);
+        android.content.SharedPreferences.Editor ed = prefs.edit();
+        if (TARGET_HOME.equals(target)) {
+            ed.putString(Config.WALLPAPER_CHOICE_KEY, dest.getAbsolutePath());
+        } else {
+            ed.putString(Config.SCREENSAVER_WALLPAPER_KEY, dest.getAbsolutePath());
+            ed.putString(Config.SCREENSAVER_BG_KEY, "wallpaper");
+        }
+        long rev = prefs.getLong(Config.SETTINGS_REVISION_KEY, 0L) + 1L;
+        ed.putLong(Config.SETTINGS_REVISION_KEY, rev).apply();
+        Config.invalidateCache();
+        notifyLauncher(ctx);
+        return true;
+    }
+
+    static boolean directClear(Context ctx, String target) {
+        String name = fileNameFor(target);
+        java.io.File dir = ctx == null ? null : resolveStorageDir(ctx);
+        if (name == null || dir == null) return false;
+        java.io.File tmp = new java.io.File(dir, name + ".tmp");
+        java.io.File dest = new java.io.File(dir, name);
+        if (tmp.exists()) tmp.delete();
+        if (dest.exists()) dest.delete();
+        android.content.SharedPreferences prefs = ctx.getSharedPreferences(Config.SETTINGS_NAME, Context.MODE_PRIVATE);
+        android.content.SharedPreferences.Editor ed = prefs.edit();
+        if (TARGET_HOME.equals(target)) {
+            ed.remove(Config.WALLPAPER_CHOICE_KEY);
+        } else {
+            ed.remove(Config.SCREENSAVER_WALLPAPER_KEY);
+            ed.remove(Config.SCREENSAVER_BG_KEY);
+        }
+        long rev = prefs.getLong(Config.SETTINGS_REVISION_KEY, 0L) + 1L;
+        ed.putLong(Config.SETTINGS_REVISION_KEY, rev).apply();
+        Config.invalidateCache();
+        notifyLauncher(ctx);
+        return true;
+    }
+
+    static void notifyLauncher(Context ctx) {
+        Intent intent = new Intent(ACTION_WALLPAPER_UPDATED).setPackage(ctx.getPackageName());
+        ctx.sendBroadcast(intent);
     }
 }

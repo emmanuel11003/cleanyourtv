@@ -614,16 +614,8 @@ final class Config {
             dock = stringList(json, "dock_apps", dock);
             fillDock = bool(json, "fill_dock", fillDock);
             hidden = stringList(json, "hidden_apps", hidden);
-            if (!hidden.contains("com.emmanuel.wallpapersync")) {
-                hidden = new ArrayList<>(hidden);
-                hidden.add("com.emmanuel.wallpapersync");
-            }
             libraryApps = stringList(json, "library_apps", libraryApps);
             libraryExcludedApps = stringList(json, "library_excluded_apps", libraryExcludedApps);
-            if (!libraryExcludedApps.contains("com.emmanuel.wallpapersync")) {
-                libraryExcludedApps = new ArrayList<>(libraryExcludedApps);
-                libraryExcludedApps.add("com.emmanuel.wallpapersync");
-            }
             liveTv = string(json, "live_tv_package", liveTv);
             liveTvAction = string(json, "live_tv_action", liveTvAction);
             liveTvInputId = string(json, "live_tv_input_id", liveTvInputId);

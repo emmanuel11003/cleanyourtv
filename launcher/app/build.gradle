@@ -13,8 +13,8 @@ android {
         applicationId providers.gradleProperty('launcherApplicationId').getOrElse('com.gathin.tvhome')
         minSdk 26
         targetSdk 34
-        versionCode 71
-        versionName '7.1'
+        versionCode 80
+        versionName '8.0'
         resourceConfigurations += [
                 'en', 'nb', 'de', 'ca', 'es', 'b+es+419', 'fr', 'ru', 'zh-rCN', 'zh-rTW',
                 'th', 'b+sr+Latn', 'pl', 'ar', 'iw', 'tr', 'pt', 'pt-rPT', 'fi', 'vi',

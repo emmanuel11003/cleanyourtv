@@ -213,13 +213,13 @@ public final class WallpaperSyncActivity extends Activity {
         left.addView(row2, r2Lp);
 
         row2.addView(makeActionBtn(d, getString(R.string.sync_clear_home), v -> {
-            WallpaperBridgeProvider.directClear(this, "home");
+            WallpaperSyncService.directClear(this, "home");
             Toast.makeText(this, R.string.sync_cleared, Toast.LENGTH_SHORT).show();
             refreshUi();
         }), btnLp(d, true));
 
         row2.addView(makeActionBtn(d, getString(R.string.sync_clear_ss), v -> {
-            WallpaperBridgeProvider.directClear(this, "screensaver");
+            WallpaperSyncService.directClear(this, "screensaver");
             Toast.makeText(this, R.string.sync_cleared, Toast.LENGTH_SHORT).show();
             refreshUi();
         }), btnLp(d, false));
@@ -285,7 +285,7 @@ public final class WallpaperSyncActivity extends Activity {
         pinText.setText(getString(R.string.sync_pin_fmt, pin));
         toggleBtn.setText(running ? R.string.sync_stop : R.string.sync_start);
 
-        boolean[] st = WallpaperBridgeProvider.directStatus(this);
+        boolean[] st = WallpaperSyncService.directStatus(this);
         homeStatus.setText(getString(R.string.sync_home_status,
                 getString(st[0] ? R.string.sync_custom : R.string.wallpaper_theme_default)));
         ssStatus.setText(getString(R.string.sync_ss_status,

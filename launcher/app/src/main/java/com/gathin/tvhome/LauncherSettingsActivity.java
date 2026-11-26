@@ -68,6 +68,7 @@ public final class LauncherSettingsActivity extends Activity {
     private TextView networkPillSwitch;
     private LinearLayout uiSoundsRow;
     private TextView uiSoundsSwitch;
+    private TextView buttonMapperSummary;
     private TextView hiddenAppsSummary;
     private TextView followThemeChoice;
     private TextView openOnStartChoice;
@@ -90,6 +91,13 @@ public final class LauncherSettingsActivity extends Activity {
                 setResult(RESULT_OK, new Intent().putExtra(EXTRA_REORDER, true));
                 finishWithMorph();
             });
+        }
+        View buttonMapperChoice = findViewById(R.id.buttonMapperChoice);
+        buttonMapperSummary = findViewById(R.id.buttonMapperSummary);
+        if (buttonMapperChoice != null) {
+            buttonMapperChoice.setVisibility(View.VISIBLE);
+            buttonMapperChoice.setOnClickListener(v ->
+                    ButtonMapper.showButtonMapperMenu(this, () -> refresh(Config.load(this))));
         }
         columns = config.columns;
         dockOpacity = config.dockOpacity;
@@ -406,7 +414,7 @@ public final class LauncherSettingsActivity extends Activity {
         animateTransitions = smoothFocus;
         Motion.applyFadeTransition(this, smoothFocus);
         int[] smoothRows = {
-                R.id.reorderChoice, R.id.wallpaperChoice, R.id.chooseWallpaperRow,
+                R.id.reorderChoice, R.id.buttonMapperChoice, R.id.wallpaperChoice, R.id.chooseWallpaperRow,
                 R.id.screensaverRow, R.id.screensaverCalendarRow, R.id.animationsChoice,
                 R.id.advancedChoice, R.id.statsRow, R.id.inputsPillRow,
                 R.id.networkPillRow, R.id.uiSoundsRow,
@@ -979,6 +987,16 @@ public final class LauncherSettingsActivity extends Activity {
 
         // 10. Navigation Click Sounds
         updateSwitch(uiSoundsSwitch, UiFeedback.isSoundsEnabled(this));
+
+        // Button Mapper summary
+        if (buttonMapperSummary != null) {
+            int mappedCount = ButtonMapper.getMappedCount(this);
+            if (mappedCount > 0) {
+                buttonMapperSummary.setText(getString(R.string.button_mapper_mapped, mappedCount));
+            } else {
+                buttonMapperSummary.setText(R.string.button_mapper_summary);
+            }
+        }
 
         // Hidden Apps count summary
         if (hiddenAppsSummary != null) {

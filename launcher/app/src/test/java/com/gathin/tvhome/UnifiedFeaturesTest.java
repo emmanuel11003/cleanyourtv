@@ -30,7 +30,51 @@ public class UnifiedFeaturesTest {
         assertTrue(MemoryBooster.isProtected("com.spotify.tv.android", "com.gathin.tvhome", "com.spotify.tv.android"));
         assertTrue(MemoryBooster.isProtected("com.android.systemui", "com.gathin.tvhome", null));
         assertTrue(MemoryBooster.isProtected("com.mediatek.tvinput", "com.gathin.tvhome", null));
-        assertFalse(MemoryBooster.isProtected("org.smarttube.stable", "com.gathin.tvhome", null));
+        assertTrue(MemoryBooster.isProtected("com.google.android.permissioncontroller", "com.gathin.tvhome", null));
+        assertTrue(MemoryBooster.isProtected("com.android.packageinstaller", "com.gathin.tvhome", null));
+        assertTrue(MemoryBooster.isProtected("com.android.networkstack", "com.gathin.tvhome", null));
+        assertTrue(MemoryBooster.isProtected("com.android.tv.tuner", "com.gathin.tvhome", null));
+
+        // Active accessibility services must never be killed.
+        Set<String> a11y = MemoryBooster.parseAccessibilityPackages(
+                "com.gathin.tvhome/.HomeKeyService:com.example.mapper/com.example.mapper.Svc");
+        assertTrue(a11y.contains("com.gathin.tvhome"));
+        assertTrue(a11y.contains("com.example.mapper"));
+        assertTrue(MemoryBooster.isProtected("com.example.mapper", "com.gathin.tvhome", null, a11y));
+
+        // Streaming & store apps are eligible for background trimming when not actively playing media.
+        assertFalse(MemoryBooster.isProtected("org.smarttube.stable", "com.gathin.tvhome", null, a11y));
+        assertFalse(MemoryBooster.isProtected("com.google.android.youtube.tv", "com.gathin.tvhome", null, a11y));
+        assertFalse(MemoryBooster.isProtected("com.android.vending", "com.gathin.tvhome", null, a11y));
+        assertTrue(MemoryBooster.isProtected("com.google.android.youtube.tv", "com.gathin.tvhome",
+                "com.google.android.youtube.tv", a11y));
+
+        // Snapshot percentage clamping and arithmetic.
+        MemoryBooster.Snapshot snap = new MemoryBooster.Snapshot(1000L, 2000L);
+        assertEquals(1000L, snap.freeMb);
+        assertEquals(50, snap.usedPercent);
+        MemoryBooster.Snapshot clamped = new MemoryBooster.Snapshot(3000L, 2000L);
+        assertEquals(0L, clamped.freeMb);
+        assertEquals(100, clamped.usedPercent);
+    }
+
+    @Test
+    public void buttonMapperProtectsNavKeysAndFormatsLabels() {
+        assertTrue(ButtonMapper.isProtectedKey(android.view.KeyEvent.KEYCODE_DPAD_UP));
+        assertTrue(ButtonMapper.isProtectedKey(android.view.KeyEvent.KEYCODE_DPAD_CENTER));
+        assertTrue(ButtonMapper.isProtectedKey(android.view.KeyEvent.KEYCODE_HOME));
+        assertTrue(ButtonMapper.isProtectedKey(android.view.KeyEvent.KEYCODE_BACK));
+        assertTrue(ButtonMapper.isProtectedKey(android.view.KeyEvent.KEYCODE_VOLUME_UP));
+        assertTrue(ButtonMapper.isProtectedKey(android.view.KeyEvent.KEYCODE_POWER));
+        assertFalse(ButtonMapper.isProtectedKey(android.view.KeyEvent.KEYCODE_PROG_RED));
+        assertFalse(ButtonMapper.isProtectedKey(android.view.KeyEvent.KEYCODE_GUIDE));
+        assertFalse(ButtonMapper.isProtectedKey(android.view.KeyEvent.KEYCODE_MENU));
+
+        assertEquals("Red Button", ButtonMapper.getKeyLabel(android.view.KeyEvent.KEYCODE_PROG_RED));
+        assertEquals("Guide / EPG", ButtonMapper.getKeyLabel(android.view.KeyEvent.KEYCODE_GUIDE));
+        assertEquals("TV Input / Source", ButtonMapper.getKeyLabel(android.view.KeyEvent.KEYCODE_TV_INPUT));
+        assertEquals(0, ButtonMapper.getMappedCount(null));
+        assertFalse(ButtonMapper.isMapped(null, android.view.KeyEvent.KEYCODE_PROG_RED));
     }
 
     @Test

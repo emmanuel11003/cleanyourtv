@@ -24,21 +24,16 @@
     <uses-permission android:name="android.permission.WRITE_SECURE_SETTINGS"
         tools:ignore="ProtectedPermissions" />
     <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
+    <uses-permission android:name="android.permission.REQUEST_DELETE_PACKAGES" />
     <uses-permission android:name="android.permission.PACKAGE_USAGE_STATS"
         tools:ignore="ProtectedPermissions" />
     <!-- YaOS (Yandex TV OS): HDMI, AV and the tuner all play in com.yandex.tv.live, whose activities require
          this permission (protection level normal, so it is granted at install). Ignored on other TVs. -->
     <uses-permission android:name="yandex.tv.permission.ACCESS_TV_SOURCE" />
 
-    <!-- Local-only permission for the Wallpaper Sync companion add-on (no network in launcher). -->
-    <permission
-        android:name="${applicationId}.permission.WALLPAPER_SYNC"
-        android:protectionLevel="signature" />
-
     <!-- Android 11+ package visibility: lets the launcher list the TV apps it shows as tiles, and the
          apps that declare a module card (docs/specs/card.md). -->
     <queries>
-        <package android:name="com.emmanuel.wallpapersync" />
         <!-- The standard settings handlers, so package visibility doesn't hide them and send the pills to a vendor fallback by mistake. -->
         <intent>
             <action android:name="android.settings.SETTINGS" />
@@ -70,6 +65,10 @@
         <!-- The tile menu and the app library offer App info only where this resolves (SystemSettings.appInfo). -->
         <intent>
             <action android:name="android.settings.APPLICATION_DETAILS_SETTINGS" />
+            <data android:scheme="package" />
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.DELETE" />
             <data android:scheme="package" />
         </intent>
         <intent>
@@ -282,13 +281,6 @@
             android:authorities="${applicationId}.theme"
             android:exported="true"
             android:permission="android.permission.WRITE_SECURE_SETTINGS" />
-
-        <!-- Local-only wallpaper bridge for the Wallpaper Sync companion add-on. -->
-        <provider
-            android:name=".WallpaperBridgeProvider"
-            android:authorities="${applicationId}.wallpaper_bridge"
-            android:exported="true"
-            android:permission="${applicationId}.permission.WALLPAPER_SYNC" />
 
         <!-- The remote's Input button (KEYCODE_TV or KEYCODE_TV_INPUT) opens the input switcher, and input_key_keycodes and
          app_keys (config.xml or a theme) bring back other remote buttons; see InputKeyService. -->

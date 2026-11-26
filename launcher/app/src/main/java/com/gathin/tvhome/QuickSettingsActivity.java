@@ -114,11 +114,15 @@ public final class QuickSettingsActivity extends Activity {
             tileNotif.setOnClickListener(v -> openNotifications());
         }
 
-        // 10. Free RAM Boost -> One-tap background RAM trim
+        // 10. Free RAM Boost -> Tap for instant RAM boost, Hold OK for RAM Manager
         View tileBoost = findViewById(R.id.tileBoostRam);
         boostRamLabel = findViewById(R.id.boostRamLabel);
         if (tileBoost != null) {
             tileBoost.setOnClickListener(v -> runRamBoost());
+            tileBoost.setOnLongClickListener(v -> {
+                RamManagerDialog.show(this, this::refreshTileBadges);
+                return true;
+            });
         }
         refreshTileBadges();
 
@@ -264,10 +268,13 @@ public final class QuickSettingsActivity extends Activity {
         safeStart(builtIn);
     }
 
-    /** 10. One-tap RAM Boost: trims background processes and updates free memory live. */
+    /** 10. One-tap RAM Boost: multi-pass background trim, launcher cache cleanup, and live feedback. */
     private void runRamBoost() {
         if (boostingRam) return;
         boostingRam = true;
+        if (boostRamLabel != null) {
+            boostRamLabel.setText(R.string.boost_ram_running);
+        }
         LauncherExecutors.io().execute(() -> {
             MemoryBooster.BoostResult res = MemoryBooster.boost(this);
             LauncherExecutors.main().post(() -> {
@@ -276,10 +283,7 @@ public final class QuickSettingsActivity extends Activity {
                 if (boostRamLabel != null) {
                     boostRamLabel.setText(getString(R.string.boost_ram_tile_fmt, res.after.freeMb));
                 }
-                String msg = res.freedMb > 0
-                        ? getString(R.string.boost_ram_freed, res.freedMb, res.after.freeMb)
-                        : getString(R.string.boost_ram_clean, res.after.freeMb);
-                Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, MemoryBooster.formatResultMessage(this, res), Toast.LENGTH_LONG).show();
             });
         });
     }
@@ -446,14 +450,17 @@ public final class QuickSettingsActivity extends Activity {
         }
         if (!isFinishing()) {
             finish();
-        }
-        if (!launchingChild) {
-            applyCloseTransition();
+            if (!launchingChild) {
+                applyCloseTransition();
+            }
         }
     }
 
     @Override
     protected void onDestroy() {
+        if (layoutMainPanel != null) {
+            layoutMainPanel.animate().cancel();
+        }
         super.onDestroy();
     }
 

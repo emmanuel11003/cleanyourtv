@@ -155,4 +155,70 @@ public class GridNavigationTest {
         assertEquals(0.45f, GridNavigation.idleAlpha(6, 4, false, -1, true), 0f);
         assertEquals(1f, GridNavigation.idleAlpha(6, 4, false, -1, false), 0f);
     }
+
+    @Test public void downThenSidewaysProducesZeroDrift() {
+        int dy = GridNavigation.verticalRevealDy(
+                763, 1010, 16, 157, 12,
+                24, 665, 745, 4, true, true);
+        assertEquals(357, dy);
+
+        int settledTop = 763 - dy;
+        int settledBottom = 1010 - dy;
+        assertEquals(406, settledTop);
+        assertEquals(653, settledBottom);
+
+        assertEquals(0, GridNavigation.verticalRevealDy(
+                settledTop, settledBottom, 16, 157, 12,
+                24, 665, 745, 4, true, true));
+        assertEquals(0, GridNavigation.verticalRevealDy(
+                settledTop, settledBottom, -24, 283, 12,
+                24, 665, 745, 4, true, true));
+    }
+
+    @Test public void bottomRowAtPaddingLineProducesZeroDriftOnSideways() {
+        assertEquals(0, GridNavigation.verticalRevealDy(
+                418, 665, 16, 157, 12,
+                24, 665, 745, 4, true, false));
+        assertEquals(0, GridNavigation.verticalRevealDy(
+                418, 665, -24, 283, 12,
+                24, 665, 745, 4, true, false));
+        assertEquals(0, GridNavigation.verticalRevealDy(
+                498, 745, -24, 283, 12,
+                24, 665, 745, 4, true, false));
+    }
+
+    @Test public void upFromBottomKeepsVisibleRowInPlaceAndRecoversClippedRow() {
+        assertEquals(0, GridNavigation.verticalRevealDy(
+                171, 418, 16, 157, 12,
+                24, 665, 745, 4, true, true));
+        assertEquals(-100, GridNavigation.verticalRevealDy(
+                -76, 171, 16, 157, 12,
+                24, 665, 745, 4, true, true));
+        assertEquals(0, GridNavigation.verticalRevealDy(
+                24, 271, -24, 283, 12,
+                24, 665, 745, 4, true, true));
+    }
+
+    @Test public void rowInsideBottomPaddingStaysPut() {
+        assertEquals(0, GridNavigation.verticalRevealDy(
+                438, 685, 16, 157, 12,
+                24, 665, 745, 4, true, true));
+        assertEquals(0, GridNavigation.verticalRevealDy(
+                438, 685, -24, 283, 12,
+                24, 665, 745, 4, true, true));
+    }
+
+    @Test public void topBoundaryDoesNotScrollPastTop() {
+        assertEquals(0, GridNavigation.verticalRevealDy(
+                -10, 237, 16, 157, 12,
+                24, 665, 745, 4, false, true));
+    }
+
+    @Test public void fastUpFromGridStopsAtDockWithoutOvershootingToTopBar() {
+        assertTrue(GridNavigation.shouldHoldAtDockOnUp(true, true, false, 1000L));
+        assertTrue(GridNavigation.shouldHoldAtDockOnUp(true, false, true, 1000L));
+        assertTrue(GridNavigation.shouldHoldAtDockOnUp(true, false, false, 150L));
+        assertFalse(GridNavigation.shouldHoldAtDockOnUp(true, false, false, 400L));
+        assertFalse(GridNavigation.shouldHoldAtDockOnUp(false, true, true, 0L));
+    }
 }

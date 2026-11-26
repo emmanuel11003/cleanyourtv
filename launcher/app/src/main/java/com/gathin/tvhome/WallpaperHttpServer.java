@@ -223,11 +223,11 @@ final class WallpaperHttpServer {
                 return;
             }
             int contentLength = parseInt(headers.get("content-length"), -1);
-            if (contentLength <= 0 || contentLength > WallpaperBridgeProvider.MAX_BYTES) {
+            if (contentLength <= 0 || contentLength > WallpaperSyncService.MAX_BYTES) {
                 writeJson(out, 413, "{\"ok\":false,\"error\":\"Image must be between 1 B and 15 MB\"}");
                 return;
             }
-            byte[] imageBytes = readBounded(body, contentLength, WallpaperBridgeProvider.MAX_BYTES);
+            byte[] imageBytes = readBounded(body, contentLength, WallpaperSyncService.MAX_BYTES);
             writeResult(out, handler.applyWallpaper(target, imageBytes));
             return;
         }

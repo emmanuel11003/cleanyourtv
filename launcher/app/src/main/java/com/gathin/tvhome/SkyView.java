@@ -47,7 +47,7 @@ public class SkyView extends View {
     private Bitmap texture;
     private BitmapDrawable drawable;
     private Canvas offscreenCanvas;
-    private final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.DITHER_FLAG);
 
     public SkyView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);

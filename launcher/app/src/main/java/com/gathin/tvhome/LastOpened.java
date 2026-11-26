@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.text.format.DateUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -115,6 +116,34 @@ final class LastOpened {
     /** Milliseconds since the epoch, or 0 when Home never opened the app. */
     static long get(Context ctx, String pkg) {
         return pkg == null ? 0L : prefs(ctx).getLong(pkg, 0L);
+    }
+
+    /** Packages opened or closed within {@code maxAgeMs}, ordered most-recent-first. */
+    static List<String> recentPackages(Context ctx, long maxAgeMs) {
+        List<String> out = new ArrayList<>();
+        if (ctx == null) return out;
+        try {
+            long cutoff = System.currentTimeMillis() - Math.max(0L, maxAgeMs);
+            java.util.Map<String, ?> all = prefs(ctx).getAll();
+            List<java.util.Map.Entry<String, Long>> entries = new ArrayList<>();
+            for (java.util.Map.Entry<String, ?> e : all.entrySet()) {
+                String key = e.getKey();
+                if (key == null || KEY_PENDING_PKG.equals(key)) continue;
+                Object val = e.getValue();
+                if (val instanceof Long) {
+                    long ts = (Long) val;
+                    if (ts >= cutoff) {
+                        entries.add(new java.util.AbstractMap.SimpleImmutableEntry<>(key, ts));
+                    }
+                }
+            }
+            entries.sort((a, b) -> Long.compare(b.getValue(), a.getValue()));
+            for (java.util.Map.Entry<String, Long> e : entries) {
+                out.add(e.getKey());
+            }
+        } catch (Throwable ignored) {
+        }
+        return out;
     }
 
     /**
