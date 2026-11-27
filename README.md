@@ -1,43 +1,41 @@
-<p align="center">
-  <a href="https://cleanyour.tv"><img src="https://raw.githubusercontent.com/Gathin23/cleanyourtv/main/docs/banner.png" alt="CleanYourTV. Your TV, minus the ads. Strip the bloatware from any Android TV or Google TV over Wi-Fi and replace the ad-filled home screen with a clean launcher that looks like an Apple TV. No root, no cable, nothing uninstalled, and a one-line restore." width="800"></a>
-</p>
+# CleanYourTV for Haier MatrixTV
 
-# CleanYourTV — Optimised Version (v6.3)
+This is Emmanuel J Joseph’s fork of [Gathin’s CleanYourTV](https://github.com/Gathin23/cleanyourtv). The upstream project provides the launcher, device lists and tools for configuring Android TV over ADB. This fork adapts launcher navigation and remote-button handling for the 55-inch Haier MatrixTV DE running Android 14.
 
-> [!TIP]
-> **High-Performance Optimised Edition (v8.0)**  
-> Forked from and built on the original **[CleanYourTV](https://github.com/Gathin23/cleanyourtv)** by **[@Gathin23](https://github.com/Gathin23)** — full credit to Gathin for creating the core launcher, debloat tools, safety architecture, and TV compatibility list.  
-> Maintained by [@emmanuel11003](https://github.com/emmanuel11003). Thoroughly optimized, tested, and verified on real hardware (**Haier MatrixTV DE 55" Google TV**, Android 14, MediaTek MT9676).  
-> 
-> 📖 **Full Release Notes & Telemetry**: [V6_2_RELEASE_NOTES.md](V6_2_RELEASE_NOTES.md) | [V6_1_RELEASE_NOTES.md](V6_1_RELEASE_NOTES.md) | [V6_RELEASE_NOTES.md](V6_RELEASE_NOTES.md)
+This edition includes local Wi-Fi wallpaper uploads in the launcher. Its [Android manifest](launcher/app/src/main/AndroidManifest.xml) declares the `INTERNET` permission for the [wallpaper transfer service](launcher/app/src/main/java/com/gathin/tvhome/WallpaperSyncService.java).
 
-### 📸 Live TV Captures (Optimised Version in Action)
+## What changes on the Haier remote
 
-| Home Launcher (5-Column Glass Dock) | Month Calendar & Clock Screensaver |
-| :---: | :---: |
-| <img src="docs/screenshots/v6.2-home.png" width="380" alt="Home Launcher Screen"> | <img src="docs/screenshots/v6.2-screensaver.png" width="380" alt="Month Calendar Screensaver"> |
-| **Stock Google TV Input Selector** | **Quick Settings with Built-in Sleep Timer** |
-| <img src="docs/screenshots/v6.2-stock-input-selector.png" width="380" alt="Stock Input Selector"> | <img src="docs/screenshots/v6.2-quick-settings.png" width="380" alt="Quick Settings Overlay"> |
-| **On-Screen Inputs Pill Dialog** | **Notification Center Panel (Modular Add-On)** |
-| <img src="docs/screenshots/v6.2-inputs-pill.png" width="380" alt="Inputs Pill Dialog"> | <img src="docs/screenshots/v6.2-notification-center.png" width="380" alt="Notification Center Panel"> |
+| Control | Behaviour on the documented setup |
+| --- | --- |
+| Physical **Input** button | Opens the stock Google TV input selector. |
+| **Settings** or gear button | Opens the launcher's Quick Settings panel, including the sleep timer. |
+| Physical **TV** button | Opens Live TV. |
+| **Inputs** on the home screen | Opens the launcher's own source picker. |
 
-### 🚀 Key Optimisations & Features at a Glance
+| Home screen | Quick Settings |
+| --- | --- |
+| ![Five-column dock on the Haier MatrixTV](docs/screenshots/v6.2-home.png) | ![Quick Settings panel with sleep timer](docs/screenshots/v6.2-quick-settings.png) |
 
-- **~85% Memory Reduction**: Consumes only **58.2 MB Total PSS** (7.3 MB Java heap) compared to ~350 MB on stock Google TV launcher, freeing up >300 MB of system RAM for streaming apps.
-- **Fluid 60 FPS**: **0.00% legacy jank** with consistent 26 ms frametimes and 0% idle CPU overhead.
-- **Centralized `RemoteKeys` Architecture**: Isolated input key precedence prevents button collisions while preserving full access to both Quick Settings and the Stock Google TV input selector.
-- **Golden Navigation Baseline**:
-  - **Remote Input Button**: Stock Google TV Input Selector (`SelectInputActivity`).
-  - **Remote Settings Gear / Menu**: Custom Quick Settings overlay (`QuickSettingsActivity`).
-  - **On-Screen Inputs Pill**: Built-in inputs popup dialog (`showInputs()`).
-  - **On-Screen Settings Pill**: Native Android TV System Settings (`com.android.tv.settings`).
-  - **Remote TV Button**: Direct Live TV / DVB tuner launch (`scan:225`).
-- **Zero-Cost Compile-Time Logging**: `Log.d` debug logs stripped by R8 in release builds for zero runtime key latency.
-- **Native Built-in Sleep Timer**: 15–120 min countdown with standby dispatch via accessibility helper (zero polling).
-- **Resilient Live Clock**: Dynamic second/minute timekeeping that never freezes across standby cycles or translucent overlays.
-- **Notification Center Add-On**: Translucent right-side notification panel matching Google TV styling ([addons/notification-center/](addons/notification-center/)).
+The screenshots above are from v6.2. The [v6.2 release notes](V6_2_RELEASE_NOTES.md) record 58.2 MB total PSS on the test TV and describe the remote-key changes. The [launcher build configuration](launcher/app/build.gradle) identifies the current source version.
 
-*Original upstream project and attribution: [Gathin23/cleanyourtv](https://github.com/Gathin23/cleanyourtv) (Licensed under MIT).*
+## Explore this fork
+
+- [Haier MatrixTV DE device notes and package list](examples/haier-matrixtv-de/) document the target hardware.
+- [Remote key dispatch](launcher/app/src/main/java/com/gathin/tvhome/RemoteKeys.java) shows how the launcher routes key events.
+- [Notification Center add-on](addons/notification-center/) provides the optional side panel. [View the panel on the TV](docs/screenshots/v6.2-notification-center.png).
+- [Clock and calendar](docs/screenshots/v6.2-screensaver.png), [stock input selector](docs/screenshots/v6.2-stock-input-selector.png) and [launcher input picker](docs/screenshots/v6.2-inputs-pill.png) show the other remote interactions.
+- Earlier engineering notes cover [v6.1](V6_1_RELEASE_NOTES.md) and [v6.0](V6_RELEASE_NOTES.md).
+
+Clone this edition with the command below.
+
+```sh
+git clone https://github.com/emmanuel11003/cleanyourtv.git
+```
+
+## Upstream CleanYourTV guide
+
+The guide below is from [Gathin23/cleanyourtv](https://github.com/Gathin23/cleanyourtv). Its clone commands, project statistics, support channels and translations refer to upstream. When following it with this fork, use the checkout above.
 
 <p align="center">
   Read in: <a href="README.he.md" lang="he" dir="rtl">עברית</a> · <a href="README.zh-CN.md">简体中文</a> · <a href="README.zh-TW.md">正體中文</a> · <a href="README.vi.md">Tiếng Việt</a> · <a href="README.ja.md">日本語</a> · <a href="README.it.md">Italiano</a> · <a href="README.pt-BR.md">Português</a> · <a href="README.nl.md">Nederlands</a> · <a href="README.de.md">Deutsch</a> · <a href="README.uk.md">Українська</a> · <a href="README.tr.md">Türkçe</a> · <a href="README.uz.md">Oʻzbekcha</a> · <a href="README.fr.md">Français</a> · <a href="README.es.md">Español</a> · <a href="README.el.md">Ελληνικά</a>
@@ -312,7 +310,7 @@ debloat list. What the audit cannot do is prove intent: [docs/privacy.md](docs/p
 ## The launcher
 
 A small native home screen for Android TV: **about 572 KB**, plain Java, built for TVs with 1 GB of RAM.
-No blur, no video, no network permission, no background services. The **TV** needs Android 8.0 (API 26)
+The upstream launcher omits blur, video, network permission and background services. This fork includes the Wi-Fi wallpaper service described above. The **TV** needs Android 8.0 (API 26)
 or newer, the `minSdk` in [`launcher/app/build.gradle`](launcher/app/build.gradle); what is left on an older
 set is in [Troubleshooting](docs/TROUBLESHOOTING.md).
 
