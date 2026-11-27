@@ -17,14 +17,21 @@ This edition includes local Wi-Fi wallpaper uploads in the launcher. Its [Androi
 | --- | --- |
 | ![Five-column dock on the Haier MatrixTV](docs/screenshots/v6.2-home.png) | ![Quick Settings panel with sleep timer](docs/screenshots/v6.2-quick-settings.png) |
 
+| Stock input selector | Launcher input picker |
+| --- | --- |
+| ![Google TV source selection panel](docs/screenshots/v6.2-stock-input-selector.png) | ![HDMI and composite sources in the launcher menu](docs/screenshots/v6.2-inputs-pill.png) |
+
+| Notification Center | Clock and calendar |
+| --- | --- |
+| ![Notifications panel beside the home screen](docs/screenshots/v6.2-notification-center.png) | ![Clock screensaver with a monthly calendar](docs/screenshots/v6.2-screensaver.png) |
+
 The screenshots above are from v6.2. The [v6.2 release notes](V6_2_RELEASE_NOTES.md) record 58.2 MB total PSS on the test TV and describe the remote-key changes. The [launcher build configuration](launcher/app/build.gradle) identifies the current source version.
 
 ## Explore this fork
 
 - [Haier MatrixTV DE device notes and package list](examples/haier-matrixtv-de/) document the target hardware.
 - [Remote key dispatch](launcher/app/src/main/java/com/gathin/tvhome/RemoteKeys.java) shows how the launcher routes key events.
-- [Notification Center add-on](addons/notification-center/) provides the optional side panel. [View the panel on the TV](docs/screenshots/v6.2-notification-center.png).
-- [Clock and calendar](docs/screenshots/v6.2-screensaver.png), [stock input selector](docs/screenshots/v6.2-stock-input-selector.png) and [launcher input picker](docs/screenshots/v6.2-inputs-pill.png) show the other remote interactions.
+- [Notification Center add-on](addons/notification-center/) provides the optional side panel.
 - Earlier engineering notes cover [v6.1](V6_1_RELEASE_NOTES.md) and [v6.0](V6_RELEASE_NOTES.md).
 
 Clone this edition with the command below.
