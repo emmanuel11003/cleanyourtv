@@ -483,60 +483,62 @@ public final class ButtonMapper {
             items[totalItems - 1] = activity.getString(R.string.button_mapper_clear_all);
         }
 
-        new AlertDialog.Builder(activity)
-                .setTitle(R.string.button_mapper)
-                .setItems(items, (dialog, which) -> {
+        Config cfg = Config.load(activity);
+        boolean reduceTransparency = cfg.reduceTransparency;
+        boolean animate = cfg.animations && !cfg.reducedMotion;
+        boolean reducedMotion = cfg.reducedMotion;
+
+        java.util.List<String> optionList = new ArrayList<>();
+        for (String item : items) optionList.add(item);
+
+        AppleTvUi.showListDialog(activity, activity.getString(R.string.button_mapper), null,
+                optionList, -1, reduceTransparency, animate, reducedMotion, which -> {
                     if (which == 0) {
                         showDetectButtonDialog(activity, onUpdated);
                     } else if (hasClearAll && which == totalItems - 1) {
-                        new AlertDialog.Builder(activity)
-                                .setTitle(R.string.button_mapper_clear_all)
-                                .setMessage(R.string.button_mapper_clear_all_confirm)
-                                .setPositiveButton(R.string.button_mapper_clear_all, (d, w) -> {
+                        AppleTvUi.showConfirmDialog(activity,
+                                activity.getString(R.string.button_mapper_clear_all),
+                                activity.getString(R.string.button_mapper_clear_all_confirm),
+                                activity.getString(R.string.button_mapper_clear_all),
+                                reduceTransparency, animate, reducedMotion, () -> {
                                     clearAll(activity);
                                     Toast.makeText(activity, R.string.button_mapper_clear_all, Toast.LENGTH_SHORT).show();
                                     if (onUpdated != null) onUpdated.run();
-                                })
-                                .setNegativeButton(android.R.string.cancel, null)
-                                .show();
+                                });
                     } else {
                         int selectedKeyCode = keys.get(which - 1);
                         showActionPickerForKey(activity, selectedKeyCode, onUpdated);
                     }
-                })
-                .setNegativeButton(android.R.string.cancel, null)
-                .show();
+                });
     }
 
     /** Captures any non-protected remote button press and opens its action picker. */
     public static void showDetectButtonDialog(Activity activity, Runnable onUpdated) {
-        AlertDialog dialog = new AlertDialog.Builder(activity)
-                .setTitle(R.string.button_mapper_learn)
-                .setMessage(R.string.button_mapper_learn_prompt)
-                .setNegativeButton(android.R.string.cancel, null)
-                .create();
-
-        dialog.setOnKeyListener((d, keyCode, event) -> {
-            if (keyCode == KeyEvent.KEYCODE_BACK) return false;
-            if (event.getAction() == KeyEvent.ACTION_UP && !event.isCanceled()) {
-                if (isProtectedKey(keyCode)) {
-                    Toast.makeText(activity, R.string.button_mapper_key_cannot_remap, Toast.LENGTH_SHORT).show();
+        Config cfg = Config.load(activity);
+        AppleTvUi.showKeyCaptureDialog(activity,
+                activity.getString(R.string.button_mapper_learn),
+                activity.getString(R.string.button_mapper_learn_prompt),
+                cfg.reduceTransparency, cfg.animations && !cfg.reducedMotion, cfg.reducedMotion,
+                (d, keyCode, event) -> {
+                    if (keyCode == KeyEvent.KEYCODE_BACK) return false;
+                    if (event.getAction() == KeyEvent.ACTION_UP && !event.isCanceled()) {
+                        if (isProtectedKey(keyCode)) {
+                            Toast.makeText(activity, R.string.button_mapper_key_cannot_remap, Toast.LENGTH_SHORT).show();
+                            return true;
+                        }
+                        d.dismiss();
+                        showActionPickerForKey(activity, keyCode, onUpdated);
+                        return true;
+                    }
                     return true;
-                }
-                d.dismiss();
-                showActionPickerForKey(activity, keyCode, onUpdated);
-                return true;
-            }
-            return true;
-        });
-
-        dialog.show();
+                });
     }
 
     /** Displays available launcher actions or app selection for a specific remote key code. */
     public static void showActionPickerForKey(Activity activity, int keyCode, Runnable onUpdated) {
         String keyLabel = getKeyLabel(keyCode);
         String current = getMapping(activity, keyCode);
+        Config cfg = Config.load(activity);
 
         final String[] targets = {
             null,
@@ -561,25 +563,25 @@ public final class ButtonMapper {
             R.string.button_mapper_action_tv_settings
         };
 
-        String[] options = new String[labelRes.length + 1];
+        java.util.List<String> options = new ArrayList<>(labelRes.length + 1);
+        int selected = 0;
         for (int i = 0; i < labelRes.length; i++) {
-            options[i] = activity.getString(labelRes[i]);
+            options.add(activity.getString(labelRes[i]));
+            if (current != null && current.equals(targets[i])) selected = i;
         }
-        options[labelRes.length] = activity.getString(R.string.button_mapper_launch_app);
+        options.add(activity.getString(R.string.button_mapper_launch_app));
 
-        new AlertDialog.Builder(activity)
-                .setTitle(keyLabel + (current != null ? " (" + getTargetLabel(activity, current) + ")" : ""))
-                .setItems(options, (dialog, which) -> {
+        String title = keyLabel + (current != null ? " (" + getTargetLabel(activity, current) + ")" : "");
+        AppleTvUi.showListDialog(activity, title, null, options, selected,
+                cfg.reduceTransparency, cfg.animations && !cfg.reducedMotion, cfg.reducedMotion, which -> {
                     if (which == labelRes.length) {
                         showAppPickerForKey(activity, keyCode, onUpdated);
                         return;
                     }
                     setMapping(activity, keyCode, targets[which]);
-                    Toast.makeText(activity, keyLabel + " \u2192 " + options[which], Toast.LENGTH_SHORT).show();
+                    Toast.makeText(activity, keyLabel + " \u2192 " + options.get(which), Toast.LENGTH_SHORT).show();
                     if (onUpdated != null) onUpdated.run();
-                })
-                .setNegativeButton(android.R.string.cancel, null)
-                .show();
+                });
     }
 
     /** Displays installed TV and phone apps to assign as a remote button launch target. */
@@ -607,22 +609,25 @@ public final class ButtonMapper {
         Collections.sort(allApps, (a, b) ->
                 a.loadLabel(pm).toString().compareToIgnoreCase(b.loadLabel(pm).toString()));
 
-        String[] appNames = new String[allApps.size()];
+        String current = getMapping(activity, keyCode);
+        java.util.List<String> appNames = new ArrayList<>(allApps.size());
+        int selected = -1;
         for (int i = 0; i < allApps.size(); i++) {
-            appNames[i] = allApps.get(i).loadLabel(pm).toString();
+            appNames.add(allApps.get(i).loadLabel(pm).toString());
+            if (current != null && current.equals(allApps.get(i).activityInfo.packageName)) selected = i;
         }
 
-        new AlertDialog.Builder(activity)
-                .setTitle(activity.getString(R.string.button_mapper_launch_app) + " (" + getKeyLabel(keyCode) + ")")
-                .setItems(appNames, (dialog, which) -> {
+        Config cfg = Config.load(activity);
+        AppleTvUi.showListDialog(activity,
+                activity.getString(R.string.button_mapper_launch_app) + " (" + getKeyLabel(keyCode) + ")",
+                null, appNames, selected,
+                cfg.reduceTransparency, cfg.animations && !cfg.reducedMotion, cfg.reducedMotion, which -> {
                     ResolveInfo chosen = allApps.get(which);
                     String pkg = chosen.activityInfo.packageName;
                     String label = chosen.loadLabel(pm).toString();
                     setMapping(activity, keyCode, pkg);
                     Toast.makeText(activity, getKeyLabel(keyCode) + " \u2192 " + label, Toast.LENGTH_SHORT).show();
                     if (onUpdated != null) onUpdated.run();
-                })
-                .setNegativeButton(android.R.string.cancel, null)
-                .show();
+                });
     }
 }

@@ -47,6 +47,14 @@ final class Config {
     static final String SCREENSAVER_BG_KEY = "screensaver_bg";
     static final String DOCK_OPACITY_KEY = "dock_opacity";
     static final String CLOCK_FORMAT_KEY = "clock_format";
+    static final String REDUCE_TRANSPARENCY_KEY = "reduce_transparency";
+    static final String SHOW_NOW_PLAYING_HOME_KEY = "show_now_playing_home";
+    static final String SHOW_NOW_PLAYING_QS_KEY = "show_now_playing_quick_settings";
+    static final String STARTUP_DEST_KEY = "startup_destination";
+    static final String QS_HIDDEN_TILES_KEY = "qs_hidden_tiles";
+    static final String STARTUP_HOME = "home";
+    static final String STARTUP_LIVE_TV = "live_tv";
+    static final String STARTUP_APP = "app";
     /**
      * Counts the changes made in Launcher settings. Home remembers the count it was built with and rebuilds on
      * resume when it differs, however the settings were left (see MainActivity#onResume).
@@ -287,6 +295,14 @@ final class Config {
     final boolean singleRow;
     /** With single_row, the band runs behind every app in the row, not only the dock apps (config.xml, dock_band_all). */
     final boolean dockBandAll;
+    /** Accessibility: replace translucent frosted surfaces with high-contrast opaque dark panels. */
+    final boolean reduceTransparency;
+    /** Video and Audio -> Now Playing: show Now Playing pill on Home (independent of Quick Settings). */
+    final boolean showNowPlayingHome;
+    /** Video and Audio -> Now Playing: show Now Playing controls in Quick Settings (independent of Home). */
+    final boolean showNowPlayingQuickSettings;
+    /** Mutually exclusive startup destination: "home", "live_tv", or "app" (empty when not explicitly set). */
+    final String startupDestination;
 
     private Config(List<String> dockApps, boolean fillDock, List<String> hiddenApps, List<String> libraryApps, List<String> libraryExcludedApps, String liveTvPackage,
                    String liveTvAction, String liveTvInputId, Map<String, String> launchActions, Map<String, String> appLabels,
@@ -303,7 +319,8 @@ final class Config {
                    boolean handleViewInputs, boolean tileMenu, boolean dockEvenPadding, boolean dockBand, boolean cinematicDots, boolean cinematicWhiteFocus, boolean wifiStatusColor, int cinematicScrim, int cinematicArt,
                    Map<String, Set<String>> wallpaperMoods, boolean gamepadPassthrough, boolean consumeVolumeKeys, boolean volumePausesFilter, boolean homeIgnoreChannelKeys, boolean powerOnHome, boolean homeLongPressHome, boolean wifiStatusWarnings, List<String> topBarApps, boolean showGreeting, boolean headerWhite, boolean clockWallpaper, int clockWallpaperDim, boolean clockGlow, String glassStyle, boolean singleRow, boolean dockBandAll, boolean lunarDate, int lunarUtcOffset, boolean dateBelowClock, boolean vpnPill, String locale, boolean powerOnHomeAlways, boolean inputsConnectedOnly, boolean inputsCecStateOnly,
                    int openOnStartNetworkWait, boolean openOnStartOnWake, boolean iconOnlyVpn, String clockFormat, boolean backOpensClock, boolean glowSnap, float animationScale,
-                   boolean settingsKeyClearTask) {
+                   boolean settingsKeyClearTask, boolean reduceTransparency, boolean showNowPlayingHome,
+                   boolean showNowPlayingQuickSettings, String startupDestination) {
         this.handleViewInputs = handleViewInputs;
         this.tileMenu = tileMenu;
         this.inputKeycodes = inputKeycodes;
@@ -424,6 +441,10 @@ final class Config {
         this.glowStyle = glowStyle(glowStyle);
         this.wallpaperCaptions = wallpaperCaptions;
         this.glassStyle = glassStyle(glassStyle);
+        this.reduceTransparency = reduceTransparency;
+        this.showNowPlayingHome = showNowPlayingHome;
+        this.showNowPlayingQuickSettings = showNowPlayingQuickSettings;
+        this.startupDestination = startupDestination != null ? startupDestination : "";
     }
 
     /** A known glow_style, or radial (the default) for anything else. */
@@ -750,11 +771,109 @@ final class Config {
         if (choices.contains("show_stats")) showStats = choices.getBoolean("show_stats", showStats);
         if (choices.contains("show_inputs_pill")) showInputsPill = choices.getBoolean("show_inputs_pill", showInputsPill);
         if (choices.contains("show_network_pill")) showNetworkPill = choices.getBoolean("show_network_pill", showNetworkPill);
+        if (choices.contains("home_idle_clock_minutes")) {
+            idleClockMinutes = Math.max(0, Math.min(1440, choices.getInt("home_idle_clock_minutes", idleClockMinutes)));
+        }
         if (choices.contains("screensaver_enabled")) {
             boolean ssEnabled = choices.getBoolean("screensaver_enabled", true);
             if (!ssEnabled) idleClockMinutes = 0;
             else if (idleClockMinutes == 0) idleClockMinutes = 5;
         }
+        reducedMotion = choices.getBoolean("reduced_motion", reducedMotion);
+        focusOvershoot = choices.getBoolean("focus_overshoot", focusOvershoot);
+        alwaysShowNames = choices.getBoolean("always_show_names", alwaysShowNames);
+        library = choices.getBoolean("app_library", library);
+        libraryButton = choices.getBoolean("library_button", libraryButton);
+        showLibraryPill = choices.getBoolean("show_library_pill", showLibraryPill);
+        libraryOkOpens = choices.getBoolean("library_ok_opens", libraryOkOpens);
+        librarySelection = choices.getBoolean("app_library_selection", librarySelection);
+        dockRow = choices.getBoolean("dock_row", dockRow);
+        dockTitle = choices.getBoolean("dock_title", dockTitle);
+        dockGlass = choices.getBoolean("dock_glass", dockGlass);
+        dockBand = choices.getBoolean("dock_band", dockBand);
+        dockEvenPadding = choices.getBoolean("dock_even_padding", dockEvenPadding);
+        singleRow = choices.getBoolean("single_row", singleRow);
+        fillDock = choices.getBoolean("fill_dock", fillDock);
+        fadeRows = choices.getBoolean("fade_rows", fadeRows);
+        topMenu = choices.getBoolean("top_menu", topMenu);
+        launcherSettingsButton = choices.getBoolean("launcher_settings_button", launcherSettingsButton);
+        reorderButton = choices.getBoolean("reorder_button", reorderButton);
+        iconOnlyButtons = choices.getBoolean("icon_only_buttons", iconOnlyButtons);
+        iconOnlyInputs = choices.getBoolean("icon_only_inputs", iconOnlyInputs);
+        iconOnlyVpn = choices.getBoolean("icon_only_vpn", iconOnlyVpn);
+        vpnPill = choices.getBoolean("vpn_pill", vpnPill);
+        tileMenu = choices.getBoolean("tile_menu", tileMenu);
+        uniformTiles = choices.getBoolean("uniform_tiles", uniformTiles);
+        moduleCards = choices.getBoolean("module_cards", moduleCards);
+        homeSettings = choices.getBoolean("show_home_settings_shortcut", homeSettings);
+        inputsConnectedOnly = choices.getBoolean("inputs_connected_only", inputsConnectedOnly);
+        inputsCecStateOnly = choices.getBoolean("inputs_cec_state_only", inputsCecStateOnly);
+        wifiStatusColor = choices.getBoolean("wifi_status_color", wifiStatusColor);
+        wifiStatusWarnings = choices.getBoolean("wifi_status_warnings", wifiStatusWarnings);
+        ambientGlow = choices.getBoolean("ambient_glow", ambientGlow);
+        appGlow = choices.getBoolean("app_glow", appGlow);
+        glowSnap = choices.getBoolean("glow_snap", glowSnap);
+        glowStyle = choices.getString("glow_style", glowStyle);
+        glassStyle = choices.getString("glass_style", glassStyle);
+        cinematic = choices.getBoolean("cinematic_home", cinematic);
+        cinematicDots = choices.getBoolean("cinematic_dots", cinematicDots);
+        cinematicWhiteFocus = choices.getBoolean("cinematic_white_focus", cinematicWhiteFocus);
+        if (choices.contains("cinematic_art")) {
+            cinematicArt = Math.max(0, Math.min(100, choices.getInt("cinematic_art", cinematicArt)));
+        }
+        if (choices.contains("cinematic_scrim")) {
+            cinematicScrim = Math.max(0, Math.min(100, choices.getInt("cinematic_scrim", cinematicScrim)));
+        }
+        if (choices.contains("sky_intensity")) {
+            skyIntensity = Math.max(0, Math.min(100, choices.getInt("sky_intensity", skyIntensity)));
+        }
+        if (choices.contains("clock_wallpaper_dim")) {
+            clockWallpaperDim = Math.max(0, Math.min(90, choices.getInt("clock_wallpaper_dim", clockWallpaperDim)));
+        }
+        clockGlow = choices.getBoolean("clock_glow", clockGlow);
+        backOpensClock = choices.getBoolean("back_opens_clock", backOpensClock);
+        showGreeting = choices.getBoolean("show_greeting", showGreeting);
+        dateBelowClock = choices.getBoolean("date_below_clock", dateBelowClock);
+        headerWhite = choices.getBoolean("header_white", headerWhite);
+        wallpaperTrueColor = choices.getBoolean("wallpaper_true_color", wallpaperTrueColor);
+        wallpaperCaptions = choices.getBoolean("wallpaper_captions", wallpaperCaptions);
+        // Device compatibility overrides (System -> Advanced -> Device Compatibility)
+        keyFilter = choices.getBoolean("key_filter", keyFilter);
+        gamepadPassthrough = choices.getBoolean("gamepad_passthrough", gamepadPassthrough);
+        consumeVolumeKeys = choices.getBoolean("consume_volume_keys", consumeVolumeKeys);
+        volumePausesFilter = choices.getBoolean("volume_pauses_filter", volumePausesFilter);
+        homeIgnoreChannelKeys = choices.getBoolean("home_ignore_channel_keys", homeIgnoreChannelKeys);
+        restoreKeyServices = choices.getBoolean("restore_key_services", restoreKeyServices);
+        powerOnHome = choices.getBoolean("power_on_home", powerOnHome);
+        powerOnHomeAlways = choices.getBoolean("power_on_home_always", powerOnHomeAlways);
+        homeLongPressHome = choices.getBoolean("home_long_press_home", homeLongPressHome);
+        settingsKeyPanel = choices.getBoolean("settings_key_panel", settingsKeyPanel);
+        settingsKeyClearTask = choices.getBoolean("settings_key_clear_task", settingsKeyClearTask);
+        handleViewInputs = choices.getBoolean("handle_view_inputs", handleViewInputs);
+        // Startup destination & independent Open on Wake
+        String startupDest = choices.getString(STARTUP_DEST_KEY, "");
+        if (STARTUP_HOME.equals(startupDest)) {
+            bootToLiveTv = false;
+        } else if (STARTUP_LIVE_TV.equals(startupDest)) {
+            bootToLiveTv = true;
+        } else if (STARTUP_APP.equals(startupDest)) {
+            bootToLiveTv = false;
+            openOnStartChoice = true;
+        } else {
+            bootToLiveTv = choices.getBoolean("boot_to_live_tv", bootToLiveTv);
+            openOnStartChoice = choices.getBoolean("open_on_start_choice", openOnStartChoice);
+        }
+        openOnStartOnWake = choices.getBoolean("open_on_start_on_wake", openOnStartOnWake);
+        if (choices.contains("open_on_start_network_wait")) {
+            openOnStartNetworkWait = Math.max(0, Math.min(600, choices.getInt("open_on_start_network_wait", openOnStartNetworkWait)));
+        }
+        if (openOnStartOnWake || !choices.getString(OpenOnStart.KEY, "").isEmpty()) {
+            openOnStartChoice = true;
+        }
+        // Accessibility & Now Playing independent switches (defaulting to current v8 behavior)
+        boolean reduceTransparency = choices.getBoolean(REDUCE_TRANSPARENCY_KEY, false);
+        boolean showNowPlayingHome = choices.getBoolean(SHOW_NOW_PLAYING_HOME_KEY, true);
+        boolean showNowPlayingQuickSettings = choices.getBoolean(SHOW_NOW_PLAYING_QS_KEY, true);
         File wallpaper = dir != null ? new File(dir, WALLPAPER_NAME) : null;
         if (wallpaper != null && !(wallpaper.isFile() && wallpaper.length() > 0)) wallpaper = null;
         if (ctx != null) {
@@ -780,6 +899,9 @@ final class Config {
         if (!wallpaperEnabled) wallpaper = null;
         int rotationMinutes = json == null ? 0 : integer(json, "wallpaper_rotation_minutes", 0, 0, 1440);
         int wallpaperDim = json == null ? 0 : integer(json, "wallpaper_dim", 0, 0, 90);
+        if (choices.contains("wallpaper_dim")) {
+            wallpaperDim = Math.max(0, Math.min(90, choices.getInt("wallpaper_dim", wallpaperDim)));
+        }
         int defaultDockOpacity = 30;
         try {
             defaultDockOpacity = res.getInteger(R.integer.dock_opacity);
@@ -827,7 +949,7 @@ final class Config {
                 Math.max(0, Math.min(90, clockWallpaperDim)), clockGlow, glassStyle, singleRow && dockRow, dockBandAll, lunar, lunarOffset,
                 dateBelowClock, vpnPill, locale, powerOnHomeAlways, inputsConnectedOnly, inputsCecStateOnly,
                 Math.max(0, Math.min(600, openOnStartNetworkWait)), openOnStartOnWake, iconOnlyVpn, clockFormat, backOpensClock, glowSnap, animationScale,
-                settingsKeyClearTask);
+                settingsKeyClearTask, reduceTransparency, showNowPlayingHome, showNowPlayingQuickSettings, startupDest);
     }
 
     /**
@@ -865,7 +987,18 @@ final class Config {
             WALLPAPER_CHOICE_KEY, SCREENSAVER_WALLPAPER_KEY, SCREENSAVER_STYLE_KEY, SCREENSAVER_BG_KEY,
             "screensaver_enabled", "show_stats", "show_inputs_pill",
             "show_network_pill", DOCK_OPACITY_KEY,
-            CLOCK_FORMAT_KEY, OpenOnStart.KEY
+            CLOCK_FORMAT_KEY, OpenOnStart.KEY, STARTUP_DEST_KEY, "open_on_start_on_wake",
+            "app_library", "library_button", "show_library_pill", "library_ok_opens", "app_library_selection",
+            "dock_row", "dock_title", "dock_glass", "dock_band", "dock_even_padding", "single_row", "fill_dock",
+            "fade_rows", "ambient_glow", "app_glow", "glow_snap", "glow_style", "glass_style",
+            "cinematic_home", "cinematic_dots", "cinematic_white_focus", "cinematic_art", "cinematic_scrim",
+            "wallpaper_dim", "clock_wallpaper_dim", "wallpaper_true_color", "wallpaper_captions", "sky_intensity",
+            "show_greeting", "date_below_clock", "header_white", "clock_glow", "back_opens_clock",
+            "home_idle_clock_minutes", "reduced_motion", "focus_overshoot", "always_show_names",
+            REDUCE_TRANSPARENCY_KEY, SHOW_NOW_PLAYING_HOME_KEY, SHOW_NOW_PLAYING_QS_KEY,
+            "reorder_button", "launcher_settings_button", "top_menu", "show_home_settings_shortcut",
+            "tile_menu", "uniform_tiles", "module_cards", "inputs_connected_only", "inputs_cec_state_only",
+            "wifi_status_color", "wifi_status_warnings", "vpn_pill", "icon_only_buttons", "icon_only_inputs", "icon_only_vpn"
     };
 
     static SharedPreferences.Editor clearOnTvChoices(SharedPreferences.Editor editor) {

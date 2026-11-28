@@ -33,10 +33,12 @@ final class RamManagerDialog {
     static void show(Context ctx, Runnable onMemoryChanged) {
         if (ctx == null) return;
         final float d = ctx.getResources().getDisplayMetrics().density;
+        final Config cfg = Config.load(ctx);
+        final boolean reduceTransparency = cfg.reduceTransparency;
         final Dialog dialog = new Dialog(ctx, android.R.style.Theme_Black_NoTitleBar_Fullscreen);
         Window win = dialog.getWindow();
         if (win != null) {
-            win.setBackgroundDrawable(new ColorDrawable(0xCC070A10));
+            win.setBackgroundDrawable(new ColorDrawable(reduceTransparency ? 0xE80A0B0F : 0xB80A0C12));
             win.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT);
             win.setDimAmount(0.55f);
         }
@@ -51,7 +53,7 @@ final class RamManagerDialog {
         card.setOrientation(LinearLayout.VERTICAL);
         card.setPadding(dp(d, 28), dp(d, 24), dp(d, 28), dp(d, 24));
         card.setClickable(true);
-        card.setBackground(roundRect(0xF2151924, dp(d, 20), 0x33FFFFFF, dp(d, 1)));
+        card.setBackgroundResource(AppleTvUi.panelBgRes(reduceTransparency));
         LinearLayout.LayoutParams cardLp = new LinearLayout.LayoutParams(dp(d, 640), LinearLayout.LayoutParams.WRAP_CONTENT);
         outer.addView(card, cardLp);
 

@@ -69,7 +69,7 @@ public final class WallpaperSyncActivity extends Activity {
         Config cfg = Config.load(this);
         animateTransitions = cfg.animations && !cfg.reducedMotion;
         Motion.applyFadeTransition(this, animateTransitions);
-        View root = buildLayout();
+        View root = buildLayout(cfg);
         setContentView(root);
         try {
             startForegroundService(new Intent(this, WallpaperSyncService.class));
@@ -109,14 +109,16 @@ public final class WallpaperSyncActivity extends Activity {
         }
     }
 
-    private View buildLayout() {
+    private View buildLayout(Config cfg) {
+        boolean reduceTransparency = cfg != null && cfg.reduceTransparency;
         float d = getResources().getDisplayMetrics().density;
         int padH = Math.round(64 * d);
         int padV = Math.round(36 * d);
 
         LinearLayout root = new LinearLayout(this);
         root.setOrientation(LinearLayout.HORIZONTAL);
-        root.setBackgroundColor(0xFF111318);
+        root.setBackgroundResource(reduceTransparency ? android.R.color.black : R.drawable.appletv_screen_bg);
+        if (reduceTransparency) root.setBackgroundColor(0xFF0E1015);
         root.setPadding(padH, padV, padH, padV);
         root.setGravity(Gravity.CENTER_VERTICAL);
         root.setClipChildren(false);
@@ -180,7 +182,7 @@ public final class WallpaperSyncActivity extends Activity {
         row1.setClipToPadding(false);
         left.addView(row1);
 
-        toggleBtn = makeActionBtn(d, getString(R.string.sync_stop), v -> {
+        toggleBtn = makeActionBtn(d, getString(R.string.sync_stop), reduceTransparency, v -> {
             if (service == null) return;
             if (service.isRunning()) {
                 service.stopServer();
@@ -195,7 +197,7 @@ public final class WallpaperSyncActivity extends Activity {
         });
         row1.addView(toggleBtn, btnLp(d, true));
 
-        TextView pinBtn = makeActionBtn(d, getString(R.string.sync_new_pin), v -> {
+        TextView pinBtn = makeActionBtn(d, getString(R.string.sync_new_pin), reduceTransparency, v -> {
             if (service != null) {
                 service.rotatePin();
                 refreshUi();
@@ -212,13 +214,13 @@ public final class WallpaperSyncActivity extends Activity {
         r2Lp.topMargin = Math.round(10 * d);
         left.addView(row2, r2Lp);
 
-        row2.addView(makeActionBtn(d, getString(R.string.sync_clear_home), v -> {
+        row2.addView(makeActionBtn(d, getString(R.string.sync_clear_home), reduceTransparency, v -> {
             WallpaperSyncService.directClear(this, "home");
             Toast.makeText(this, R.string.sync_cleared, Toast.LENGTH_SHORT).show();
             refreshUi();
         }), btnLp(d, true));
 
-        row2.addView(makeActionBtn(d, getString(R.string.sync_clear_ss), v -> {
+        row2.addView(makeActionBtn(d, getString(R.string.sync_clear_ss), reduceTransparency, v -> {
             WallpaperSyncService.directClear(this, "screensaver");
             Toast.makeText(this, R.string.sync_cleared, Toast.LENGTH_SHORT).show();
             refreshUi();
@@ -234,12 +236,12 @@ public final class WallpaperSyncActivity extends Activity {
         return root;
     }
 
-    private TextView makeActionBtn(float d, String text, View.OnClickListener listener) {
+    private TextView makeActionBtn(float d, String text, boolean reduceTransparency, View.OnClickListener listener) {
         TextView b = new TextView(this);
         b.setText(text);
         b.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15f);
-        b.setTextColor(getColorStateList(R.color.quick_tile_text_color));
-        b.setBackgroundResource(R.drawable.quick_settings_tile_bg);
+        b.setTextColor(getColorStateList(AppleTvUi.tileTextColorRes(reduceTransparency)));
+        b.setBackgroundResource(AppleTvUi.tileBgRes(reduceTransparency));
         b.setGravity(Gravity.CENTER);
         b.setFocusable(true);
         b.setClickable(true);

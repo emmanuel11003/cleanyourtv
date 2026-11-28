@@ -29,7 +29,13 @@ public final class WallpaperSyncService extends Service {
     private static final String KEY_PIN = "pairing_pin";
 
     private final IBinder binder = new LocalBinder();
+    private static volatile WallpaperSyncService activeInstance;
     private WallpaperHttpServer server;
+
+    static boolean isRunningNow() {
+        WallpaperSyncService inst = activeInstance;
+        return inst != null && inst.isRunning();
+    }
     private String currentPin;
     private String lastError;
 
@@ -84,12 +90,14 @@ public final class WallpaperSyncService extends Service {
         try {
             int port = s.start(DEFAULT_PORT);
             server = s;
+            activeInstance = this;
             String ip = NetworkAddress.localIpv4(this);
             String url = ip != null ? "http://" + ip + ":" + port : "port " + port;
             startForeground(NOTIF_ID, buildNotification(url));
         } catch (IOException e) {
             lastError = e.getMessage();
             server = null;
+            if (activeInstance == this) activeInstance = null;
         }
         notifyUi();
     }
@@ -99,6 +107,7 @@ public final class WallpaperSyncService extends Service {
             server.stop();
             server = null;
         }
+        if (activeInstance == this) activeInstance = null;
         stopForeground(STOP_FOREGROUND_REMOVE);
         notifyUi();
     }
@@ -121,6 +130,20 @@ public final class WallpaperSyncService extends Service {
         if (server != null) server.setPin(currentPin);
         notifyUi();
         return currentPin;
+    }
+
+    static String rotatePinNow(Context ctx) {
+        WallpaperSyncService inst = activeInstance;
+        if (inst != null) return inst.rotatePin();
+        String pin = generatePin();
+        ctx.getSharedPreferences(PREFS, MODE_PRIVATE).edit().putString(KEY_PIN, pin).apply();
+        return pin;
+    }
+
+    static String currentPinNow(Context ctx) {
+        WallpaperSyncService inst = activeInstance;
+        if (inst != null) return inst.getPin();
+        return loadOrCreatePin(ctx);
     }
 
     synchronized String getLastError() {

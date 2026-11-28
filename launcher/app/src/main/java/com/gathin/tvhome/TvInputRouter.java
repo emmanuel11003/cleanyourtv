@@ -56,15 +56,20 @@ final class TvInputRouter {
     }
 
     static boolean openLiveTvAfterBoot(MainActivity host) {
+        if (Config.STARTUP_HOME.equals(host.startupDestination)) return false;
         String app = host.openOnStartChoice ? host.getSharedPreferences(Config.SETTINGS_NAME, Context.MODE_PRIVATE)
                 .getString(OpenOnStart.KEY, "") : "";
-        if (!host.bootToLiveTv && app.isEmpty()) return false;
+        boolean wantLiveTv = Config.STARTUP_LIVE_TV.equals(host.startupDestination)
+                || (host.startupDestination.isEmpty() && host.bootToLiveTv);
+        boolean wantApp = Config.STARTUP_APP.equals(host.startupDestination)
+                || (host.startupDestination.isEmpty() && !host.bootToLiveTv);
+        if (!wantLiveTv && (!wantApp || app.isEmpty())) return false;
         int boot = OpenOnStart.boot(host);
         SharedPreferences prefs = host.getSharedPreferences(OpenOnStart.BOOT_PREFS, Context.MODE_PRIVATE);
-        String target = host.bootToLiveTv ? host.liveTvPkg : app;
+        String target = wantLiveTv ? host.liveTvPkg : app;
         if (!OpenOnStart.due(boot, prefs.getInt(OpenOnStart.BOOT_KEY, -1), target, host.getPackageName())) return false;
         prefs.edit().putInt(OpenOnStart.BOOT_KEY, boot).apply();
-        Intent i = host.bootToLiveTv ? liveTvIntent(host) : OpenOnStart.intent(host.getPackageManager(), app);
+        Intent i = wantLiveTv ? liveTvIntent(host) : OpenOnStart.intent(host.getPackageManager(), app);
         if (i == null) return false;
         return openWhenReady(host, i);
     }
@@ -72,8 +77,9 @@ final class TvInputRouter {
     static void openStartAppOnWake(MainActivity host) {
         String app = host.getSharedPreferences(Config.SETTINGS_NAME, Context.MODE_PRIVATE)
                 .getString(OpenOnStart.KEY, "");
-        if (app.isEmpty() || app.equals(host.getPackageName())) return;
-        Intent i = OpenOnStart.intent(host.getPackageManager(), app);
+        Intent i = !app.isEmpty() && !app.equals(host.getPackageName())
+                ? OpenOnStart.intent(host.getPackageManager(), app)
+                : (host.bootToLiveTv || Config.STARTUP_LIVE_TV.equals(host.startupDestination) ? liveTvIntent(host) : null);
         if (i != null) openWhenReady(host, i);
     }
 

@@ -1,31 +1,74 @@
-# CleanYourTV for Haier MatrixTV
+# CleanYourTV for Haier MatrixTV (v8.0)
 
-This is Emmanuel J Joseph’s fork of [Gathin’s CleanYourTV](https://github.com/Gathin23/cleanyourtv). The upstream project provides the launcher, device lists and tools for configuring Android TV over ADB. This fork adapts launcher navigation and remote-button handling for the 55-inch Haier MatrixTV DE running Android 14.
+This is Emmanuel J Joseph’s fork of [Gathin’s CleanYourTV](https://github.com/Gathin23/cleanyourtv) (full credit to [@Gathin23](https://github.com/Gathin23) for the original launcher, debloat tools, safety architecture, and TV compatibility list). The upstream project provides the launcher, device lists and tools for configuring Android TV over ADB. This fork adapts launcher navigation, remote-button handling, and Apple TV–style Settings and Quick Settings for the 55-inch Haier MatrixTV DE running Android 14 (`mt5896`).
 
-This edition includes local Wi-Fi wallpaper uploads in the launcher. Its [Android manifest](launcher/app/src/main/AndroidManifest.xml) declares the `INTERNET` permission for the [wallpaper transfer service](launcher/app/src/main/java/com/gathin/tvhome/WallpaperSyncService.java).
+This edition includes local Wi-Fi wallpaper uploads in the launcher. Its [Android manifest](launcher/app/src/main/AndroidManifest.xml) declares the `INTERNET` permission solely for the on-demand [wallpaper transfer service](launcher/app/src/main/java/com/gathin/tvhome/WallpaperSyncService.java).
 
 ## What changes on the Haier remote
 
 | Control | Behaviour on the documented setup |
 | --- | --- |
-| Physical **Input** button | Opens the stock Google TV input selector. |
-| **Settings** or gear button | Opens the launcher's Quick Settings panel, including the sleep timer. |
-| Physical **TV** button | Opens Live TV. |
+| Physical **Input** button | Opens the stock Google TV input selector (`SelectInputActivity`). |
+| **Settings** or gear button | Opens the launcher's compact Quick Settings overlay (`QuickSettingsActivity`). |
+| Physical **TV** button | Opens Live TV (`com.cltv.hybrid`). |
 | **Inputs** on the home screen | Opens the launcher's own source picker. |
 
-| Home screen | Quick Settings |
-| --- | --- |
-| ![Five-column dock on the Haier MatrixTV](docs/screenshots/v6.2-home.png) | ![Quick Settings panel with sleep timer](docs/screenshots/v6.2-quick-settings.png) |
+## Live TV Screenshots (All Features in Action)
 
-| Stock input selector | Launcher input picker |
-| --- | --- |
-| ![Google TV source selection panel](docs/screenshots/v6.2-stock-input-selector.png) | ![HDMI and composite sources in the launcher menu](docs/screenshots/v6.2-inputs-pill.png) |
+| Home Screen (5-Column Glass Dock) | Apple TV–Style Root Settings (`CleanYourTV` Box) |
+| :---: | :---: |
+| <img src="docs/screenshots/v8.0-home.png" width="380" alt="Home Screen"> | <img src="docs/screenshots/v8.0-settings-root.png" width="380" alt="Apple TV Style Root Settings"> |
+| **Quick Settings Overlay (Gear Key)** | **Quick Settings Inline Edit Controls** |
+| <img src="docs/screenshots/v8.0-quick-settings.png" width="380" alt="Quick Settings Frosted Overlay"> | <img src="docs/screenshots/v8.0-qs-edit-controls.png" width="380" alt="Quick Settings Edit Controls"> |
+| **General → Appearance** | **Wallpaper Picker (Live Preview Only)** |
+| <img src="docs/screenshots/v8.0-appearance.png" width="380" alt="Appearance Settings"> | <img src="docs/screenshots/v8.0-wallpaper-picker.png" width="380" alt="Wallpaper Picker with Live Preview"> |
+| **Accessibility → Reduce Transparency (Opaque High-Contrast)** | **Home Screen Settings** |
+| <img src="docs/screenshots/v8.0-accessibility.png" width="380" alt="Reduce Transparency High Contrast Mode"> | <img src="docs/screenshots/v8.0-home-screen-settings.png" width="380" alt="Home Screen Settings"> |
+| **Video & Audio → Independent Now Playing** | **Screen Saver Settings** |
+| <img src="docs/screenshots/v8.0-now-playing.png" width="380" alt="Independent Now Playing Switches"> | <img src="docs/screenshots/v8.0-screensaver-settings.png" width="380" alt="Screen Saver Settings"> |
+| **Clock & Month Calendar Screensaver** | **Spotlight Fuzzy Search (Apps, Inputs & Actions)** |
+| <img src="docs/screenshots/v8.0-clock-screensaver.png" width="380" alt="Clock and Month Calendar Screensaver"> | <img src="docs/screenshots/v8.0-spotlight-search.png" width="380" alt="Spotlight Fuzzy Search"> |
+| **Remotes and Devices** | **Built-in Remote Button Mapper** |
+| <img src="docs/screenshots/v8.0-remotes-devices.png" width="380" alt="Remotes and Devices Settings"> | <img src="docs/screenshots/v8.0-button-mapper.png" width="380" alt="Remote Button Mapper"> |
+| **System → Advanced → Device Compatibility** | **RAM Cleaner & Memory Manager** |
+| <img src="docs/screenshots/v8.0-device-compatibility.png" width="380" alt="Device Compatibility Switches"> | <img src="docs/screenshots/v8.0-ram-manager.png" width="380" alt="RAM Cleaner and Memory Manager"> |
+| **Transfer and Backup** | **Wi-Fi Wallpaper & Backup Sync (QR Upload)** |
+| <img src="docs/screenshots/v8.0-transfer-backup.png" width="380" alt="Transfer and Backup"> | <img src="docs/screenshots/v8.0-wallpaper-sync.png" width="380" alt="Wi-Fi Wallpaper Sync QR"> |
+| **Built-in Notification Center** | **Stock Google TV Input Selector (Physical Input Key)** |
+| <img src="docs/screenshots/v8.0-notification-center.png" width="380" alt="Notification Center Overlay"> | <img src="docs/screenshots/v6.2-stock-input-selector.png" width="380" alt="Stock Google TV Input Selector"> |
+| **On-Screen Inputs Pill Menu** | **Earlier Quick Settings (v6.2 Comparison)** |
+| <img src="docs/screenshots/v6.2-inputs-pill.png" width="380" alt="On-Screen Inputs Menu"> | <img src="docs/screenshots/v6.2-quick-settings.png" width="380" alt="Earlier Quick Settings Comparison"> |
 
-| Notification Center | Clock and calendar |
-| --- | --- |
-| ![Notifications panel beside the home screen](docs/screenshots/v6.2-notification-center.png) | ![Clock screensaver with a monthly calendar](docs/screenshots/v6.2-screensaver.png) |
+## Complete v8.0 Feature List
 
-The screenshots above are from v6.2. The [v6.2 release notes](V6_2_RELEASE_NOTES.md) record 58.2 MB total PSS on the test TV and describe the remote-key changes. The [launcher build configuration](launcher/app/build.gradle) identifies the current source version.
+- **Apple TV–Style Split-Pane Settings UI**:
+  - Matte charcoal canvas with a centered `CleanYourTV` hardware illustration ([DeviceHeroView.java](launcher/app/src/main/java/com/gathin/tvhome/DeviceHeroView.java)) on the left and a compact smoked-glass vertical menu on the right (`General`, `Home Screen`, `Video and Audio`, `Screen Saver`, `Notifications`, `Remotes and Devices`, `Apps`, `Network`, `Transfer and Backup`, `System`).
+  - Pale frosted focus highlight with dark text, slight hardware lift, single D-pad focus stop per row, live value readouts with chevrons/checkmarks, and exact parent focus & scroll restoration across Back and external Android settings.
+  - Contextual left-pane hints on submenus, with wallpaper image previews reserved strictly for the Wallpaper picker.
+  - **Accessibility → Reduce Transparency**: Instant toggle between default translucent frosted glass and opaque high-contrast surfaces across Settings, Quick Settings, Notification Center, and dialogs.
+- **12 Everyday Switches + Independent Now Playing**:
+  - **General → Appearance**: `Home Wallpaper`, `Animations`, `Advanced Effects`, `Interface Sounds`, `Wallpaper` picker, `Wallpaper Dimming`, `Glass & Glow Effects`, `Clock & Header`.
+  - **Home Screen**: `Show Inputs Button`, `Show Network Button`, `Show Memory & Storage`, `Enable App Library`, `Rearrange Apps`, `Home Layout` (`4–7` columns, `0–3` rows below dock, `30%–100%` dock opacity), `Cinematic Shelf`, `App Library Options`, `Tile & Input Options`.
+  - **Screen Saver**: `Start When Home Is Idle`, `Show Calendar`, `Idle Timeout`, `Screen Saver Background` (`Black` / `Glow` / `Wallpaper`), `Screensaver Wallpaper`, `Screensaver Dimming`, `Ambient Color Glow`, `Back on Home Opens Screen Saver`.
+  - **Video and Audio → Now Playing**: Independent `Show on Home` and `Show in Quick Settings` switches—media continues playing in the background when either surface is hidden.
+- **Compact Frosted Quick Settings & Edit Controls**:
+  - Gear key opens a floating frosted overlay over the running app with **All settings**, live **Now Playing** controls, **Sleep Timer** (`Off / 15 / 30 / 45 / 60 / 90 / 120 min`), **Notifications**, **Free RAM / RAM Manager**, and **Edit Controls** to show or hide any of the 10 optional tiles while keeping **All settings** and **Edit Controls** always reachable.
+- **Remote Button Mapper & Haier MatrixTV DE Compatibility**:
+  - Built-in **Remote Button Mapper** with live key detection, per-key app/action mapping, and navigation/power/volume key protection.
+  - Dedicated **System → Advanced → Device Compatibility** menu exposing all 12 hardware key/volume/wake/repair toggles (`key_filter`, `gamepad_passthrough`, `consume_volume_keys`, `volume_pauses_filter`, `home_ignore_channel_keys`, `restore_key_services`, `power_on_home`, `power_on_home_always`, `home_long_press_home`, `settings_key_panel`, `settings_key_clear_task`, `handle_view_inputs`).
+- **Built-in Wi-Fi Transfer & Full Backup / Restore**:
+  - On-demand local LAN HTTP server (`WallpaperSyncActivity`) with Pairing PIN, solid white QR code, live server status indicators, and upload/export/restore from any phone browser.
+  - Explicit **Export Backup (JSON)**, **Restore from Backup**, **Change PIN**, and **Reset to Theme Defaults** actions; preserves older v1 backups and includes all preferences, tile order, custom labels, hidden apps, Quick Settings tiles, and remote button mappings.
+- **Spotlight Search, Notification Center & RAM Cleaner**:
+  - Fuzzy top-bar **Spotlight Search** across apps, TV inputs, and launcher actions.
+  - Built-in **Notification Center** (`GuardRevival`) and interactive **RAM Cleaner & Memory Manager** (`MemoryBooster` + Android 14 App Info Force Stop).
+- **Hardware-Verified Performance on Haier `mt5896` (Android 14)**:
+  - **Settings UI:** **`0.40%` jank** · `8 ms` median frame · `5 ms` 90th-percentile GPU.
+  - **Home Screen:** **`0.71%` jank** · `0` missed Vsync · `0` slow UI thread frames.
+  - **Quick Settings:** **`5.26%` jank** · `3 ms` median GPU.
+  - **Memory & Footprint:** **`26.2 MB` Total PSS** (`649 KB` release APK, zero background idle CPU, zero internet telemetry).
+
+The [launcher build configuration](launcher/app/build.gradle) identifies the current source version, and [V6_2_RELEASE_NOTES.md](V6_2_RELEASE_NOTES.md) records the earlier v6.2 baseline.
 
 ## Explore this fork
 

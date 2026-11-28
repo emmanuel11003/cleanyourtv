@@ -44,6 +44,13 @@ public class InputKeyService extends AccessibilityService {
         return running;
     }
 
+    static void reloadConfigFromHost() {
+        InputKeyService service = running;
+        if (service != null) {
+            LauncherExecutors.main().post(service::loadConfig);
+        }
+    }
+
     @Override
     protected void onServiceConnected() {
         super.onServiceConnected();

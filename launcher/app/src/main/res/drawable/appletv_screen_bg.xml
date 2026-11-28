@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <!-- Matte dark charcoal tuned for MediaTek mt5896: avoids a 1080p per-frame gradient shader pass. -->
+    <solid android:color="#FF15171D" />
+</shape>

@@ -39,6 +39,7 @@ import java.util.Map;
 public final class NotificationPanelActivity extends Activity implements GuardRevival.Callback {
 
     private boolean animateTransitions;
+    private boolean reduceTransparency;
     private ScrollView scrollView;
     private LinearLayout listLayout;
     private LinearLayout emptyView;
@@ -61,6 +62,7 @@ public final class NotificationPanelActivity extends Activity implements GuardRe
         super.onCreate(state);
         Config cfg = Config.load(this);
         animateTransitions = cfg.animations && !cfg.reducedMotion;
+        reduceTransparency = cfg.reduceTransparency;
         Motion.applyFadeTransition(this, animateTransitions);
         density = getResources().getDisplayMetrics().density;
         pm = getPackageManager();
@@ -76,7 +78,7 @@ public final class NotificationPanelActivity extends Activity implements GuardRe
         View scrimBackdrop = new View(this);
         scrimBackdrop.setLayoutParams(new FrameLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-        scrimBackdrop.setBackgroundColor(0x48000000);
+        scrimBackdrop.setBackgroundColor(reduceTransparency ? 0xCC06070A : 0x48000000);
         scrimBackdrop.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
         scrim.addView(scrimBackdrop);
 
@@ -87,7 +89,7 @@ public final class NotificationPanelActivity extends Activity implements GuardRe
         panelLp.bottomMargin = dp(16);
         panelLp.setMarginEnd(dp(24));
         panel.setLayoutParams(panelLp);
-        panel.setBackgroundResource(R.drawable.quick_settings_panel_bg);
+        panel.setBackgroundResource(AppleTvUi.panelBgRes(reduceTransparency));
         panel.setPaddingRelative(dp(14), dp(18), dp(14), dp(14));
         panel.setClipChildren(false);
         panel.setClipToPadding(false);
@@ -181,9 +183,9 @@ public final class NotificationPanelActivity extends Activity implements GuardRe
         clearAllBtn.setId(View.generateViewId());
         clearAllBtn.setText("Clear all");
         clearAllBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12f);
-        clearAllBtn.setTextColor(getColorStateList(R.color.quick_tile_text_color));
+        clearAllBtn.setTextColor(getColorStateList(AppleTvUi.tileTextColorRes(reduceTransparency)));
         clearAllBtn.setTypeface(Typeface.create("sans-serif", Typeface.NORMAL));
-        clearAllBtn.setBackgroundResource(R.drawable.quick_settings_tile_bg);
+        clearAllBtn.setBackgroundResource(AppleTvUi.tileBgRes(reduceTransparency));
         clearAllBtn.setPaddingRelative(dp(12), dp(6), dp(12), dp(6));
         clearAllBtn.setFocusable(true);
         clearAllBtn.setClickable(true);
@@ -231,7 +233,7 @@ public final class NotificationPanelActivity extends Activity implements GuardRe
         card.setLayoutParams(new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         card.setOrientation(LinearLayout.VERTICAL);
-        card.setBackgroundResource(R.drawable.quick_settings_tile_bg);
+        card.setBackgroundResource(AppleTvUi.tileBgRes(reduceTransparency));
         card.setPadding(dp(14), dp(14), dp(14), dp(14));
         card.setFocusable(true);
         card.setClickable(true);
@@ -248,7 +250,7 @@ public final class NotificationPanelActivity extends Activity implements GuardRe
         TextView head = new TextView(this);
         head.setText("Notification access is off");
         head.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14f);
-        head.setTextColor(getColorStateList(R.color.quick_tile_text_color));
+        head.setTextColor(getColorStateList(AppleTvUi.tileTextColorRes(reduceTransparency)));
         head.setTypeface(Typeface.create("sans-serif", Typeface.NORMAL));
         head.setDuplicateParentStateEnabled(true);
         card.addView(head);
@@ -256,7 +258,7 @@ public final class NotificationPanelActivity extends Activity implements GuardRe
         TextView sub = new TextView(this);
         sub.setText("Press OK to grant access in Settings");
         sub.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12f);
-        sub.setTextColor(getColorStateList(R.color.quick_tile_sub_color));
+        sub.setTextColor(getColorStateList(AppleTvUi.tileSubColorRes(reduceTransparency)));
         sub.setDuplicateParentStateEnabled(true);
         LinearLayout.LayoutParams subLp = new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -420,7 +422,7 @@ public final class NotificationPanelActivity extends Activity implements GuardRe
         row.setLayoutParams(rowLp);
         row.setOrientation(LinearLayout.HORIZONTAL);
         row.setGravity(Gravity.CENTER_VERTICAL);
-        row.setBackgroundResource(R.drawable.quick_settings_tile_bg);
+        row.setBackgroundResource(AppleTvUi.tileBgRes(reduceTransparency));
         row.setPadding(dp(12), dp(10), dp(12), dp(10));
         row.setFocusable(true);
         row.setClickable(true);
@@ -452,7 +454,7 @@ public final class NotificationPanelActivity extends Activity implements GuardRe
                 0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
         titleView.setText((item.title != null && item.title.length() > 0) ? item.title : loadLabel(item.packageName));
         titleView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13f);
-        titleView.setTextColor(getColorStateList(R.color.quick_tile_text_color));
+        titleView.setTextColor(getColorStateList(AppleTvUi.tileTextColorRes(reduceTransparency)));
         titleView.setTypeface(Typeface.create("sans-serif", Typeface.NORMAL));
         titleView.setMaxLines(1);
         titleView.setEllipsize(TextUtils.TruncateAt.END);
@@ -469,7 +471,7 @@ public final class NotificationPanelActivity extends Activity implements GuardRe
                 : DateUtils.getRelativeTimeSpanString(item.postTime, now,
                         DateUtils.MINUTE_IN_MILLIS, DateUtils.FORMAT_ABBREV_RELATIVE));
         timeView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 11f);
-        timeView.setTextColor(getColorStateList(R.color.quick_tile_sub_color));
+        timeView.setTextColor(getColorStateList(AppleTvUi.tileSubColorRes(reduceTransparency)));
         timeView.setDuplicateParentStateEnabled(true);
         topLine.addView(timeView);
         textCol.addView(topLine);
@@ -482,7 +484,7 @@ public final class NotificationPanelActivity extends Activity implements GuardRe
             bodyView.setLayoutParams(bodyLp);
             bodyView.setText(item.text);
             bodyView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12f);
-            bodyView.setTextColor(getColorStateList(R.color.quick_tile_sub_color));
+            bodyView.setTextColor(getColorStateList(AppleTvUi.tileSubColorRes(reduceTransparency)));
             bodyView.setMaxLines(2);
             bodyView.setEllipsize(TextUtils.TruncateAt.END);
             bodyView.setDuplicateParentStateEnabled(true);

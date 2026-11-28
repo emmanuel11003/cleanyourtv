@@ -3,4 +3,14 @@
     <item name="tag_clock_format_saved" type="id" />
     <item name="tag_clock_format_12" type="id" />
     <item name="tag_clock_format_24" type="id" />
+    <item name="tileScreensaver" type="id" />
+    <item name="tileInputs" type="id" />
+    <item name="tileDisplay" type="id" />
+    <item name="tileSound" type="id" />
+    <item name="tileWifi" type="id" />
+    <item name="tileBluetooth" type="id" />
+    <item name="tileSleepTimer" type="id" />
+    <item name="tileRearrange" type="id" />
+    <item name="tileNotifications" type="id" />
+    <item name="tileBoostRam" type="id" />
 </resources>

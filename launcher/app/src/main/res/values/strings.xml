@@ -295,4 +295,65 @@
     <string name="tile_uninstall" translatable="false">Uninstall</string>
     <string name="tile_disable" translatable="false">Disable</string>
     <string name="tile_disable_hint" translatable="false">Select Disable in App info</string>
+
+    <!-- Apple TV-style Settings hierarchy & Quick Settings Edit Controls -->
+    <string name="settings_root_title" translatable="false">Settings</string>
+    <string name="cat_general" translatable="false">General</string>
+    <string name="cat_home_screen" translatable="false">Home Screen</string>
+    <string name="cat_video_audio" translatable="false">Video and Audio</string>
+    <string name="cat_screensaver" translatable="false">Screen Saver</string>
+    <string name="cat_notifications" translatable="false">Notifications</string>
+    <string name="cat_remotes_devices" translatable="false">Remotes and Devices</string>
+    <string name="cat_apps" translatable="false">Apps</string>
+    <string name="cat_network" translatable="false">Network</string>
+    <string name="cat_transfer_backup" translatable="false">Transfer and Backup</string>
+    <string name="cat_system" translatable="false">System</string>
+
+    <string name="sec_appearance" translatable="false">Appearance</string>
+    <string name="sec_clock_header" translatable="false">Clock &amp; Header</string>
+    <string name="sec_accessibility" translatable="false">Accessibility</string>
+    <string name="sec_about" translatable="false">About CleanYourTV</string>
+    <string name="sec_home_layout" translatable="false">Home Layout</string>
+    <string name="sec_cinematic_shelf" translatable="false">Cinematic Shelf</string>
+    <string name="sec_library_options" translatable="false">App Library Options</string>
+    <string name="sec_tile_input_options" translatable="false">Tile &amp; Input Options</string>
+    <string name="sec_now_playing" translatable="false">Now Playing</string>
+    <string name="sec_device_compatibility" translatable="false">Device Compatibility</string>
+    <string name="sec_advanced" translatable="false">Advanced</string>
+
+    <string name="opt_on" translatable="false">On</string>
+    <string name="opt_off" translatable="false">Off</string>
+    <string name="opt_home" translatable="false">Home</string>
+    <string name="opt_live_tv" translatable="false">Live TV</string>
+    <string name="opt_selected_app" translatable="false">Selected App</string>
+    <string name="opt_pick_app" translatable="false">Choose App…</string>
+
+    <string name="set_home_wallpaper" translatable="false">Home Wallpaper</string>
+    <string name="set_interface_sounds" translatable="false">Interface Sounds</string>
+    <string name="set_reduce_transparency" translatable="false">Reduce Transparency</string>
+    <string name="set_reduce_transparency_desc" translatable="false">Use opaque, high-contrast surfaces instead of translucent frosted glass.</string>
+    <string name="set_show_inputs_btn" translatable="false">Show Inputs Button</string>
+    <string name="set_show_network_btn" translatable="false">Show Network Button</string>
+    <string name="set_show_memory_storage" translatable="false">Show Memory &amp; Storage</string>
+    <string name="set_enable_app_library" translatable="false">Enable App Library</string>
+    <string name="set_show_now_playing_home" translatable="false">Show on Home</string>
+    <string name="set_show_now_playing_qs" translatable="false">Show in Quick Settings</string>
+    <string name="set_ss_start_idle" translatable="false">Start When Home Is Idle</string>
+    <string name="set_ss_show_calendar" translatable="false">Show Calendar</string>
+    <string name="set_ss_background" translatable="false">Screen Saver Background</string>
+    <string name="set_ss_bg_black" translatable="false">Black</string>
+    <string name="set_ss_bg_glow" translatable="false">Glow</string>
+    <string name="set_ss_bg_wallpaper" translatable="false">Wallpaper</string>
+    <string name="set_startup_dest" translatable="false">Startup Destination</string>
+    <string name="set_open_on_wake" translatable="false">Open on Wake</string>
+    <string name="set_upload_from_phone" translatable="false">Upload from Phone…</string>
+    <string name="set_wifi_transfer" translatable="false">Wi-Fi Transfer</string>
+    <string name="set_change_pin" translatable="false">Change PIN</string>
+    <string name="set_reset_theme_defaults" translatable="false">Reset to Theme Defaults</string>
+    <string name="set_reset_confirm_msg" translatable="false">Clear on-TV appearance, layout, clock, and motion overrides and restore theme defaults?</string>
+    <string name="pin_rotated_fmt" translatable="false">New pairing PIN: %1$s</string>
+
+    <string name="qs_edit_controls" translatable="false">Edit Controls</string>
+    <string name="qs_done" translatable="false">Done</string>
+    <string name="qs_all_hidden_hint" translatable="false">All optional controls are hidden. Choose Edit Controls to restore tiles.</string>
 </resources>

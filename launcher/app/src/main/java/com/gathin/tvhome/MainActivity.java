@@ -332,6 +332,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     private static LocalDate lastPetalShower;
     /** boot_to_live_tv: open the Live TV app on the first Home of each boot. */
     boolean bootToLiveTv;
+    String startupDestination = "";
+    boolean showNowPlayingHome = true;
     /** The input in the Live TV tile's launch_actions ("input:<id>"), opened at power-on instead of the Live TV app. */
     String bootInputId;
     /** open_on_start_choice: the app picked in Launcher settings may open on the first Home of each boot. */
@@ -560,6 +562,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         idleClockMs = cfg.homeIdleClockMinutes * MINUTE_MS;
         backOpensClock = cfg.backOpensClock;
         bootToLiveTv = cfg.bootToLiveTv;
+        startupDestination = cfg.startupDestination;
+        showNowPlayingHome = cfg.showNowPlayingHome;
         bootInputId = LaunchActions.inputId(cfg.launchActions.get(cfg.liveTvPackage));
         openOnStartChoice = cfg.openOnStartChoice;
         openOnStartWaitMs = cfg.openOnStartNetworkWait * 1000L;
@@ -991,8 +995,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             });
         }
         btnNowPlaying = findViewById(R.id.btnNowPlaying);
-        mediaNowPlaying = new MediaNowPlaying(this, this::updateNowPlayingPill);
+        mediaNowPlaying = showNowPlayingHome ? new MediaNowPlaying(this, this::updateNowPlayingPill) : null;
         if (btnNowPlaying != null) {
+            if (!showNowPlayingHome) btnNowPlaying.setVisibility(View.GONE);
             btnNowPlaying.setOnClickListener(v -> {
                 UiFeedback.playClick(v);
                 showNowPlayingMenu(v);
@@ -3407,7 +3412,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
 
     private void updateNowPlayingPill(MediaNowPlaying.State state) {
         if (btnNowPlaying == null) return;
-        if (state == null) {
+        if (!showNowPlayingHome || state == null) {
             btnNowPlaying.setVisibility(View.GONE);
             return;
         }

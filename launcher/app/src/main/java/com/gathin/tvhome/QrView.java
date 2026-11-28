@@ -11,7 +11,7 @@ import android.view.ViewOutlineProvider;
 /** High-contrast QR code view scaled to whole pixels per module, coalesced into a single GPU path. */
 final class QrView extends View {
     private static final int QUIET = 4;
-    private static final int LIGHT = 0xFFEAF0F6;
+    private static final int LIGHT = 0xFFFFFFFF;
     private static final int DARK = 0xFF111318;
 
     private final Paint paint = new Paint();

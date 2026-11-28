@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Google TV Stock Style Quick Settings Panel -->
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/scrim"
     android:layout_width="match_parent"
@@ -11,657 +10,294 @@
         android:id="@+id/scrimBackdrop"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#48000000"
+        android:background="#52000000"
         android:importantForAccessibility="no" />
 
-    <!-- Floating Rounded Panel (Google TV Exact Bounds) -->
+    <!-- Compact Apple TV-style Quick Settings Floating Panel -->
     <FrameLayout
         android:id="@+id/panel"
-        android:layout_width="290dp"
+        android:layout_width="316dp"
         android:layout_height="match_parent"
-        android:layout_marginTop="16dp"
-        android:layout_marginBottom="16dp"
-        android:layout_marginEnd="24dp"
         android:layout_gravity="end|center_vertical"
-        android:background="@drawable/quick_settings_panel_bg"
-        android:paddingStart="14dp"
-        android:paddingEnd="14dp"
-        android:paddingTop="18dp"
-        android:paddingBottom="14dp"
-        android:clipChildren="false"
-        android:clipToPadding="false"
+        android:layout_marginTop="18dp"
+        android:layout_marginBottom="18dp"
+        android:layout_marginEnd="24dp"
+        android:background="@drawable/quick_panel_frosted_bg"
         android:clickable="true"
+        android:clipChildren="true"
+        android:clipToPadding="true"
+        android:elevation="0dp"
         android:focusable="false"
-        android:elevation="0dp">
+        android:paddingStart="16dp"
+        android:paddingTop="18dp"
+        android:paddingEnd="16dp"
+        android:paddingBottom="14dp">
 
-        <!-- Main Panel View -->
         <LinearLayout
             android:id="@+id/layoutMainPanel"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:clipChildren="false"
-            android:clipToPadding="false"
+            android:clipChildren="true"
+            android:clipToPadding="true"
             android:orientation="vertical">
 
-            <!-- Top Header: Date, Clock & Circular All Settings Button -->
+            <!-- Header: Date, Clock & Always-Reachable All Settings -->
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="4dp"
-                android:layout_marginEnd="4dp"
+                android:layout_marginStart="2dp"
+                android:layout_marginEnd="2dp"
                 android:clipChildren="false"
                 android:clipToPadding="false">
 
-                <!-- Left: Date & Large Clock -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_alignParentStart="true"
-                    android:layout_toStartOf="@id/btnAllSettings"
-                    android:layout_marginEnd="10dp"
                     android:layout_centerVertical="true"
+                    android:layout_marginEnd="10dp"
+                    android:layout_toStartOf="@id/btnAllSettings"
                     android:orientation="vertical">
 
                     <TextView
                         android:id="@+id/quickDate"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:textSize="10.5sp"
-                        android:textColor="#FFA8C7FA"
-                        android:textAllCaps="true"
-                        android:letterSpacing="0.06"
-                        android:fontFamily="@string/font_medium"
                         android:ellipsize="end"
-                        android:singleLine="true" />
+                        android:fontFamily="@string/font_medium"
+                        android:letterSpacing="0.06"
+                        android:singleLine="true"
+                        android:textAllCaps="true"
+                        android:textColor="#FFA8C7FA"
+                        android:textSize="10.5sp" />
 
                     <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="1dp"
-                        android:orientation="horizontal"
-                        android:baselineAligned="true">
+                        android:baselineAligned="true"
+                        android:orientation="horizontal">
 
                         <com.gathin.tvhome.LiveClockView
                             android:id="@+id/quickClock"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:textSize="28sp"
-                            android:textColor="#FFE3E2E6"
                             android:fontFamily="@string/font_body"
-                            android:singleLine="true" />
+                            android:singleLine="true"
+                            android:textColor="#FFF4F5F8"
+                            android:textSize="28sp" />
 
                         <TextClock
                             android:id="@+id/quickAmPm"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginStart="4dp"
                             android:layout_gravity="bottom"
+                            android:layout_marginStart="4dp"
                             android:layout_marginBottom="3dp"
-                            android:textSize="12sp"
-                            android:textColor="#FFC4C6D0"
                             android:fontFamily="@string/font_medium"
                             android:format12Hour="a"
                             android:format24Hour=""
+                            android:singleLine="true"
                             android:textAllCaps="true"
-                            android:singleLine="true" />
+                            android:textColor="#FFC4C6D0"
+                            android:textSize="12sp" />
                     </LinearLayout>
                 </LinearLayout>
 
-                <!-- Right: Circular All Settings Button & Label -->
                 <LinearLayout
                     android:id="@+id/btnAllSettings"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentEnd="true"
                     android:layout_centerVertical="true"
-                    android:focusable="true"
                     android:clickable="true"
+                    android:descendantFocusability="blocksDescendants"
+                    android:focusable="true"
                     android:gravity="center_horizontal"
                     android:orientation="vertical">
 
                     <FrameLayout
-                        android:layout_width="38dp"
-                        android:layout_height="38dp"
-                        android:background="@drawable/quick_settings_circle_bg"
+                        android:id="@+id/btnAllSettingsCircle"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:background="@drawable/quick_tile_frosted_bg"
                         android:duplicateParentState="true">
 
                         <ImageView
+                            android:id="@+id/btnAllSettingsIcon"
                             android:layout_width="18dp"
                             android:layout_height="18dp"
                             android:layout_gravity="center"
-                            android:src="@drawable/ic_settings"
-                            android:tint="@color/quick_tile_icon_color"
+                            android:contentDescription="@null"
                             android:duplicateParentState="true"
-                            android:contentDescription="@null" />
+                            android:src="@drawable/ic_settings"
+                            android:tint="@color/quick_tile_icon_color" />
                     </FrameLayout>
 
                     <TextView
+                        android:id="@+id/btnAllSettingsLabel"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
+                        android:fontFamily="@string/font_body"
+                        android:singleLine="true"
                         android:text="@string/all_settings"
                         android:textColor="#FFD8DAE2"
-                        android:textSize="10sp"
-                        android:fontFamily="@string/font_body"
-                        android:singleLine="true" />
+                        android:textSize="10.5sp" />
                 </LinearLayout>
             </RelativeLayout>
 
-            <!-- Live Media Now-Playing Bar (hidden when nothing is playing) -->
+            <!-- Independent Quick Settings Media Now Playing Bar -->
             <LinearLayout
                 android:id="@+id/quickMediaCard"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:background="@drawable/quick_settings_tile_bg"
+                android:layout_marginTop="12dp"
+                android:background="@drawable/quick_tile_frosted_bg"
+                android:clipChildren="false"
+                android:clipToPadding="false"
                 android:gravity="center_vertical"
                 android:orientation="horizontal"
                 android:paddingStart="10dp"
-                android:paddingEnd="6dp"
                 android:paddingTop="8dp"
+                android:paddingEnd="8dp"
                 android:paddingBottom="8dp"
                 android:visibility="gone">
 
                 <ImageView
                     android:layout_width="16dp"
                     android:layout_height="16dp"
+                    android:contentDescription="@null"
                     android:src="@drawable/ic_music"
-                    android:tint="#FFA8C7FA"
-                    android:contentDescription="@null" />
+                    android:tint="#FFA8C7FA" />
 
                 <LinearLayout
                     android:id="@+id/quickMediaOpen"
                     android:layout_width="0dp"
-                    android:layout_weight="1"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
-                    android:layout_marginEnd="4dp"
-                    android:focusable="true"
+                    android:layout_marginEnd="6dp"
+                    android:layout_weight="1"
                     android:clickable="true"
+                    android:focusable="true"
                     android:orientation="vertical">
 
                     <TextView
                         android:id="@+id/quickMediaTitle"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:singleLine="true"
                         android:ellipsize="end"
-                        android:textColor="#FFE3E2E6"
-                        android:textSize="12sp"
-                        android:fontFamily="@string/font_medium" />
+                        android:fontFamily="@string/font_medium"
+                        android:singleLine="true"
+                        android:textColor="@color/quick_tile_text_color"
+                        android:textSize="12.5sp" />
 
                     <TextView
                         android:id="@+id/quickMediaArtist"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:singleLine="true"
                         android:ellipsize="end"
-                        android:textColor="#FFC4C6D0"
-                        android:textSize="10sp"
-                        android:fontFamily="@string/font_body" />
+                        android:fontFamily="@string/font_body"
+                        android:singleLine="true"
+                        android:textColor="@color/quick_tile_sub_color"
+                        android:textSize="10.5sp" />
                 </LinearLayout>
 
                 <TextView
                     android:id="@+id/quickMediaPlayPause"
-                    android:layout_width="28dp"
-                    android:layout_height="28dp"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:background="@drawable/quick_tile_frosted_bg"
+                    android:clickable="true"
+                    android:contentDescription="@string/media_play_pause"
+                    android:focusable="true"
                     android:gravity="center"
                     android:text="⏯"
                     android:textColor="@color/quick_tile_text_color"
-                    android:textSize="12sp"
-                    android:background="@drawable/quick_settings_circle_bg"
-                    android:focusable="true"
-                    android:clickable="true"
-                    android:contentDescription="@string/media_play_pause" />
+                    android:textSize="12sp" />
 
                 <TextView
                     android:id="@+id/quickMediaNext"
-                    android:layout_width="28dp"
-                    android:layout_height="28dp"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
                     android:layout_marginStart="4dp"
+                    android:background="@drawable/quick_tile_frosted_bg"
+                    android:clickable="true"
+                    android:contentDescription="@string/media_next"
+                    android:focusable="true"
                     android:gravity="center"
                     android:text="⏭"
                     android:textColor="@color/quick_tile_text_color"
-                    android:textSize="12sp"
-                    android:background="@drawable/quick_settings_circle_bg"
-                    android:focusable="true"
-                    android:clickable="true"
-                    android:contentDescription="@string/media_next" />
+                    android:textSize="12sp" />
             </LinearLayout>
 
-            <!-- Quick Settings Tiles (2 Columns x 5 Rows) -->
+            <!-- Scrollable Controls Container (Reflowed 2-Column Tiles or Edit Controls Checklist) -->
+            <ScrollView
+                android:id="@+id/quickScroll"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_marginTop="12dp"
+                android:layout_weight="1"
+                android:clipChildren="true"
+                android:clipToPadding="true"
+                android:scrollbars="none">
+
+                <LinearLayout
+                    android:id="@+id/quickTilesContainer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:clipChildren="false"
+                    android:clipToPadding="false"
+                    android:orientation="vertical"
+                    android:paddingTop="4dp"
+                    android:paddingBottom="6dp" />
+            </ScrollView>
+
+            <!-- Always-Reachable Footer Action (Edit Controls / Done) + Back Hint -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
+                android:layout_marginTop="10dp"
                 android:clipChildren="false"
                 android:clipToPadding="false"
                 android:orientation="vertical">
 
-                <!-- Row 1: Screensaver & Inputs -->
                 <LinearLayout
+                    android:id="@+id/btnEditControls"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:clipChildren="false"
-                    android:clipToPadding="false"
-                    android:baselineAligned="false"
-                    android:orientation="horizontal">
+                    android:layout_height="38dp"
+                    android:background="@drawable/appletv_row_frosted"
+                    android:clickable="true"
+                    android:descendantFocusability="blocksDescendants"
+                    android:focusable="true"
+                    android:gravity="center"
+                    android:orientation="horizontal"
+                    android:paddingStart="14dp"
+                    android:paddingEnd="14dp">
 
-                    <LinearLayout
-                        android:id="@+id/tileScreensaver"
-                        android:layout_width="0dp"
-                        android:layout_weight="1"
-                        android:layout_height="52dp"
-                        android:layout_marginEnd="4dp"
-                        android:background="@drawable/quick_settings_tile_bg"
-                        android:focusable="true"
-                        android:clickable="true"
-                        android:gravity="center_vertical"
-                        android:paddingStart="12dp"
-                        android:paddingEnd="6dp"
-                        android:orientation="horizontal">
-
-                        <ImageView
-                            android:layout_width="18dp"
-                            android:layout_height="18dp"
-                            android:src="@drawable/ic_screensaver"
-                            android:tint="@color/quick_tile_icon_color"
-                            android:duplicateParentState="true"
-                            android:contentDescription="@null" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="8dp"
-                            android:text="@string/tile_screensaver"
-                            android:textColor="@color/quick_tile_text_color"
-                            android:textSize="12sp"
-                            android:fontFamily="@string/font_medium"
-                            android:duplicateParentState="true"
-                            android:singleLine="true" />
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:id="@+id/tileInputs"
-                        android:layout_width="0dp"
-                        android:layout_weight="1"
-                        android:layout_height="52dp"
-                        android:layout_marginStart="4dp"
-                        android:background="@drawable/quick_settings_tile_bg"
-                        android:focusable="true"
-                        android:clickable="true"
-                        android:gravity="center_vertical"
-                        android:paddingStart="12dp"
-                        android:paddingEnd="6dp"
-                        android:orientation="horizontal">
-
-                        <ImageView
-                            android:layout_width="18dp"
-                            android:layout_height="18dp"
-                            android:src="@drawable/ic_input"
-                            android:tint="@color/quick_tile_icon_color"
-                            android:duplicateParentState="true"
-                            android:contentDescription="@null" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="8dp"
-                            android:text="@string/tile_inputs"
-                            android:textColor="@color/quick_tile_text_color"
-                            android:textSize="12sp"
-                            android:fontFamily="@string/font_medium"
-                            android:duplicateParentState="true"
-                            android:singleLine="true" />
-                    </LinearLayout>
+                    <TextView
+                        android:id="@+id/btnEditControlsLabel"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:duplicateParentState="true"
+                        android:fontFamily="@string/font_medium"
+                        android:singleLine="true"
+                        android:text="@string/qs_edit_controls"
+                        android:textColor="@color/appletv_row_title_color"
+                        android:textSize="13sp" />
                 </LinearLayout>
-
-                <!-- Row 2: Display & Sound -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="7dp"
-                    android:clipChildren="false"
-                    android:clipToPadding="false"
-                    android:baselineAligned="false"
-                    android:orientation="horizontal">
-
-                    <LinearLayout
-                        android:id="@+id/tileDisplay"
-                        android:layout_width="0dp"
-                        android:layout_weight="1"
-                        android:layout_height="52dp"
-                        android:layout_marginEnd="4dp"
-                        android:background="@drawable/quick_settings_tile_bg"
-                        android:focusable="true"
-                        android:clickable="true"
-                        android:gravity="center_vertical"
-                        android:paddingStart="12dp"
-                        android:paddingEnd="6dp"
-                        android:orientation="horizontal">
-
-                        <ImageView
-                            android:layout_width="18dp"
-                            android:layout_height="18dp"
-                            android:src="@drawable/ic_picture"
-                            android:tint="@color/quick_tile_icon_color"
-                            android:duplicateParentState="true"
-                            android:contentDescription="@null" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="8dp"
-                            android:text="@string/tile_display"
-                            android:textColor="@color/quick_tile_text_color"
-                            android:textSize="12sp"
-                            android:fontFamily="@string/font_medium"
-                            android:duplicateParentState="true"
-                            android:singleLine="true" />
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:id="@+id/tileSound"
-                        android:layout_width="0dp"
-                        android:layout_weight="1"
-                        android:layout_height="52dp"
-                        android:layout_marginStart="4dp"
-                        android:background="@drawable/quick_settings_tile_bg"
-                        android:focusable="true"
-                        android:clickable="true"
-                        android:gravity="center_vertical"
-                        android:paddingStart="12dp"
-                        android:paddingEnd="6dp"
-                        android:orientation="horizontal">
-
-                        <ImageView
-                            android:layout_width="18dp"
-                            android:layout_height="18dp"
-                            android:src="@drawable/ic_sound"
-                            android:tint="@color/quick_tile_icon_color"
-                            android:duplicateParentState="true"
-                            android:contentDescription="@null" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="8dp"
-                            android:text="@string/tile_sound"
-                            android:textColor="@color/quick_tile_text_color"
-                            android:textSize="12sp"
-                            android:fontFamily="@string/font_medium"
-                            android:duplicateParentState="true"
-                            android:singleLine="true" />
-                    </LinearLayout>
-                </LinearLayout>
-
-                <!-- Row 3: Wi-Fi & Bluetooth -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="7dp"
-                    android:clipChildren="false"
-                    android:clipToPadding="false"
-                    android:baselineAligned="false"
-                    android:orientation="horizontal">
-
-                    <LinearLayout
-                        android:id="@+id/tileWifi"
-                        android:layout_width="0dp"
-                        android:layout_weight="1"
-                        android:layout_height="52dp"
-                        android:layout_marginEnd="4dp"
-                        android:background="@drawable/quick_settings_tile_bg"
-                        android:focusable="true"
-                        android:clickable="true"
-                        android:gravity="center_vertical"
-                        android:paddingStart="12dp"
-                        android:paddingEnd="6dp"
-                        android:orientation="horizontal">
-
-                        <ImageView
-                            android:layout_width="18dp"
-                            android:layout_height="18dp"
-                            android:src="@drawable/ic_wifi"
-                            android:tint="@color/quick_tile_icon_color"
-                            android:duplicateParentState="true"
-                            android:contentDescription="@null" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="8dp"
-                            android:text="@string/tile_wifi"
-                            android:textColor="@color/quick_tile_text_color"
-                            android:textSize="12sp"
-                            android:fontFamily="@string/font_medium"
-                            android:duplicateParentState="true"
-                            android:singleLine="true" />
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:id="@+id/tileBluetooth"
-                        android:layout_width="0dp"
-                        android:layout_weight="1"
-                        android:layout_height="52dp"
-                        android:layout_marginStart="4dp"
-                        android:background="@drawable/quick_settings_tile_bg"
-                        android:focusable="true"
-                        android:clickable="true"
-                        android:gravity="center_vertical"
-                        android:paddingStart="12dp"
-                        android:paddingEnd="6dp"
-                        android:orientation="horizontal">
-
-                        <ImageView
-                            android:layout_width="18dp"
-                            android:layout_height="18dp"
-                            android:src="@drawable/ic_bluetooth"
-                            android:tint="@color/quick_tile_icon_color"
-                            android:duplicateParentState="true"
-                            android:contentDescription="@null" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="8dp"
-                            android:text="@string/tile_bluetooth"
-                            android:textColor="@color/quick_tile_text_color"
-                            android:textSize="12sp"
-                            android:fontFamily="@string/font_medium"
-                            android:duplicateParentState="true"
-                            android:singleLine="true" />
-                    </LinearLayout>
-                </LinearLayout>
-
-                <!-- Row 4: Sleep timer & Accessibility -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="7dp"
-                    android:clipChildren="false"
-                    android:clipToPadding="false"
-                    android:baselineAligned="false"
-                    android:orientation="horizontal">
-
-                    <LinearLayout
-                        android:id="@+id/tileSleepTimer"
-                        android:layout_width="0dp"
-                        android:layout_weight="1"
-                        android:layout_height="52dp"
-                        android:layout_marginEnd="4dp"
-                        android:background="@drawable/quick_settings_tile_bg"
-                        android:focusable="true"
-                        android:clickable="true"
-                        android:gravity="center_vertical"
-                        android:paddingStart="12dp"
-                        android:paddingEnd="6dp"
-                        android:orientation="horizontal">
-
-                        <ImageView
-                            android:layout_width="18dp"
-                            android:layout_height="18dp"
-                            android:src="@drawable/ic_timer"
-                            android:tint="@color/quick_tile_icon_color"
-                            android:duplicateParentState="true"
-                            android:contentDescription="@null" />
-
-                        <TextView
-                            android:id="@+id/sleepTimerLabel"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="8dp"
-                            android:text="@string/tile_sleep_timer"
-                            android:textColor="@color/quick_tile_text_color"
-                            android:textSize="12sp"
-                            android:fontFamily="@string/font_medium"
-                            android:duplicateParentState="true"
-                            android:singleLine="true" />
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:id="@+id/tileRearrange"
-                        android:layout_width="0dp"
-                        android:layout_weight="1"
-                        android:layout_height="52dp"
-                        android:layout_marginStart="4dp"
-                        android:background="@drawable/quick_settings_tile_bg"
-                        android:focusable="true"
-                        android:clickable="true"
-                        android:gravity="center_vertical"
-                        android:paddingStart="12dp"
-                        android:paddingEnd="6dp"
-                        android:orientation="horizontal">
-
-                        <ImageView
-                            android:layout_width="18dp"
-                            android:layout_height="18dp"
-                            android:src="@drawable/ic_swap_vert"
-                            android:tint="@color/quick_tile_icon_color"
-                            android:duplicateParentState="true"
-                            android:contentDescription="@null" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="8dp"
-                            android:text="@string/reorder"
-                            android:textColor="@color/quick_tile_text_color"
-                            android:textSize="12sp"
-                            android:fontFamily="@string/font_medium"
-                            android:duplicateParentState="true"
-                            android:singleLine="true" />
-                    </LinearLayout>
-                </LinearLayout>
-
-                <!-- Row 5: Notifications & Free RAM Boost -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="7dp"
-                    android:clipChildren="false"
-                    android:clipToPadding="false"
-                    android:baselineAligned="false"
-                    android:orientation="horizontal">
-
-                    <LinearLayout
-                        android:id="@+id/tileNotifications"
-                        android:layout_width="0dp"
-                        android:layout_weight="1"
-                        android:layout_height="52dp"
-                        android:layout_marginEnd="4dp"
-                        android:background="@drawable/quick_settings_tile_bg"
-                        android:focusable="true"
-                        android:clickable="true"
-                        android:gravity="center_vertical"
-                        android:paddingStart="10dp"
-                        android:paddingEnd="4dp"
-                        android:orientation="horizontal">
-
-                        <ImageView
-                            android:layout_width="18dp"
-                            android:layout_height="18dp"
-                            android:src="@drawable/ic_notifications"
-                            android:tint="@color/quick_tile_icon_color"
-                            android:duplicateParentState="true"
-                            android:contentDescription="@null" />
-
-                        <TextView
-                            android:id="@+id/notificationsLabel"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="6dp"
-                            android:text="@string/tile_notifications"
-                            android:textColor="@color/quick_tile_text_color"
-                            android:textSize="12sp"
-                            android:fontFamily="@string/font_medium"
-                            android:duplicateParentState="true"
-                            android:singleLine="true" />
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:id="@+id/tileBoostRam"
-                        android:layout_width="0dp"
-                        android:layout_weight="1"
-                        android:layout_height="52dp"
-                        android:layout_marginStart="4dp"
-                        android:background="@drawable/quick_settings_tile_bg"
-                        android:focusable="true"
-                        android:clickable="true"
-                        android:gravity="center_vertical"
-                        android:paddingStart="12dp"
-                        android:paddingEnd="6dp"
-                        android:orientation="horizontal">
-
-                        <ImageView
-                            android:layout_width="18dp"
-                            android:layout_height="18dp"
-                            android:src="@drawable/ic_boost"
-                            android:tint="@color/quick_tile_icon_color"
-                            android:duplicateParentState="true"
-                            android:contentDescription="@null" />
-
-                        <TextView
-                            android:id="@+id/boostRamLabel"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="8dp"
-                            android:text="@string/tile_boost_ram"
-                            android:textColor="@color/quick_tile_text_color"
-                            android:textSize="12sp"
-                            android:fontFamily="@string/font_medium"
-                            android:duplicateParentState="true"
-                            android:singleLine="true" />
-                    </LinearLayout>
-                </LinearLayout>
-            </LinearLayout>
-
-            <!-- Bottom Spacer to push footer to bottom -->
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1" />
-
-            <!-- Google TV Style Footer: Branding, Dots & Back Hint -->
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="4dp"
-                android:paddingStart="4dp"
-                android:paddingEnd="4dp">
 
                 <TextView
+                    android:id="@+id/quickFooterHint"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentStart="true"
-                    android:layout_centerVertical="true"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="8dp"
+                    android:fontFamily="@string/font_body"
                     android:text="@string/quick_settings_footer"
-                    android:textColor="#5F6368"
-                    android:textSize="12sp"
-                    android:fontFamily="@string/font_medium" />
-            </RelativeLayout>
-
+                    android:textColor="#FF7E8494"
+                    android:textSize="11sp" />
+            </LinearLayout>
         </LinearLayout>
-
     </FrameLayout>
 </FrameLayout>

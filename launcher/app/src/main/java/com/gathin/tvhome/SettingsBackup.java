@@ -127,6 +127,18 @@ final class SettingsBackup {
             }
         }
 
+        // 5. Optional custom remote button mappings (backward compatible optional section in v1 backups)
+        SharedPreferences btnPrefs = ctx.getSharedPreferences(ButtonMapper.PREFS_NAME, Context.MODE_PRIVATE);
+        JSONObject btnObj = new JSONObject();
+        for (Map.Entry<String, ?> e : btnPrefs.getAll().entrySet()) {
+            if (e.getKey() != null && e.getKey().startsWith("kc_") && e.getValue() instanceof String) {
+                btnObj.put(e.getKey(), e.getValue());
+            }
+        }
+        if (btnObj.length() > 0) {
+            root.put("button_mappings", btnObj);
+        }
+
         return root.toString(2);
     }
 
@@ -265,6 +277,15 @@ final class SettingsBackup {
                         writeText(new File(dir, Config.FILE_NAME), overlay.toString(2));
                     } catch (IOException ignored) {
                     }
+                }
+            }
+
+            // 5. Restore custom remote button mappings if present in backup
+            JSONObject btnObj = root.optJSONObject("button_mappings");
+            if (btnObj != null) {
+                Map<Integer, String> parsed = ButtonMapper.parseMappingsJson(btnObj);
+                for (Map.Entry<Integer, String> entry : parsed.entrySet()) {
+                    ButtonMapper.setMapping(ctx, entry.getKey(), entry.getValue());
                 }
             }
 
